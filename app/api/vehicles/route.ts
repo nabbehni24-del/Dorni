@@ -1,15 +1,4 @@
-import { AuthError, requireUser } from "@/lib/server/auth";
-import { audit, db, id, json, readJson } from "@/lib/server/core";
-
-export async function POST(request: Request) {
-  try {
-    const user = await requireUser(request);
-    const p = await readJson<{ manufacturer?: string; model?: string; color?: string; year?: number }>(request);
-    const manufacturer = p.manufacturer?.trim(), model = p.model?.trim(), color = p.color?.trim();
-    if (!manufacturer || !model || !color) return json({ error: "بيانات السيارة الأساسية مطلوبة" }, 400);
-    const vehicle = { id: id("veh"), manufacturer, model, color, year: p.year ? Number(p.year) : null };
-    await db().prepare("INSERT INTO vehicles (id, user_id, manufacturer, model, color, year, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)").bind(vehicle.id, user.id, manufacturer, model, color, vehicle.year, Date.now()).run();
-    await audit(user.id, "VEHICLE_CREATED", "vehicle", vehicle.id);
-    return json({ vehicle }, 201);
-  } catch (error) { return json({ error: error instanceof AuthError ? "UNAUTHORIZED" : "تعذر إضافة السيارة" }, error instanceof AuthError ? 401 : 500); }
-}
+import { z } from "zod";
+import { body, json, requireUser, UnauthorizedError } from "@/lib/server/http";
+const schema=z.object({manufacturer:z.string().trim().min(1).max(80),model:z.string().trim().min(1).max(80),color:z.string().trim().min(1).max(40),nickname:z.string().trim().max(80).optional(),year:z.coerce.number().int().min(1950).max(2100).optional()});
+export async function POST(request:Request){try{const {user,supabase}=await requireUser();const value=schema.parse(await body(request));const {data,error}=await supabase.from("vehicles").insert({...value,owner_id:user.id}).select("id,manufacturer,model,color,nickname,year").single();if(error)throw error;return json({vehicle:data},201);}catch(error){if(error instanceof UnauthorizedError)return json({error:"UNAUTHORIZED"},401);if(error instanceof z.ZodError)return json({error:"بيانات السيارة غير صالحة",issues:error.issues},400);return json({error:"تعذر إضافة السيارة"},500);}}

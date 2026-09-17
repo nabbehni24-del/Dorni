@@ -1,0 +1,37 @@
+services:
+  - type: web
+    name: dorni
+    runtime: docker
+    autoDeployTrigger: commit
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: NEXT_PUBLIC_SUPABASE_URL
+        sync: false
+      - key: NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY
+        sync: false
+      - key: SUPABASE_SECRET_KEY
+        sync: false
+      - key: CLAIM_PEPPER
+        generateValue: true
+      - key: ABUSE_HASH_SECRET
+        generateValue: true
+      - key: NEXT_PUBLIC_APP_URL
+        sync: false
+      - key: DORNI_BOOTSTRAP_PHONE
+        sync: false
+      - key: DORNI_BOOTSTRAP_TOKEN
+        generateValue: true
+      - key: CRON_SECRET
+        generateValue: true
+      - key: DORNI_NOTIFICATION_MODE
+        value: provider
+      - key: SMS_WEBHOOK_URL
+        sync: false
+      - key: SMS_API_TOKEN
+        sync: false
+      - key: WHATSAPP_WEBHOOK_URL
+        sync: false
+      - key: WHATSAPP_API_TOKEN
+        sync: false

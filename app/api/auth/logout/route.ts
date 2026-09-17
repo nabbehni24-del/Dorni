@@ -1,3 +1,3 @@
-import { clearSessionCookie } from "@/lib/server/auth";
-import { json } from "@/lib/server/core";
-export async function POST() { return json({ ok: true }, 200, { "Set-Cookie": clearSessionCookie() }); }
+import { json } from "@/lib/server/http";
+import { createServerSupabase } from "@/lib/supabase/server";
+export async function POST() { const supabase = await createServerSupabase(); await supabase.auth.signOut({ scope: "local" }); return json({ ok: true }); }

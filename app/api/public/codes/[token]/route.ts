@@ -1,6 +1,3 @@
-import { db, json } from "@/lib/server/core";
-export async function GET(_request: Request, context: { params: Promise<{ token: string }> }) {
-  const { token } = await context.params;
-  const row = await db().prepare(`SELECT v.manufacturer, v.model, v.color FROM codes c JOIN vehicles v ON v.id = c.vehicle_id WHERE c.public_token = ? AND c.activation_state = 'ACTIVE'`).bind(token).first();
-  return row ? json({ active: true, vehicle: row }) : json({ active: false }, 404);
-}
+import { json } from "@/lib/server/http";
+import { createAdminSupabase } from "@/lib/supabase/admin";
+export async function GET(_request:Request,{params}:{params:Promise<{token:string}>}){const {token}=await params;const {data,error}=await createAdminSupabase().rpc("get_public_code",{p_public_token:token});if(error||!data?.[0])return json({error:"الكود غير صالح أو غير مفعّل"},404);const row=data[0];return json({vehicle:{manufacturer:row.manufacturer,model:row.model,color:row.color}});}

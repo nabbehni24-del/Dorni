@@ -1,13 +1,17 @@
-import { AuthError, requireUser } from "@/lib/server/auth";
-import { db, json } from "@/lib/server/core";
+import { json, requireUser, UnauthorizedError } from "@/lib/server/http";
 
-export async function GET(request: Request) {
+export async function GET() {
   try {
-    const user = await requireUser(request);
-    const [vehicles, reports] = await Promise.all([
-      db().prepare(`SELECT v.id, v.manufacturer, v.model, v.color, v.year, c.serial_number, c.public_token, c.activation_state FROM vehicles v LEFT JOIN codes c ON c.vehicle_id = v.id AND c.activation_state = 'ACTIVE' WHERE v.user_id = ? ORDER BY v.created_at DESC`).bind(user.id).all(),
-      db().prepare(`SELECT r.id, r.report_type, r.status, r.owner_response, r.created_at, v.manufacturer, v.model, v.color FROM reports r JOIN vehicles v ON v.id = r.vehicle_id WHERE v.user_id = ? ORDER BY r.created_at DESC LIMIT 30`).bind(user.id).all(),
+    const { user, supabase } = await requireUser();
+    const [profile, vehicles, reports, preferences, contacts] = await Promise.all([
+      supabase.from("profiles").select("id,phone,locale,account_status,created_at").eq("id",user.id).single(),
+      supabase.from("vehicles").select("id,manufacturer,model,color,nickname,year,archived_at,code_assignments(id,ended_at,codes(id,serial_number,public_token,activation_state))").is("archived_at",null).order("created_at",{ascending:false}),
+      supabase.from("reports").select("id,report_type_code,status,owner_response,duplicate_count,created_at,updated_at,vehicles(manufacturer,model,color)").order("created_at",{ascending:false}).limit(50),
+      supabase.from("notification_preferences").select("*").eq("user_id",user.id).single(),
+      supabase.from("contact_methods").select("id,kind,destination,verified_at,enabled").order("created_at"),
     ]);
-    return json({ user, vehicles: vehicles.results, reports: reports.results });
-  } catch (error) { return json({ error: error instanceof AuthError ? "UNAUTHORIZED" : "تعذر تحميل الحساب" }, error instanceof AuthError ? 401 : 500); }
+    const error = profile.error||vehicles.error||reports.error||preferences.error||contacts.error;
+    if (error) throw error;
+    return json({ user:{id:user.id,phone:user.phone},profile:profile.data,vehicles:vehicles.data,reports:reports.data,preferences:preferences.data,contacts:contacts.data });
+  } catch(error){return json({error:error instanceof UnauthorizedError?"UNAUTHORIZED":"تعذر تحميل الحساب"},error instanceof UnauthorizedError?401:500);}
 }

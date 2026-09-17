@@ -1,0 +1,5 @@
+import { z } from "zod";
+import { body,json,UnauthorizedError } from "@/lib/server/http";
+import { ForbiddenError,requirePartner } from "@/lib/server/access";
+const schema=z.object({quantity:z.number().int().min(1).max(100000),productType:z.string().min(2).max(60).default("STANDARD_CARD"),notes:z.string().max(1000).optional()});
+export async function POST(request:Request){try{const {user,supabase,membership}=await requirePartner();if(!["PARTNER_ADMIN","PARTNER_OPERATOR"].includes(membership.role))return json({error:"صلاحيتك للعرض فقط"},403);const p=schema.parse(await body(request));const {data,error}=await supabase.from("partner_batch_requests").insert({organization_id:membership.organization_id,requested_by:user.id,quantity:p.quantity,product_type:p.productType,notes:p.notes}).select("id,status,created_at").single();if(error)throw error;return json({request:data},201);}catch(error){if(error instanceof UnauthorizedError)return json({error:"UNAUTHORIZED"},401);if(error instanceof ForbiddenError)return json({error:"FORBIDDEN"},403);if(error instanceof z.ZodError)return json({error:"بيانات الطلب غير صالحة"},400);return json({error:"تعذر إرسال طلب الدفعة"},500);}}

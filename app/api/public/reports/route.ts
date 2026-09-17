@@ -1,17 +1,6 @@
-import { db, id, json, randomToken, readJson, reportTypes, secretHash } from "@/lib/server/core";
-export async function POST(request: Request) {
-  try {
-    const { publicToken, reportType } = await readJson<{ publicToken?: string; reportType?: string }>(request);
-    if (!reportTypes.includes(reportType as never)) return json({ error: "نوع البلاغ غير صالح" }, 400);
-    const code = await db().prepare("SELECT id, vehicle_id FROM codes WHERE public_token = ? AND activation_state = 'ACTIVE'").bind(publicToken).first<{ id: string; vehicle_id: string }>();
-    if (!code) return json({ error: "الكود غير مفعّل" }, 404);
-    const recent = await db().prepare("SELECT id FROM reports WHERE code_id = ? AND report_type = ? AND status IN ('ACTIVE','ACKNOWLEDGED') AND created_at > ?").bind(code.id, reportType, Date.now() - 5 * 60_000).first();
-    if (recent) return json({ error: "تم إرسال نفس التنبيه مؤخراً" }, 429);
-    const statusToken = randomToken(24), reportId = id("rpt"), now = Date.now();
-    await db().batch([
-      db().prepare("INSERT INTO reports (id, code_id, vehicle_id, report_type, status, status_token_hash, expires_at, created_at, updated_at) VALUES (?, ?, ?, ?, 'ACTIVE', ?, ?, ?, ?)").bind(reportId, code.id, code.vehicle_id, reportType, await secretHash(statusToken), now + 72 * 60 * 60_000, now, now),
-      db().prepare("INSERT INTO report_events (id, report_id, event_type, created_at) VALUES (?, ?, 'REPORT_CREATED', ?)").bind(id("evt"), reportId, now),
-    ]);
-    return json({ reportId, statusToken, statusPath: `/status/${statusToken}` }, 201);
-  } catch (error) { return json({ error: error instanceof Error ? error.message : "تعذر إرسال البلاغ" }, 400); }
-}
+import { z } from "zod";
+import { body, json } from "@/lib/server/http";
+import { digest, randomToken } from "@/lib/server/security";
+import { createAdminSupabase } from "@/lib/supabase/admin";
+const schema=z.object({publicToken:z.string().min(20).max(200),reportType:z.string().min(2).max(60),scannerSessionToken:z.string().min(20).max(200).optional(),latitude:z.number().min(-90).max(90).optional(),longitude:z.number().min(-180).max(180).optional()});
+export async function POST(request:Request){try{const p=schema.parse(await body(request));const statusToken=randomToken(32);const sessionToken=p.scannerSessionToken??randomToken(24);const ip=(request.headers.get("x-forwarded-for")??"").split(",")[0].trim();const {data,error}=await createAdminSupabase().rpc("submit_public_report",{p_public_token:p.publicToken,p_report_type:p.reportType,p_session_hash:await digest(sessionToken),p_status_token_hash:await digest(statusToken),p_ip_hash:ip?await digest(`${process.env.ABUSE_HASH_SECRET??"dev"}:${ip}`):null,p_latitude:p.latitude??null,p_longitude:p.longitude??null});if(error)return json({error:error.message.includes("RATE_LIMITED")?"محاولات كثيرة، حاول بعد دقيقة":"تعذر إرسال البلاغ"},error.message.includes("RATE_LIMITED")?429:400);return json({reportId:data[0].report_id,aggregated:data[0].aggregated,statusToken,statusPath:`/status/${statusToken}`,scannerSessionToken:sessionToken},201);}catch(error){if(error instanceof z.ZodError)return json({error:"بيانات البلاغ غير صالحة"},400);return json({error:"تعذر إرسال البلاغ"},400);}}
