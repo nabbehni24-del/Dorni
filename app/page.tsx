@@ -1,7 +1,7 @@
 "use client";
+/* eslint-disable @next/next/no-html-link-for-pages */
 
 import { useState } from "react";
-import Link from "next/link";
 import {
   AlertTriangle, CarFront, Check, ChevronLeft, CircleAlert,
   DoorOpen, Lightbulb, MapPin, MoveRight, ShieldCheck,
@@ -48,10 +48,10 @@ export default function PublicScanPage() {
       <div className="ambient-orb ambient-orb-one" />
       <div className="ambient-orb ambient-orb-two" />
       <header className="public-header">
-        <Link className="brand" href="/" aria-label="دورني، الصفحة الرئيسية">
+        <a className="brand" href="/" aria-label="دورني، الصفحة الرئيسية">
           <span className="brand-mark"><span /></span>
           <span><b>دورني</b><small>DORNI</small></span>
-        </Link>
+        </a>
         <span className="secure-chip"><ShieldCheck /> تواصل آمن</span>
       </header>
 
@@ -93,7 +93,7 @@ export default function PublicScanPage() {
       </section>
 
       <footer className="public-footer">
-        <span>بطاقة دورني الرسمية</span><span>•</span><Link href="/app">دخول صاحب السيارة</Link>
+        <span>بطاقة دورني الرسمية</span><span>•</span><a href="/app">دخول صاحب السيارة</a>
       </footer>
     </main>
   );
