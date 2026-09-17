@@ -1,0 +1,42 @@
+-- Cover every foreign key reported by the Supabase performance advisor.
+-- These indexes keep joins, cascades, ownership checks, and timeline queries predictable.
+
+create index if not exists abuse_events_code_id_idx on public.abuse_events (code_id);
+create index if not exists abuse_events_scanner_session_id_idx on public.abuse_events (scanner_session_id);
+create index if not exists audit_logs_actor_id_idx on public.audit_logs (actor_id);
+create index if not exists campaigns_organization_id_idx on public.campaigns (organization_id);
+create index if not exists code_assignments_assigned_by_idx on public.code_assignments (assigned_by);
+create index if not exists code_batches_approved_by_idx on public.code_batches (approved_by);
+create index if not exists code_batches_campaign_id_idx on public.code_batches (campaign_id);
+create index if not exists code_batches_organization_id_idx on public.code_batches (organization_id);
+create index if not exists code_batches_requested_by_idx on public.code_batches (requested_by);
+create index if not exists code_claims_claimed_by_idx on public.code_claims (claimed_by);
+create index if not exists code_replacements_replaced_by_idx on public.code_replacements (replaced_by);
+create index if not exists codes_batch_id_idx on public.codes (batch_id);
+create index if not exists distribution_events_code_id_idx on public.distribution_events (code_id);
+create index if not exists distribution_events_organization_id_idx on public.distribution_events (organization_id);
+create index if not exists notification_attempts_message_id_idx on public.notification_attempts (message_id);
+create index if not exists notification_messages_recipient_id_idx on public.notification_messages (recipient_id);
+create index if not exists notification_messages_report_id_idx on public.notification_messages (report_id);
+create index if not exists partner_batch_requests_batch_id_idx on public.partner_batch_requests (batch_id);
+create index if not exists partner_batch_requests_organization_id_idx on public.partner_batch_requests (organization_id);
+create index if not exists partner_batch_requests_requested_by_idx on public.partner_batch_requests (requested_by);
+create index if not exists partner_memberships_user_id_idx on public.partner_memberships (user_id);
+create index if not exists production_exports_batch_id_idx on public.production_exports (batch_id);
+create index if not exists production_exports_created_by_idx on public.production_exports (created_by);
+create index if not exists report_events_actor_id_idx on public.report_events (actor_id);
+create index if not exists report_events_report_id_idx on public.report_events (report_id);
+create index if not exists reports_code_id_idx on public.reports (code_id);
+create index if not exists reports_report_type_code_idx on public.reports (report_type_code);
+create index if not exists reports_scanner_session_id_idx on public.reports (scanner_session_id);
+create index if not exists scanner_sessions_code_id_idx on public.scanner_sessions (code_id);
+create index if not exists support_messages_author_id_idx on public.support_messages (author_id);
+create index if not exists support_messages_ticket_id_idx on public.support_messages (ticket_id);
+create index if not exists support_tickets_assigned_to_idx on public.support_tickets (assigned_to);
+create index if not exists support_tickets_code_id_idx on public.support_tickets (code_id);
+create index if not exists support_tickets_organization_id_idx on public.support_tickets (organization_id);
+create index if not exists support_tickets_report_id_idx on public.support_tickets (report_id);
+create index if not exists support_tickets_requester_id_idx on public.support_tickets (requester_id);
+create index if not exists support_tickets_vehicle_id_idx on public.support_tickets (vehicle_id);
+create index if not exists terms_acceptances_terms_version_id_idx on public.terms_acceptances (terms_version_id);
+create index if not exists vehicles_owner_id_idx on public.vehicles (owner_id);
