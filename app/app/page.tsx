@@ -1,67 +1,31 @@
 "use client";
-
-import { useState } from "react";
-import { Bell, CarFront, Check, ChevronLeft, CircleUserRound, Clock3, Menu, MessageCircle, Plus, ShieldCheck } from "lucide-react";
+/* eslint-disable react-hooks/set-state-in-effect, @next/next/no-location-assign-relative-destination, @next/next/no-img-element */
+import { useCallback, useEffect, useState } from "react";
+import QRCode from "qrcode";
+import { Bell, CarFront, Check, CircleUserRound, Copy, LogOut, Plus, QrCode, RefreshCw, ShieldCheck } from "lucide-react";
 import { DorniBrand } from "@/components/dorni-brand";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { WebMcpTools } from "@/components/webmcp-tools";
 
-const nav = [
-  { id: "account", label: "بياناتي", icon: CircleUserRound },
-  { id: "alerts", label: "التنبيهات", icon: Bell },
-  { id: "cars", label: "سياراتي", icon: CarFront },
-];
+type Vehicle={id:string;manufacturer:string;model:string;color:string;year:number|null;serial_number?:string;public_token?:string;activation_state?:string};
+type Report={id:string;report_type:string;status:string;owner_response:string|null;created_at:number;manufacturer:string;model:string;color:string};
+type Me={user:{id:string;phone:string};vehicles:Vehicle[];reports:Report[]};
+const reportLabel:Record<string,string>={BLOCKING_EXIT:"السيارة تعيق خروجي",PLEASE_MOVE:"الرجاء تحريك السيارة",LIGHTS_ON:"الأنوار ما زالت شغّالة",DOOR_OR_WINDOW_OPEN:"باب أو نافذة مفتوحة",VEHICLE_DAMAGE:"هناك ضرر بالسيارة",URGENT_ATTENTION:"تنبيه عاجل"};
 
-export default function OwnerApp() {
-  const [active, setActive] = useState("alerts");
-  const [response, setResponse] = useState<string | null>(null);
-  return (
-    <main className="owner-page" dir="rtl">
-      <header className="owner-topbar">
-        <DorniBrand compact />
-        <button className="icon-button" aria-label="فتح القائمة"><Menu /></button>
-      </header>
-
-      <section className="owner-content">
-        <div className="owner-welcome">
-          <div><p className="eyebrow">مساء الخير، محمد</p><h1>التنبيهات</h1></div>
-          <Badge className="soft-badge"><span className="live-dot" /> كل شيء تمام</Badge>
-        </div>
-
-        <div className="owner-summary-grid">
-          <article><span className="summary-icon mint"><Bell /></span><div><strong>1</strong><small>تنبيه يحتاج ردّك</small></div></article>
-          <article><span className="summary-icon blue"><CarFront /></span><div><strong>2</strong><small>سيارات مفعّلة</small></div></article>
-        </div>
-
-        <div className="section-title"><div><h2>التنبيهات الحالية</h2><p>وصلك قبل 3 دقائق</p></div><span className="count-pill">1 جديد</span></div>
-        <article className="alert-detail-card">
-          <div className="alert-accent" />
-          <div className="alert-card-head">
-            <span className="alert-type-icon"><CarFront /></span>
-            <div><Badge className="urgent-badge">يحتاج رد</Badge><h3>السيارة تعيق خروجي</h3><p>تويوتا كامري • البيضاء</p></div>
-            <span className="time-label"><Clock3 /> 3 د</span>
-          </div>
-          <div className="report-context"><ShieldCheck /><p><b>خصوصية محمية</b><span>المبلّغ لا يقدر يشوف اسمك أو رقمك.</span></p></div>
-          <div className="owner-actions">
-            <p>شن تحب ترد؟</p>
-            <div>
-              <Button onClick={() => setResponse("جاي للسيارة")} className={response === "جاي للسيارة" ? "selected-response" : ""}><CarFront /> جاي للسيارة</Button>
-              <Button variant="outline" onClick={() => setResponse("تم حل الموضوع")}><Check /> تم حل الموضوع</Button>
-              <Button variant="ghost" onClick={() => setResponse("مش قادر نوصل توا")}><MessageCircle /> مش قادر نوصل توا</Button>
-            </div>
-          </div>
-          {response && <div className="response-confirmation"><Check /> تم إرسال ردّك: <b>{response}</b></div>}
-          <button className="detail-link">عرض التفاصيل والخريطة <ChevronLeft /></button>
-        </article>
-
-        <div className="section-title spaced"><h2>آخر التنبيهات</h2><button>عرض الكل</button></div>
-        <article className="history-row"><span className="history-icon"><Check /></span><div><strong>الأنوار ما زالت شغّالة</strong><small>هيونداي توسان • أمس، 10:42 م</small></div><Badge variant="secondary">تم الحل</Badge></article>
-      </section>
-
-      <nav className="owner-bottom-nav" aria-label="التنقل الرئيسي">
-        {nav.map(({ id, label, icon: Icon }) => <button key={id} className={active === id ? "active" : ""} onClick={() => setActive(id)}><Icon /><span>{label}</span>{id === "alerts" && <i>1</i>}</button>)}
-      </nav>
-      <button className="floating-add" aria-label="إضافة سيارة"><Plus /></button>
-    </main>
-  );
+export default function OwnerApp(){
+  const [data,setData]=useState<Me|null>(null),[tab,setTab]=useState("vehicles"),[error,setError]=useState(""),[busy,setBusy]=useState(false),[form,setForm]=useState({manufacturer:"تويوتا",model:"كامري",color:"أبيض",year:"2021"}),[qr,setQr]=useState("");
+  const load=useCallback(async()=>{const r=await fetch("/api/me");if(r.status===401)return window.location.assign("/login");const j=await r.json();if(!r.ok)setError(j.error);else setData(j);},[]);
+  useEffect(()=>{void load();},[load]);
+  useEffect(()=>{const token=data?.vehicles.find(v=>v.public_token)?.public_token;if(token)void QRCode.toDataURL(`${window.location.origin}/t/${token}`,{width:260,margin:2,color:{dark:"#071d2b",light:"#ffffff"}}).then(setQr);},[data]);
+  async function post(url:string,body:unknown){setBusy(true);setError("");const r=await fetch(url,{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify(body)});const j=await r.json();setBusy(false);if(!r.ok){setError(j.error);return false;}await load();return true;}
+  async function logout(){await fetch("/api/auth/logout",{method:"POST"});window.location.assign("/login");}
+  if(!data)return <main className="loading-screen" dir="rtl"><RefreshCw className="spin"/><p>جاري تحميل حسابك...</p></main>;
+  const activeCode=data.vehicles.find(v=>v.public_token);
+  return <main className="real-owner-page" dir="rtl"><WebMcpTools onChanged={load}/><header className="owner-real-header"><DorniBrand/><div><span className="phone-chip">{data.user.phone}</span><button onClick={logout} aria-label="تسجيل الخروج"><LogOut/></button></div></header><section className="owner-real-content"><div className="owner-real-lead"><div><p className="eyebrow">حساب موثّق</p><h1>{tab==="vehicles"?"سياراتي وأكواد دورني":tab==="alerts"?"التنبيهات الواردة":"بياناتي"}</h1></div><Badge className="soft-badge"><span className="live-dot"/> متصل بقاعدة البيانات</Badge></div>{error&&<div className="form-error block-error">{error}</div>}
+  <nav className="real-tabs"><button className={tab==="account"?"active":""} onClick={()=>setTab("account")}><CircleUserRound/> بياناتي</button><button className={tab==="alerts"?"active":""} onClick={()=>setTab("alerts")}><Bell/> التنبيهات <i>{data.reports.filter(r=>r.status==="ACTIVE").length}</i></button><button className={tab==="vehicles"?"active":""} onClick={()=>setTab("vehicles")}><CarFront/> سياراتي</button></nav>
+  {tab==="vehicles"&&<div className="owner-work-grid"><div><article className="work-card"><div className="card-heading"><div><h2>إضافة سيارة</h2><p>تُحفظ السيارة في حسابك مباشرة</p></div><Plus/></div><div className="vehicle-form"><Input placeholder="الشركة" value={form.manufacturer} onChange={e=>setForm({...form,manufacturer:e.target.value})}/><Input placeholder="الموديل" value={form.model} onChange={e=>setForm({...form,model:e.target.value})}/><Input placeholder="اللون" value={form.color} onChange={e=>setForm({...form,color:e.target.value})}/><Input placeholder="السنة" value={form.year} onChange={e=>setForm({...form,year:e.target.value})}/><Button onClick={()=>post("/api/vehicles",{...form,year:Number(form.year)})} disabled={busy}><Plus/> حفظ السيارة</Button></div></article><div className="vehicle-list">{data.vehicles.map(v=><article className="vehicle-real-card" key={v.id}><span><CarFront/></span><div><h3>{v.manufacturer} {v.model}</h3><p>{v.color}{v.year?` • ${v.year}`:""}</p>{v.serial_number&&<small dir="ltr">{v.serial_number}</small>}</div>{v.public_token?<Badge className="soft-badge"><Check/> كود مفعّل</Badge>:<Button onClick={()=>post("/api/codes",{vehicleId:v.id})} disabled={busy}><QrCode/> إصدار كود</Button>}</article>)}</div></div><aside className="qr-live-card"><div className="card-heading"><div><h2>كود سيارتك</h2><p>مولّد من محرّك Dorni المركزي</p></div><ShieldCheck/></div>{activeCode&&qr?<><img src={qr} alt="رمز QR الخاص بسيارة العميل"/><b dir="ltr">{activeCode.serial_number}</b><a href={`/t/${activeCode.public_token}`} target="_blank">فتح صفحة المسح</a><Button variant="outline" onClick={()=>navigator.clipboard.writeText(`${location.origin}/t/${activeCode.public_token}`)}><Copy/> نسخ الرابط</Button></>:<div className="empty-code"><QrCode/><p>أضف سيارة ثم أصدر كودها.</p></div>}</aside></div>}
+  {tab==="alerts"&&<div className="reports-real-list">{data.reports.length===0?<div className="empty-state"><Bell/><h2>ما فيش تنبيهات توا</h2><p>أي بلاغ حقيقي من صفحة كود السيارة بيظهر هنا.</p></div>:data.reports.map(r=><article key={r.id}><div><Badge className={r.status==="ACTIVE"?"urgent-badge":"soft-badge"}>{r.status==="ACTIVE"?"يحتاج رد":r.status==="RESOLVED"?"تم الحل":"تم الرد"}</Badge><h3>{reportLabel[r.report_type]??r.report_type}</h3><p>{r.manufacturer} {r.model} • {new Date(r.created_at).toLocaleString("ar-LY")}</p></div><div className="report-buttons"><Button onClick={()=>post(`/api/reports/${r.id}/respond`,{response:"ON_MY_WAY"})}>جاي للسيارة</Button><Button variant="outline" onClick={()=>post(`/api/reports/${r.id}/respond`,{response:"RESOLVED"})}>تم حل الموضوع</Button><Button variant="ghost" onClick={()=>post(`/api/reports/${r.id}/respond`,{response:"CANNOT_REACH_NOW"})}>مش قادر نوصل توا</Button></div></article>)}</div>}
+  {tab==="account"&&<article className="account-real-card"><span><CircleUserRound/></span><div><p>رقم الهاتف الموثّق</p><h2 dir="ltr">{data.user.phone}</h2><small>الحساب مربوط بجلسة آمنة مدتها 30 يوم.</small></div><Button variant="outline" onClick={logout}>تسجيل الخروج</Button></article>}</section></main>;
 }
