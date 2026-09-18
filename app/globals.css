@@ -3,11 +3,23 @@
 @import "../vendor/shadcn-tailwind-4.13.0.css";
 
 :root {
-  --background: #f4f7f7; --foreground: #0b2432; --card: #ffffff; --card-foreground: #0b2432;
-  --popover: #fff; --popover-foreground: #0b2432; --primary: #087b68; --primary-foreground: #fff;
-  --secondary: #e4f6f1; --secondary-foreground: #075e51; --muted: #edf2f2; --muted-foreground: #61757d;
-  --accent: #d8f8ee; --accent-foreground: #075e51; --destructive: #d83a4d; --border: #dce6e6;
-  --input: #d7e2e2; --ring: #13aa8e; --radius: 1rem;
+  --background: #fff8f2; --foreground: #132536; --card: #ffffff; --card-foreground: #132536;
+  --popover: #ffffff; --popover-foreground: #132536; --primary: #f65338; --primary-foreground: #ffffff;
+  --secondary: #fff0e5; --secondary-foreground: #9c321f; --muted: #f5ece6; --muted-foreground: #687986;
+  --accent: #ffe1cb; --accent-foreground: #7c291b; --destructive: #d9364f; --border: #eadfd7;
+  --input: #e4d8d0; --ring: #ff7652; --radius: 1rem;
+  --brand-navy: #061a2b; --brand-navy-soft: #0d2b41; --brand-coral: #f65338;
+  --brand-orange: #ff8b4a; --brand-ivory: #fff6e8; --surface-raised: #ffffff;
+}
+
+.dark {
+  --background: #071421; --foreground: #f8f3ec; --card: #0d1d2c; --card-foreground: #f8f3ec;
+  --popover: #102334; --popover-foreground: #f8f3ec; --primary: #ff704c; --primary-foreground: #1d0c07;
+  --secondary: #253143; --secondary-foreground: #ffe0cf; --muted: #172839; --muted-foreground: #b4c0ca;
+  --accent: #3a2830; --accent-foreground: #ffd9c2; --destructive: #ff6172; --border: #294052;
+  --input: #344b5e; --ring: #ff8a61; --brand-navy: #050e18; --brand-navy-soft: #11283a;
+  --brand-coral: #ff704c; --brand-orange: #ff9d5d; --brand-ivory: #fff3e2; --surface-raised: #0d1d2c;
+  color-scheme: dark;
 }
 
 .menu-button{width:42px;height:42px;border:1px solid var(--border);border-radius:12px;background:var(--card);display:grid;place-items:center}.menu-button svg{width:20px}.owner-drawer{position:fixed;inset:0;z-index:80}.drawer-backdrop{position:absolute;inset:0;background:rgba(2,14,23,.55);border:0;width:100%}.owner-drawer aside{position:absolute;right:0;top:0;bottom:0;width:min(88vw,360px);background:var(--card);padding:28px;box-shadow:-20px 0 50px rgba(0,0,0,.18)}.drawer-close{position:absolute;left:20px;top:20px;border:0;background:transparent}.owner-drawer nav{display:grid;gap:8px;margin-top:42px}.owner-drawer nav button{border:0;background:transparent;padding:14px;border-radius:12px;display:flex;align-items:center;gap:12px;font:inherit;text-align:right}.owner-drawer nav button:hover{background:var(--muted)}.owner-drawer nav svg{width:19px}.settings-panel{max-width:760px;margin:auto;display:grid;gap:16px}.settings-panel textarea{min-height:150px}.guide-steps ol{display:grid;gap:12px;padding-right:24px}.success-banner{padding:12px 16px;border-radius:12px;background:#e8f7ef;color:#0b6b3a;display:flex;align-items:center;gap:8px}.claim-card{margin-top:18px;display:grid;gap:12px}.claim-card select{height:44px;border:1px solid var(--border);border-radius:10px;padding:0 12px;background:var(--background);font:inherit}.active-qr{display:grid;justify-items:center;gap:10px;padding:16px 0;border-top:1px solid var(--border)}.active-qr:first-of-type{border-top:0}.active-qr img{width:190px;height:190px}.account-grid{display:grid;gap:16px}.account-real-card{display:flex;align-items:center;gap:18px}.account-real-card>span{width:48px;height:48px;border-radius:14px;background:var(--muted);display:grid;place-items:center}.account-real-card>span svg{width:22px}.account-real-card h2{margin:4px 0}.account-real-card p,.account-real-card small{color:var(--muted-foreground)}
@@ -188,4 +200,148 @@ button, a { -webkit-tap-highlight-color: transparent; }
 @media (max-width: 620px) {
   .owner-content { padding-left: 12px; padding-right: 12px; }.owner-summary-grid { grid-template-columns: 1fr 1fr; }.owner-actions > div { grid-template-columns: 1fr; }.owner-actions button:last-child { grid-column: auto; }.alert-card-head { grid-template-columns: 48px 1fr; }.time-label { grid-column: 2; }.floating-add { left: 16px; }
   .portal-header .portal-user { display: none; }.portal-lead { align-items: flex-start; gap: 15px; flex-direction: column; }.portal-lead button { width: 100%; }.metric-grid, .admin-metrics { grid-template-columns: 1fr 1fr; gap: 8px; }.metric-grid article, .admin-metrics article { padding: 13px; }.batch-head { display: none; }.batch-row { grid-template-columns: 1fr auto; }.batch-row > span:nth-of-type(1), .batch-row > span:nth-of-type(2), .batch-row button { display: none; }.admin-search { width: 44px; }.admin-search input { display: none; }.ops-banner { grid-template-columns: 40px 1fr; }.ops-banner > span:last-child { grid-column: 2; justify-self: start; }.queue-row { grid-template-columns: 38px 1fr auto; }.queue-row > button { display: none; }.claim-shell { padding: 18px 12px 35px; }.claim-card { padding: 28px 18px; }
+}
+
+/* Dorni sunset identity + accessible color modes */
+html { background: var(--brand-navy); }
+body { background: var(--background); color: var(--foreground); transition: background-color .2s ease, color .2s ease; }
+input, textarea, select, button { color: inherit; }
+input::placeholder, textarea::placeholder { color: var(--muted-foreground); opacity: .82; }
+*:focus-visible { outline: 3px solid color-mix(in srgb, var(--ring) 40%, transparent); outline-offset: 2px; }
+
+.theme-toggle {
+  position: fixed; z-index: 250; top: 18px; left: 18px; min-width: 82px; height: 42px;
+  display: inline-flex; align-items: center; justify-content: center; gap: 7px; padding: 0 11px;
+  border: 1px solid color-mix(in srgb, var(--border) 82%, transparent); border-radius: 14px;
+  background: color-mix(in srgb, var(--card) 88%, transparent); color: var(--foreground);
+  box-shadow: 0 10px 30px rgba(5,18,31,.13); backdrop-filter: blur(16px);
+  font: 800 .72rem Tahoma,Arial,sans-serif; cursor: pointer; transition: transform .18s ease, border-color .18s ease, background .18s ease;
+}
+.theme-toggle:hover { transform: translateY(-1px); border-color: var(--primary); }
+.theme-toggle-icon { width: 25px; height: 25px; display: grid; place-items: center; border-radius: 9px; background: var(--secondary); color: var(--primary); }
+.theme-toggle svg { width: 15px; height: 15px; grid-area: 1/1; }
+.theme-sun, .theme-light-label { display: none; }
+.dark .theme-moon, .dark .theme-dark-label { display: none; }
+.dark .theme-sun, .dark .theme-light-label { display: block; }
+
+/* Light palette follows the supplied navy / coral / ivory mark. */
+.public-shell, .auth-shell, .claim-shell { background: radial-gradient(circle at 52% -12%, #ffe3ca 0, #fff9f4 40%, #f9f0e9 100%); }
+.ambient-orb-one { background: rgba(255,111,72,.15); }
+.ambient-orb-two { background: rgba(255,166,84,.12); }
+.brand { color: var(--foreground); }
+.brand small { color: var(--muted-foreground); }
+.secure-chip { border-color: #f1d4c1; color: #a43b26; background: rgba(255,255,255,.82); }
+.scan-card, .status-card, .auth-card, .claim-card { background: rgba(255,255,255,.95); border-color: var(--border); box-shadow: 0 24px 70px rgba(35,22,18,.10); }
+.vehicle-icon, .auth-icon, .claim-icon, .floating-add { background: var(--brand-navy); color: var(--brand-orange); }
+.eyebrow, .public-footer a, .text-action, .auth-switches button, .code-table-row button,
+.qr-dialog a, .qr-live-card>a, .section-title button, .detail-link, .card-heading button { color: var(--primary); }
+.step-number, .success-mark, .vehicle-real-card>span, .account-real-card>span,
+.portal-user>span, .admin-profile>span, .activity-stat>span { color: var(--primary); background: #fff0e6; }
+.reason-option.is-selected { border-color: var(--primary); background: #fff5ee; box-shadow: inset 0 0 0 1px var(--primary); }
+.is-selected .reason-icon { color: var(--primary); background: #ffe7d6; }
+.is-selected .selection-dot, .status-step.is-done>span, .funnel div:nth-child(3) { background: var(--primary); border-color: var(--primary); }
+.location-icon svg, .location-row>svg, .privacy-footer svg, .privacy-note svg,
+.work-card .card-heading>svg, .qr-live-card .card-heading>svg, .status-spinner,
+.report-context svg, .vehicle-choice svg, .claim-success-row svg { color: var(--primary); }
+.primary-action { background: linear-gradient(135deg, var(--brand-orange), var(--brand-coral)); box-shadow: 0 13px 28px rgba(246,83,56,.25); color: #fff; }
+.primary-action:hover { background: linear-gradient(135deg, #f9823f, #df432d); }
+.account-kind-tabs, .real-tabs { background: #f4e9e2; }
+.account-kind-tabs button.active, .real-tabs button.active { background: #fff; color: var(--primary); }
+.auth-field>div, .claim-input { border-color: var(--input); background: var(--card); }
+.auth-field>div:focus-within, .claim-input:focus-within { border-color: var(--ring); box-shadow: 0 0 0 3px rgba(255,118,82,.13); }
+.auth-field>div>svg, .claim-input svg { color: #a45a45; }
+.auth-field b { color: var(--primary); border-color: var(--border); }
+.company-signup-fields select, .portal-grid select, .admin-portal select { background: var(--card); color: var(--foreground); border-color: var(--input); }
+.invite-banner, .invite-result, .claim-success-row, .report-context, .privacy-note { border-color: #f3cdb8; background: #fff3ea; color: #854b3d; }
+.check-row input { accent-color: var(--primary); }
+.portal-page, .real-owner-page, .portal-shell, .admin-shell { background: var(--background); }
+.portal-header, .admin-header, .owner-real-header, .metric-grid article, .work-card, .qr-live-card,
+.account-real-card, .reports-real-list>article, .vehicle-real-card, .table-card, .activation-card,
+.ops-queue, .activity-panel, .admin-metrics article { background: var(--card); border-color: var(--border); }
+.owner-real-header button, .portal-header-actions>button, .icon-button { background: var(--card); color: var(--foreground); border-color: var(--border); }
+.real-tabs button.active, .owner-bottom-nav button.active { color: var(--primary); }
+.vehicle-real-card>span, .account-real-card>span { background: #fff0e6; color: var(--primary); }
+.empty-state>svg { color: var(--primary); }
+.owner-bottom-nav { background: rgba(255,255,255,.94); border-color: var(--border); }
+.portal-sidebar, .admin-sidebar { background: var(--brand-navy); }
+.org-card, .sidebar-trust { background: #0d2a3f; border-color: #25445a; }
+.org-card>span { background: #ffe7d4; color: var(--primary); }
+.sidebar-trust svg { color: var(--brand-orange); }
+.metric-icon, .owner-summary-grid article>span { color: var(--primary); background: #fff0e6; }
+.soft-badge, .funnel div, .activity-stat>span { background: #fff0e6; color: #9d3c27; }
+.funnel div:nth-child(2) { background: #ffddc7; }
+.mini-bars i { background: #ffc3a1; }
+.mini-bars i:nth-last-child(-n+2) { background: var(--brand-coral); }
+.ops-banner { border-color: #f0cfbc; background: #fff3ea; }
+.ops-banner>span, .ops-banner .bg-primary { background: #ffe1cf; color: #ad432d; }
+.vehicle-choice { border-color: var(--primary); background: #fff4ec; color: var(--foreground); }
+.active-qr img, .qr-live-card>img, .qr-dialog img { background: #fff; padding: 8px; }
+
+/* Dark surfaces: explicit overrides keep every label and secondary line readable. */
+.dark body, .dark .portal-page, .dark .real-owner-page, .dark .portal-shell, .dark .admin-shell { background: var(--background); color: var(--foreground); }
+.dark .public-shell, .dark .auth-shell, .dark .claim-shell { background: radial-gradient(circle at 50% -15%, #243247 0, #0a1928 42%, #06111d 100%); }
+.dark .ambient-orb-one { background: rgba(255,104,67,.16); }
+.dark .ambient-orb-two { background: rgba(255,173,93,.08); }
+.dark .brand, .dark h1, .dark h2, .dark h3, .dark b, .dark strong, .dark label { color: var(--foreground); }
+.dark .brand small, .dark .support-copy, .dark .report-heading p, .dark .vehicle-summary p:last-child,
+.dark .public-footer, .dark .privacy-footer, .dark .auth-card>p:not(.eyebrow):not(.form-error),
+.dark .auth-field>span, .dark .auth-field small, .dark .check-row, .dark .portal-header p,
+.dark .admin-header p, .dark .portal-user small, .dark .card-heading p, .dark .section-title p,
+.dark .vehicle-real-card p, .dark .vehicle-real-card small, .dark .qr-live-card>b,
+.dark .reports-real-list p, .dark .account-real-card p, .dark .account-real-card small,
+.dark .empty-state, .dark .loading-inline, .dark .status-step, .dark .list-row p,
+.dark .metric-grid span, .dark .admin-metrics p, .dark .admin-metrics small,
+.dark .queue-row small, .dark .activity-stat small, .dark .activity-breakdown span,
+.dark .aggregate-note, .dark .claim-card>p:not(.eyebrow):not(.privacy-footer),
+.dark .vehicle-choice small, .dark .qr-dialog p, .dark .qr-dialog small { color: var(--muted-foreground); }
+.dark .secure-chip { border-color: #435469; color: #ffd6c1; background: rgba(15,32,48,.82); }
+.dark .scan-card, .dark .status-card, .dark .auth-card, .dark .claim-card,
+.dark .portal-header, .dark .admin-header, .dark .owner-real-header, .dark .metric-grid article,
+.dark .work-card, .dark .qr-live-card, .dark .account-real-card, .dark .reports-real-list>article,
+.dark .vehicle-real-card, .dark .table-card, .dark .activation-card, .dark .ops-queue,
+.dark .activity-panel, .dark .admin-metrics article, .dark .qr-dialog article {
+  background: var(--card); color: var(--card-foreground); border-color: var(--border); box-shadow: 0 18px 50px rgba(0,0,0,.19);
+}
+.dark .auth-field>div, .dark .claim-input, .dark .company-signup-fields select,
+.dark .portal-grid select, .dark .admin-portal select, .dark input, .dark textarea, .dark select {
+  background: #0a1928; color: #f8f3ec; border-color: var(--input);
+}
+.dark .auth-field>div>svg, .dark .claim-input svg, .dark .password-eye { color: #ffad83; }
+.dark .account-kind-tabs, .dark .real-tabs, .dark .qr-dialog-close { background: #172839; }
+.dark .account-kind-tabs button, .dark .real-tabs button { color: #bdc7cf; }
+.dark .account-kind-tabs button.active, .dark .real-tabs button.active { background: #293b4c; color: #ff9a73; box-shadow: none; }
+.dark .invite-banner, .dark .invite-result, .dark .claim-success-row,
+.dark .report-context, .dark .privacy-note, .dark .ops-banner { background: #2b2327; border-color: #604039; color: #ffd8c4; }
+.dark .success-banner { background: #21392f; color: #baf3d4; }
+.dark .form-error { background: #3b2029; color: #ffb8c2; }
+.dark .reason-option { background: #102131; border-color: #31485a; color: #edf2f5; }
+.dark .reason-option:hover { border-color: #ff906a; }
+.dark .reason-option.is-selected { background: #34252a; border-color: var(--primary); }
+.dark .reason-icon, .dark .location-icon, .dark .status-step>span { background: #1a2c3d; color: #c4d0d8; border-color: #33495a; }
+.dark .is-selected .reason-icon, .dark .step-number, .dark .success-mark,
+.dark .vehicle-real-card>span, .dark .account-real-card>span, .dark .portal-user>span,
+.dark .admin-profile>span, .dark .metric-icon, .dark .owner-summary-grid article>span,
+.dark .activity-stat>span { background: #3a282d; color: #ff9b76; }
+.dark .location-row { color: var(--foreground); }
+.dark .divider, .dark .status-step:not(:last-child)::after, .dark .list-row,
+.dark .code-table-head, .dark .code-table-row, .dark .queue-row,
+.dark .activity-breakdown, .dark .detail-link { border-color: var(--border); }
+.dark .owner-real-header button, .dark .portal-header-actions>button, .dark .icon-button,
+.dark .menu-button { background: #122536; color: #e9eff3; border-color: var(--border); }
+.dark .owner-drawer aside { background: var(--card); color: var(--foreground); }
+.dark .owner-drawer nav button:hover { background: var(--muted); }
+.dark .owner-bottom-nav { background: rgba(10,25,40,.96); border-color: var(--border); }
+.dark .owner-bottom-nav button { color: #9eacb6; }
+.dark .phone-chip, .dark .soft-badge { background: #38282d; color: #ffc6ad; }
+.dark .code-table-head, .dark .audit-hint, .dark .batch-head { background: #132535; color: #b9c5cd; }
+.dark .funnel div { background: #3b2b2f; color: #ffd7c3; }
+.dark .funnel div:nth-child(2) { background: #51342f; }
+.dark .funnel div:nth-child(3) { color: #1c0905; }
+.dark .vehicle-choice { background: #2e2327; border-color: #ff805d; color: #fff4ed; }
+.dark .qr-live-card>img, .dark .qr-dialog img, .dark .active-qr img { border-color: #3d5061; }
+.dark .loading-screen { background: var(--background); color: var(--muted-foreground); }
+
+@media (max-width: 720px) {
+  .theme-toggle { top: 18px; bottom: auto; left: 62px; min-width: 44px; width: 44px; padding: 0; border-radius: 14px; }
+  .theme-toggle>.theme-mode-label { display: none; }
 }
