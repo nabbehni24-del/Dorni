@@ -6,7 +6,7 @@ Dorni is a privacy-first vehicle communication platform. A person scans an offic
 
 - `/t/:token` — anonymous, mobile-first scanner experience
 - `/status/:token` — temporary report status capability
-- `/login` and `/app` — phone-OTP owner application
+- `/login` and `/app` — email/password owner application with durable sessions
 - `/partner` — organization-isolated partner portal
 - `/admin` — permission-gated Dorni operations console
 
@@ -22,9 +22,9 @@ Dorni is a privacy-first vehicle communication platform. A person scans an offic
 
 1. Copy `.env.example` to `.env.local` and fill the Supabase project values.
 2. Apply `supabase/migrations/20260917173000_dorni_foundation.sql` to a clean Supabase project.
-3. Enable Phone Auth and configure an SMS provider in Supabase.
+3. Enable Email/Password Auth, set the production Site URL, and configure SMTP for production email delivery.
 4. Run `npm ci`, then `npm run dev`.
-5. Sign in using the phone set in `DORNI_BOOTSTRAP_PHONE`, then call `POST /api/admin/bootstrap` once with `DORNI_BOOTSTRAP_TOKEN` to create the first internal administrator.
+5. Create the first email/password account, then call `POST /api/admin/bootstrap` once with `DORNI_BOOTSTRAP_TOKEN` to create the first internal administrator.
 
 Development notification mocks require `DORNI_NOTIFICATION_MODE=mock` and are rejected when `NODE_ENV=production`. Production provider mode never silently falls back to a mock.
 
