@@ -35,6 +35,20 @@ export async function GET(request: Request) {
       login.searchParams.set("error", "partner_invite");
       return NextResponse.redirect(login);
     }
+  } else {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (user?.user_metadata?.account_type === "partner") {
+      const registration = await supabase.rpc("register_my_partner_organization", {
+        p_name: user.user_metadata.company_name,
+        p_type: user.user_metadata.company_type ?? "CORPORATE",
+        p_registration_number: user.user_metadata.registration_number ?? null,
+      });
+      if (registration.error) {
+        const login = new URL("/login", url.origin);
+        login.searchParams.set("error", "partner_registration");
+        return NextResponse.redirect(login);
+      }
+    }
   }
   const response = NextResponse.redirect(new URL(inviteToken ? "/partner" : next, url.origin));
   if (inviteToken) response.cookies.delete("dorni_partner_invite");
