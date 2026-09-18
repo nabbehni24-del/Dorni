@@ -1,109 +1,16 @@
 "use client";
-
-import { FormEvent, useState } from "react";
-import { useRouter } from "next/navigation";
-import { ArrowLeft, KeyRound, Phone, RotateCcw, ShieldCheck } from "lucide-react";
+import { FormEvent,Suspense,useState } from "react";
+import { useRouter,useSearchParams } from "next/navigation";
+import { ArrowLeft,Building2,Eye,EyeOff,KeyRound,Mail,ShieldCheck,UserRound } from "lucide-react";
 import { DorniBrand } from "@/components/dorni-brand";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp";
 
-type Step = "phone" | "code";
+type Portal="owner"|"partner";
+type Mode="login"|"signup"|"forgot";
+function LoginContent(){const router=useRouter(),params=useSearchParams();const invite=params.get("invite")??"",reason=params.get("error");const initialError=reason==="partner_invite"?"تعذر ربط دعوة الشركة. افتح رابط الدعوة من جديد.":reason==="email_link"?"رابط البريد غير صالح أو انتهت صلاحيته.":"";const [portal,setPortal]=useState<Portal>(invite?"partner":"owner"),[mode,setMode]=useState<Mode>(invite?"signup":"login"),[fullName,setFullName]=useState(""),[email,setEmail]=useState(""),[password,setPassword]=useState(""),[show,setShow]=useState(false),[busy,setBusy]=useState(false),[error,setError]=useState(initialError),[notice,setNotice]=useState("");
+function changePortal(next:Portal){setPortal(next);setError("");setNotice("");if(next==="partner"&&!invite)setMode("login");}
+async function submit(e:FormEvent){e.preventDefault();setBusy(true);setError("");setNotice("");try{if(mode==="forgot"){const r=await fetch("/api/auth/forgot-password",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({email})});const j=await r.json();if(!r.ok)throw new Error(j.error);setNotice("لو البريد مسجل، بيصلك رابط لتغيير كلمة المرور.");return;}const url=mode==="signup"?"/api/auth/signup":"/api/auth/login";const payload=mode==="signup"?{fullName,email,password,inviteToken:invite||undefined}:{email,password,portal};const r=await fetch(url,{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify(payload)});const j=await r.json();if(!r.ok)throw new Error(j.error);if(j.needsEmailConfirmation){setNotice("تم إنشاء الحساب. افتح رسالة التأكيد في بريدك وبعدها ادخل.");setMode("login");setPassword("");return;}router.replace(j.context?.destination??j.destination??(portal==="partner"?"/partner":"/app"));router.refresh();}catch(err){setError(err instanceof Error?err.message:"تعذر إكمال العملية");}finally{setBusy(false);}}
+return <main className="auth-shell" dir="rtl"><header><DorniBrand/><span className="secure-chip"><ShieldCheck/> حسابات حقيقية ومشفرة</span></header><section className="auth-card account-auth-card"><div className="account-kind-tabs"><button className={portal==="owner"?"active":""} onClick={()=>changePortal("owner")}><UserRound/> صاحب سيارة</button><button className={portal==="partner"?"active":""} onClick={()=>changePortal("partner")}><Building2/> شركة / شريك</button></div><span className="auth-icon">{portal==="partner"?<Building2/>:mode==="forgot"?<KeyRound/>:<UserRound/>}</span><p className="eyebrow">{portal==="partner"?"بوابة الشركات":"حساب صاحب السيارة"}</p><h1>{mode==="signup"?invite?"فعّل حساب الشركة":"أنشئ حسابك":mode==="forgot"?"استرجع كلمة المرور":"تسجيل الدخول"}</h1><p>{invite?"الدعوة تربط حسابك بالشركة وصلاحياتها بشكل دائم.":portal==="partner"?"ادخل ببريد الشركة وكلمة المرور. إنشاء حساب شركة جديد يكون بدعوة آمنة من دورني.":"حسابك يحفظ السيارات والبطاقات والتنبيهات حتى بعد إغلاق التطبيق."}</p>{invite&&<div className="invite-banner"><ShieldCheck/> دعوة شركة موثقة</div>}<form onSubmit={submit}>{mode==="signup"&&<label className="auth-field"><span>الاسم الكامل</span><div><UserRound/><Input value={fullName} onChange={e=>setFullName(e.target.value)} autoComplete="name" required/></div></label>}<label className="auth-field"><span>البريد الإلكتروني</span><div><Mail/><Input dir="ltr" type="email" value={email} onChange={e=>setEmail(e.target.value)} autoComplete="email" required/></div></label>{mode!=="forgot"&&<label className="auth-field"><span>كلمة المرور</span><div><KeyRound/><Input dir="ltr" type={show?"text":"password"} value={password} onChange={e=>setPassword(e.target.value)} autoComplete={mode==="signup"?"new-password":"current-password"} required/><button type="button" className="password-eye" onClick={()=>setShow(!show)} aria-label="إظهار كلمة المرور">{show?<EyeOff/>:<Eye/>}</button></div>{mode==="signup"&&<small>8 أحرف على الأقل وتحتوي على رقم</small>}</label>}<Button className="primary-action" type="submit" disabled={busy}>{busy?"جاري التنفيذ...":mode==="signup"?"إنشاء الحساب":mode==="forgot"?"إرسال رابط الاسترجاع":"دخول"} <ArrowLeft/></Button></form>{error&&<p className="form-error" role="alert">{error}</p>}{notice&&<p className="success-banner">{notice}</p>}<div className="auth-switches">{portal==="owner"&&mode!=="forgot"&&<button onClick={()=>setMode(mode==="login"?"signup":"login")}>{mode==="login"?"ما عندكش حساب؟ أنشئ حساب":"عندك حساب؟ سجل دخول"}</button>}{mode==="login"&&<button onClick={()=>setMode("forgot")}>نسيت كلمة المرور</button>}{mode==="forgot"&&<button onClick={()=>setMode("login")}>رجوع لتسجيل الدخول</button>}</div><div className="privacy-note"><ShieldCheck/><span>بيانات الدخول لا تظهر للشركات ولا لأي شخص يمسح بطاقة دورني.</span></div></section></main>}
 
-export default function LoginPage() {
-  const router = useRouter();
-  const [step, setStep] = useState<Step>("phone");
-  const [phone, setPhone] = useState("0911111111");
-  const [normalizedPhone, setNormalizedPhone] = useState("");
-  const [code, setCode] = useState("");
-  const [error, setError] = useState("");
-  const [busy, setBusy] = useState(false);
-
-  async function requestCode(event?: FormEvent) {
-    event?.preventDefault();
-    setBusy(true);
-    setError("");
-    try {
-      const response = await fetch("/api/auth/request-otp", {
-        method: "POST",
-        headers: { "content-type": "application/json" },
-        body: JSON.stringify({ phone }),
-      });
-      const data = await response.json();
-      if (!response.ok) throw new Error(data.error || "تعذر إرسال رمز الدخول");
-      setNormalizedPhone(data.phone);
-      setCode("");
-      setStep("code");
-    } catch (requestError) {
-      setError(requestError instanceof Error ? requestError.message : "تعذر إرسال رمز الدخول");
-    } finally {
-      setBusy(false);
-    }
-  }
-
-  async function verifyCode(event: FormEvent) {
-    event.preventDefault();
-    if (!/^\d{6}$/.test(code)) return;
-    setBusy(true);
-    setError("");
-    try {
-      const response = await fetch("/api/auth/verify-otp", {
-        method: "POST",
-        headers: { "content-type": "application/json" },
-        body: JSON.stringify({ phone: normalizedPhone || phone, code }),
-      });
-      const data = await response.json();
-      if (!response.ok) throw new Error(data.error || "الرمز غير صحيح أو منتهي");
-      router.replace("/app");
-      router.refresh();
-    } catch (verifyError) {
-      setError(verifyError instanceof Error ? verifyError.message : "تعذر تسجيل الدخول");
-    } finally {
-      setBusy(false);
-    }
-  }
-
-  function changePhone() {
-    setStep("phone");
-    setCode("");
-    setError("");
-  }
-
-  return <main className="auth-shell" dir="rtl">
-    <header><DorniBrand/><span className="secure-chip"><ShieldCheck/> خصوصيتك محفوظة</span></header>
-    <section className="auth-card">
-      <span className="auth-icon">{step === "phone" ? <Phone/> : <KeyRound/>}</span>
-      <p className="eyebrow">حساب صاحب السيارة</p>
-      <h1>{step === "phone" ? "ادخل برقم هاتفك" : "اكتب رمز التحقق"}</h1>
-      <p>{step === "phone"
-        ? "اكتب رقم هاتفك الليبي ونبعث لك رمز دخول من 6 أرقام."
-        : `بعثنا الرمز إلى ${normalizedPhone}. اكتبه لإكمال الدخول.`}</p>
-
-      <div className="dev-otp">
-        <span>تجربة مؤقتة:</span><b dir="ltr">0911111111</b><span>الرمز:</span><b dir="ltr">246810</b>
-      </div>
-
-      {step === "phone" ? <form onSubmit={requestCode}>
-        <label className="auth-field">
-          <span>رقم الهاتف</span>
-          <div><Input dir="ltr" type="tel" inputMode="tel" placeholder="0912345678" value={phone} onChange={event=>setPhone(event.target.value)} autoComplete="tel" required/></div>
-        </label>
-        <Button className="primary-action" type="submit" disabled={busy||phone.replace(/\D/g, "").length < 9}>{busy ? "جاري إرسال الرمز..." : "إرسال رمز الدخول"} <ArrowLeft/></Button>
-      </form> : <form onSubmit={verifyCode}>
-        <div className="otp-wrap" dir="ltr">
-          <InputOTP maxLength={6} value={code} onChange={setCode} inputMode="numeric" autoFocus>
-            <InputOTPGroup>
-              {[0,1,2,3,4,5].map(index=><InputOTPSlot key={index} index={index}/>) }
-            </InputOTPGroup>
-          </InputOTP>
-        </div>
-        <Button className="primary-action" type="submit" disabled={busy||code.length!==6}>{busy ? "جاري التحقق..." : "تحقق وادخل"} <ArrowLeft/></Button>
-        <button className="text-action" type="button" disabled={busy} onClick={()=>requestCode()}><RotateCcw/> إعادة إرسال الرمز</button>
-        <button className="text-action" type="button" disabled={busy} onClick={changePhone}>تغيير رقم الهاتف</button>
-      </form>}
-
-      {error&&<p className="form-error" role="alert">{error}</p>}
-      <div className="privacy-note"><ShieldCheck/><span>رقمك لا يظهر للماسح ولا يُعرض في المسارات العامة.</span></div>
-    </section>
-  </main>;
-}
+export default function LoginPage(){return <Suspense fallback={<main className="loading-screen" dir="rtl">جاري تحميل الدخول...</main>}><LoginContent/></Suspense>}
