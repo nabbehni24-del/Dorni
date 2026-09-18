@@ -1,1 +1,22 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title"><title id="title">شعار دورني</title><defs><radialGradient id="bg" cx="72%" cy="18%" r="95%"><stop offset="0" stop-color="#07334a"/><stop offset=".55" stop-color="#041b2b"/><stop offset="1" stop-color="#010b16"/></radialGradient><linearGradient id="mint" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#08f0cf"/><stop offset="1" stop-color="#0792bd"/></linearGradient><linearGradient id="light" x1="0" y1="0" x2=".8" y2="1"><stop offset="0" stop-color="#fff"/><stop offset="1" stop-color="#d9fff7"/></linearGradient></defs><rect x="22" y="22" width="468" height="468" rx="104" fill="url(#bg)"/><path d="M144 142c62 0 105 34 118 83-31 12-49 39-49 67s18 55 49 67c-13 49-56 83-118 83-11 0-20-9-20-20V162c0-11 9-20 20-20Z" fill="url(#mint)"/><path d="M287 132c92 0 157 56 157 160s-65 160-157 160c-13 0-21-10-18-24 8-39 76-61 76-136s-68-97-76-136c-3-14 5-24 18-24Z" fill="url(#light)"/><circle cx="270" cy="292" r="42" fill="url(#mint)"/></svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title">
+  <title id="title">شعار دورني</title>
+  <defs>
+    <radialGradient id="bg" cx="72%" cy="18%" r="95%">
+      <stop offset="0" stop-color="#07334a"/>
+      <stop offset="0.55" stop-color="#041b2b"/>
+      <stop offset="1" stop-color="#010b16"/>
+    </radialGradient>
+    <linearGradient id="mint" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#08f0cf"/>
+      <stop offset="1" stop-color="#0792bd"/>
+    </linearGradient>
+    <linearGradient id="light" x1="0" y1="0" x2="0.8" y2="1">
+      <stop offset="0" stop-color="#ffffff"/>
+      <stop offset="1" stop-color="#d9fff7"/>
+    </linearGradient>
+  </defs>
+  <rect x="22" y="22" width="468" height="468" rx="104" fill="url(#bg)"/>
+  <path d="M144 142c62 0 105 34 118 83-31 12-49 39-49 67s18 55 49 67c-13 49-56 83-118 83-11 0-20-9-20-20V162c0-11 9-20 20-20Z" fill="url(#mint)"/>
+  <path d="M287 132c92 0 157 56 157 160s-65 160-157 160c-13 0-21-10-18-24 8-39 76-61 76-136s-68-97-76-136c-3-14 5-24 18-24Z" fill="url(#light)"/>
+  <circle cx="270" cy="292" r="42" fill="url(#mint)"/>
+</svg>
