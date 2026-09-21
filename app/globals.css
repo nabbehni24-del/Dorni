@@ -33,12 +33,12 @@
   --color-accent: var(--accent); --color-accent-foreground: var(--accent-foreground); --color-destructive: var(--destructive);
   --color-border: var(--border); --color-input: var(--input); --color-ring: var(--ring);
   --radius-sm: calc(var(--radius) - 4px); --radius-md: calc(var(--radius) - 2px); --radius-lg: var(--radius); --radius-xl: calc(var(--radius) + 5px);
-  --font-sans: Tahoma, Arial, sans-serif;
+  --font-sans: var(--font-cairo), Tahoma, Arial, sans-serif;
 }
 
 * { box-sizing: border-box; }
 html { background: #071d2b; }
-body { margin: 0; background: var(--background); color: var(--foreground); font-family: Tahoma, Arial, sans-serif; }
+body { margin: 0; background: var(--background); color: var(--foreground); font-family: var(--font-cairo), Tahoma, Arial, sans-serif; }
 button, a { -webkit-tap-highlight-color: transparent; }
 
 .public-shell { min-height: 100svh; position: relative; overflow: hidden; padding: 26px 20px 40px; background: radial-gradient(circle at 50% -20%, #defaf1 0, #f5f8f8 40%, #eef3f3 100%); }
@@ -205,7 +205,7 @@ button, a { -webkit-tap-highlight-color: transparent; }
 /* Dorni sunset identity + accessible color modes */
 html { background: var(--brand-navy); }
 body { background: var(--background); color: var(--foreground); transition: background-color .2s ease, color .2s ease; }
-input, textarea, select, button { color: inherit; }
+input, textarea, select, button { color: inherit; font-family: inherit; }
 input::placeholder, textarea::placeholder { color: var(--muted-foreground); opacity: .82; }
 *:focus-visible { outline: 3px solid color-mix(in srgb, var(--ring) 40%, transparent); outline-offset: 2px; }
 
@@ -215,7 +215,7 @@ input::placeholder, textarea::placeholder { color: var(--muted-foreground); opac
   border: 1px solid color-mix(in srgb, var(--border) 82%, transparent); border-radius: 14px;
   background: color-mix(in srgb, var(--card) 88%, transparent); color: var(--foreground);
   box-shadow: 0 10px 30px rgba(5,18,31,.13); backdrop-filter: blur(16px);
-  font: 800 .72rem Tahoma,Arial,sans-serif; cursor: pointer; transition: transform .18s ease, border-color .18s ease, background .18s ease;
+  font: 800 .72rem var(--font-cairo),Tahoma,Arial,sans-serif; cursor: pointer; transition: transform .18s ease, border-color .18s ease, background .18s ease;
 }
 .theme-toggle:hover { transform: translateY(-1px); border-color: var(--primary); }
 .theme-toggle-icon { width: 25px; height: 25px; display: grid; place-items: center; border-radius: 9px; background: var(--secondary); color: var(--primary); }
