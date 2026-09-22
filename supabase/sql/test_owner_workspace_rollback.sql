@@ -1,0 +1,46 @@
+begin;
+do $$
+declare u uuid; other uuid; sid uuid:=gen_random_uuid(); v uuid; v2 uuid; foreign_v uuid; c uuid; t uuid; result jsonb;
+begin
+ select p.id into u from public.profiles p where account_status='ACTIVE' and not exists(select 1 from public.internal_memberships i where i.user_id=p.id and active) limit 1;
+ select id into other from public.profiles where id<>u limit 1;
+ if u is null or other is null then raise exception 'TWO_PROFILES_REQUIRED'; end if;
+ insert into auth.sessions(id,user_id) values(sid,u);
+ perform set_config('request.jwt.claims',jsonb_build_object('sub',u,'session_id',sid,'role','authenticated')::text,true);
+ perform public.owner_workspace('profile','{"name":"اختبار مؤقت"}');
+ if (select full_name from public.profiles where id=u)<>'اختبار مؤقت' then raise exception 'PROFILE_FAILED'; end if;
+ if (select raw_user_meta_data->>'full_name' from auth.users where id=u)<>'اختبار مؤقت' then raise exception 'LOGIN_NAME_DRIFT'; end if;
+ insert into public.vehicles(owner_id,manufacturer,model,color) values(u,'Test','One','White') returning id into v;
+ insert into public.vehicles(owner_id,manufacturer,model,color) values(u,'Test','Two','White') returning id into v2;
+ insert into public.vehicles(owner_id,manufacturer,model,color) values(other,'Test','Other','White') returning id into foreign_v;
+ begin perform public.owner_workspace('vehicle_edit',jsonb_build_object('id',foreign_v,'manufacturer','Bad','model','Bad','color','Bad')); raise exception 'OWNERSHIP_BYPASS'; exception when others then if sqlerrm<>'NOT_FOUND' then raise; end if; end;
+ perform public.owner_workspace('vehicle_edit',jsonb_build_object('id',v,'manufacturer','Updated','model','One','color','Blue'));
+ insert into public.codes(serial_number,public_token,ownership_state,activation_state) values('TEST-'||gen_random_uuid(),gen_random_uuid()::text,'CLAIMED','ACTIVE') returning id into c;
+ insert into public.code_assignments(code_id,vehicle_id,assigned_by) values(c,v,u);
+ begin perform public.owner_workspace('vehicle_archive',jsonb_build_object('id',v)); raise exception 'ORPHAN_CARD'; exception when others then if sqlerrm<>'CARD_ASSIGNED' then raise; end if; end;
+ perform public.owner_workspace('card_suspend',jsonb_build_object('id',c));
+ if exists(select 1 from public.codes where id=c and activation_state='ACTIVE') then raise exception 'SUSPEND_FAILED'; end if;
+ perform public.owner_workspace('card_resume',jsonb_build_object('id',c));
+ begin perform public.owner_workspace('card_move',jsonb_build_object('id',c,'vehicleId',foreign_v)); raise exception 'MOVE_FOREIGN'; exception when others then if sqlerrm<>'NOT_FOUND' then raise; end if; end;
+ perform public.owner_workspace('card_move',jsonb_build_object('id',c,'vehicleId',v2));
+ perform public.owner_workspace('vehicle_archive',jsonb_build_object('id',v));
+ perform public.owner_workspace('vehicle_restore',jsonb_build_object('id',v));
+ perform public.owner_workspace('card_retire',jsonb_build_object('id',c,'confirm','RETIRE'));
+ if exists(select 1 from public.code_assignments where code_id=c and ended_at is null) then raise exception 'RETIRE_FAILED'; end if;
+ begin perform public.owner_workspace('ticket_create',jsonb_build_object('category','VEHICLE','subject','Test support','description','temporary test only','vehicleId',foreign_v)); raise exception 'TICKET_FOREIGN'; exception when others then if sqlerrm<>'NOT_FOUND' then raise; end if; end;
+ result:=public.owner_workspace('ticket_create',jsonb_build_object('category','VEHICLE','subject','Test support','description','temporary test only','vehicleId',v)); t:=(result->>'id')::uuid;
+ perform public.owner_workspace('ticket_reply',jsonb_build_object('id',t,'body','Owner reply'));
+ insert into public.support_messages(ticket_id,author_id,body,is_internal) values(t,other,'PRIVATE STAFF NOTE',true);
+ result:=public.owner_workspace('messages',jsonb_build_object('id',t));
+ if result::text like '%PRIVATE STAFF NOTE%' then raise exception 'INTERNAL_NOTE_LEAK'; end if;
+ update public.support_tickets set status='CLOSED' where id=t;
+ begin perform public.owner_workspace('ticket_reply',jsonb_build_object('id',t,'body','Late reply')); raise exception 'CLOSED_REPLY'; exception when others then if sqlerrm<>'TICKET_CLOSED' then raise; end if; end;
+ begin perform public.owner_workspace('staff_tickets'); raise exception 'STAFF_BYPASS'; exception when insufficient_privilege then null; end;
+ begin perform public.owner_workspace('ticket_create','{"category":"DELETION_REQUEST","subject":"Delete request","description":"Test deletion request"}'); raise exception 'DELETE_CONFIRM_BYPASS'; exception when others then if sqlerrm<>'CONFIRM_REQUIRED' then raise; end if; end;
+ result:=public.owner_workspace('overview');
+ if result->'sessions' is null then raise exception 'SESSIONS_MISSING'; end if;
+ perform set_config('request.jwt.claims','{}',true);
+ begin perform public.owner_workspace('overview'); raise exception 'AUTH_BYPASS'; exception when insufficient_privilege then null; end;
+end $$;
+rollback;
+
