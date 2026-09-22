@@ -87,7 +87,7 @@ export function InstallPanel() {
     {installed ? <p className="success-banner"><Check /> تفتح التطبيق الآن في وضع مستقل.</p> : prompt ? <button className="install-primary" disabled={busy} onClick={install}><Download size={20} /> {busy ? "جاري التثبيت..." : "تثبيت دورني"}</button> : <p className="install-hint">لو خيار التثبيت مش ظاهر، اتبع خطوات جهازك تحت. وقد يكون دورني مثبتاً بالفعل.</p>}
     {error && <p className="form-error" role="alert">{error}</p>}
     <div className="install-instructions"><section><h2>آيفون</h2><ol><li>افتح دورني في Safari.</li><li>من قائمة المشاركة اختار «إضافة إلى الشاشة الرئيسية».</li><li>أكد الإضافة وافتح دورني من الأيقونة الجديدة.</li></ol></section><section><h2>أندرويد</h2><ol><li>افتح دورني في Chrome.</li><li>اضغط زر التثبيت، أو افتح قائمة المتصفح واختار «تثبيت التطبيق» أو «إضافة إلى الشاشة الرئيسية».</li><li>افتح دورني من الشاشة الرئيسية وسجّل دخولك.</li></ol></section></div>
-    <div className="install-hint"><h2>التنبيهات حالياً</h2><p>تتحدّث داخل دورني وهو مفتوح. إشعارات شاشة القفل لم تُفعّل بعد؛ التثبيت وحده لا يفعّلها. ستحتاج موافقتك عند إطلاقها.</p></div>
+    <div className="install-hint"><h2>التنبيهات حالياً</h2><p>بعد التثبيت سجّل دخولك وافتح الإعدادات لتفعيل إشعارات هذا الجهاز وإرسال اختبار. التثبيت وحده لا يمنح إذن الإشعارات.</p></div>
     <Link className="install-primary" href="/app">فتح حسابي</Link><Link href="/login">تسجيل الدخول أو إنشاء حساب</Link>
   </>;
 }
