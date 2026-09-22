@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { createServerSupabase } from "@/lib/supabase/server";
 
-export const json = (data: unknown, status = 200) => NextResponse.json(data, { status });
+export const json = (data: unknown, status = 200) => NextResponse.json(data, { status, headers: { "Cache-Control": "private, no-store" } });
 export async function body<T>(request: Request): Promise<T> { return request.json() as Promise<T>; }
 export async function requireUser() {
   const supabase = await createServerSupabase();
