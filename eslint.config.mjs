@@ -16,6 +16,7 @@ const eslintConfig = defineConfig([
     ".npm-cache-task/**",
     "outputs/**",
     "work/**",
+    "supabase/functions/**",
   ]),
   {
     files: ["components/ui/**/*.{ts,tsx}", "hooks/use-mobile.ts"],
