@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { json, requireUser, UnauthorizedError } from "@/lib/server/http";
+import { validPushOrigin } from "@/lib/server/push-origin";
 
 const input = z.object({
   action:z.enum(["status","subscribe","disable","test"]),
@@ -16,8 +17,7 @@ export async function GET() {
 }
 export async function POST(request:Request) {
   try {
-    const origin=request.headers.get("origin");
-    if(origin && new URL(origin).origin!==new URL(request.url).origin) return json({error:"FORBIDDEN"},403);
+    if(!validPushOrigin(request, process.env.NEXT_PUBLIC_APP_URL)) return json({error:"تعذر التحقق من عنوان التطبيق. افتح دورني من رابطه الرسمي وحاول مرة أخرى."},403);
     const {supabase}=await requireUser();
     const p=input.parse(await request.json());
     if(!p.endpoint || (p.action==="subscribe"&&!p.keys)) return json({error:"اشتراك الجهاز غير مكتمل"},400);
@@ -29,3 +29,4 @@ export async function POST(request:Request) {
     return json(data);
   }catch(e){return json({error:e instanceof UnauthorizedError?"UNAUTHORIZED":"بيانات اشتراك الجهاز غير صالحة"},e instanceof UnauthorizedError?401:400);}
 }
+
