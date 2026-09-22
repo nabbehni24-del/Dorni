@@ -371,3 +371,32 @@ input::placeholder, textarea::placeholder { color: var(--muted-foreground); opac
 .dark .incoming-alert button:not(.incoming-dismiss) { background: #ffabbc; color: #34121e; }
 .dark .refresh-error { color: #ffb7c5; }
 @media (max-width: 560px) { .incoming-alert { flex-wrap: wrap; } .incoming-alert strong { flex-basis: calc(100% - 52px); } }
+
+/* PWA controls share the accessible light/dark palette. */
+.install-page{min-height:100svh;padding:28px 20px 110px;background:var(--background)}
+.install-page>header{max-width:760px;margin:0 auto 24px}
+.install-card{max-width:760px;margin:auto;padding:clamp(22px,5vw,42px);border:1px solid var(--border);border-radius:28px;background:var(--card);display:grid;gap:18px}
+.install-card h1{font-size:clamp(25px,5vw,36px);margin:0}.install-card h2{font-size:19px;margin:0 0 10px}
+.install-card p{line-height:1.9;margin:0;color:var(--muted-foreground)}.install-card a{color:var(--foreground);text-underline-offset:4px}
+.install-symbol{display:grid;place-items:center;width:60px;height:60px;border-radius:18px;background:var(--secondary);color:var(--secondary-foreground)}.install-symbol svg{width:30px;height:30px}
+.install-primary,.install-card a.install-primary{display:flex;justify-content:center;align-items:center;gap:10px;min-height:50px;border:0;border-radius:14px;background:#9c321f;color:#fff8f2;font:inherit;font-weight:700;text-decoration:none;padding:12px 18px}
+.dark .install-primary,.dark .install-card a.install-primary{background:#ff9d70;color:#211008}
+.install-instructions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}.install-instructions section,.install-hint{border:1px solid var(--border);border-radius:16px;padding:18px;background:var(--muted)}
+.install-instructions ol{padding-inline-start:22px;line-height:1.9;display:grid;gap:10px}
+.install-shortcut{position:fixed;bottom:max(20px,env(safe-area-inset-bottom));right:20px;z-index:40;display:flex;align-items:center;gap:8px;border:1px solid var(--border);border-radius:999px;background:var(--card);color:var(--foreground);padding:12px 16px;box-shadow:0 4px 24px #0002;font-size:13px;text-decoration:none}
+.connection-banner{position:sticky;top:0;z-index:100;display:flex;justify-content:center;align-items:center;gap:10px;padding:12px max(16px,env(safe-area-inset-right));background:#7f1d1d;color:#fff;font-size:14px}
+.pwa-update{position:fixed;bottom:max(80px,env(safe-area-inset-bottom));left:50%;transform:translateX(-50%);z-index:110;width:min(92vw,520px);border:1px solid var(--border);border-radius:18px;background:var(--card);color:var(--foreground);padding:18px;box-shadow:0 12px 40px #0004;display:grid;gap:12px}
+.pwa-update button{display:flex;align-items:center;justify-content:center;gap:8px;background:var(--secondary);color:var(--secondary-foreground);padding:12px;border-radius:10px;font:inherit}
+.loading-screen{gap:16px;text-align:center;padding:32px;flex-direction:column}.loading-screen p{max-width:480px;line-height:1.8}.loading-screen h1{font-size:24px}
+button:disabled{cursor:not-allowed}button:focus-visible,a:focus-visible,select:focus-visible{outline:3px solid var(--ring);outline-offset:3px}
+@media(max-width:600px){.install-instructions{grid-template-columns:1fr}.install-shortcut{right:14px}.real-owner-page,.portal-page,.auth-shell{padding-bottom:90px}.code-table{overflow-x:auto}.code-table-head,.code-table-row{min-width:650px}}
+@media(display-mode:standalone){body{padding-top:env(safe-area-inset-top);padding-left:env(safe-area-inset-left);padding-right:env(safe-area-inset-right)}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important}}
+
+
+/* Keep the install link clear of forms and the on-screen keyboard. */
+body:has(input:focus, textarea:focus, select:focus) .install-shortcut{display:none}
+.invalid-code,.loading-inline{color:var(--muted-foreground)}
+.invalid-code h1{color:var(--foreground)}
+.invalid-code button,.loading-screen button,.empty-state button{margin-top:14px;background:#9c321f;color:#fff8f2;min-height:44px;padding:10px 20px;border-radius:12px}
+.dark .invalid-code button,.dark .loading-screen button,.dark .empty-state button{background:#ff9d70;color:#211008}
