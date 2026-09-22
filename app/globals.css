@@ -345,3 +345,29 @@ input::placeholder, textarea::placeholder { color: var(--muted-foreground); opac
   .theme-toggle { top: 18px; bottom: auto; left: 62px; min-width: 44px; width: 44px; padding: 0; border-radius: 14px; }
   .theme-toggle>.theme-mode-label { display: none; }
 }
+
+/* The scanner's status reflects the owner's actual response, not only report creation. */
+.status-mark.status-mark--waiting { background: #ffe8ec; color: #b4233d; }
+.status-mark.status-mark--responded { background: #dcf7e8; color: #126b40; }
+.status-step.is-waiting { color: #a9233b; }
+.status-step.is-waiting > span { background: #ffe8ec; color: #a9233b; }
+.status-step.is-done { color: #126b40; }
+.status-step.is-done > span { background: #126b40; border-color: #126b40; color: #fff; }
+.dark .status-mark.status-mark--waiting { background: #4c2531; color: #ffb7c5; }
+.dark .status-mark.status-mark--responded { background: #173f32; color: #a5efc5; }
+.dark .status-step.is-waiting { color: #ffb7c5; }
+.dark .status-step.is-waiting > span { background: #4c2531; color: #ffb7c5; border-color: #70404d; }
+.dark .status-step.is-done { color: #a5efc5; }
+.dark .status-step.is-done > span { background: #126b40; border-color: #126b40; color: #fff; }
+
+.incoming-alert { display: flex; align-items: center; gap: 12px; margin-bottom: 18px; padding: 13px 15px; border: 1px solid #f2b5bf; border-radius: 14px; background: #fff0f2; color: #9f1b34; }
+.incoming-alert > svg { width: 22px; height: 22px; flex: none; }
+.incoming-alert strong { flex: 1; color: inherit; }
+.incoming-alert button { padding: 7px 11px; border: 0; border-radius: 9px; background: #9f1b34; color: #fff; font-weight: 800; cursor: pointer; }
+.incoming-alert .incoming-dismiss { display: grid; place-items: center; padding: 6px; background: transparent; color: inherit; }
+.incoming-dismiss svg { width: 18px; height: 18px; }
+.refresh-error { margin: 0 0 14px; color: #9f1b34; font-size: .8rem; }
+.dark .incoming-alert { background: #3c202b; border-color: #784150; color: #ffd4db; }
+.dark .incoming-alert button:not(.incoming-dismiss) { background: #ffabbc; color: #34121e; }
+.dark .refresh-error { color: #ffb7c5; }
+@media (max-width: 560px) { .incoming-alert { flex-wrap: wrap; } .incoming-alert strong { flex-basis: calc(100% - 52px); } }
