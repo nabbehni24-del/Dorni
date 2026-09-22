@@ -1,5 +1,7 @@
 # Dorni Web Push — implementation and operations
 
+> Production backend configured on 2026-09-22: **ppflwbwnxxmfzdfckhlk (Dorni Production)**, matching Render. After reconnecting the correct account, the migration, dedicated new Vault secrets, worker deployment and rolled-back integration checks succeeded on this production project. An authenticated empty worker call returned HTTP 200. Phone delivery acceptance remains pending. The earlier configuration on **lgpnadulbcnqmgqosxni** remains disabled with its retry cron unscheduled; its additive objects remain inactive. Equal ID was not modified.
+
 ## Architecture
 
 - `/api/push` authenticates the user using Supabase Auth, then calls `push_device`.
@@ -22,7 +24,7 @@
 
 ## Deployment state / checks (2026-09-22)
 
-- Applied named hosted migration `dorni_web_push` on **Dorni** (`lgpnadulbcnqmgqosxni`); Equal ID untouched.
+- Applied named hosted migration `dorni_web_push` on **Dorni Production** (`ppflwbwnxxmfzdfckhlk`); Equal ID untouched.
 - `supabase/sql/dorni_web_push.sql` records the migration. Local CLI failed to initialize its Windows settings directory; hosted migration tool was used instead.
 - Edge Function deployed. An authenticated empty worker invocation returned HTTP 200 with zero processed jobs; invalid bearer returned 403.
 - Permission checks: anonymous/signed-in users cannot read worker secrets; only service_role can. Anonymous users cannot register a device.
@@ -49,3 +51,4 @@ To pause sending without losing queued data: set `private.push_settings.enabled=
 Retention cleanup of old terminal jobs is not automated yet; review growth before scaling and add a retention job with an agreed window.
 
 References: [Web Push library](https://github.com/web-push-libs/web-push), [Supabase scheduled workers](https://supabase.com/docs/guides/functions/schedule-functions).
+
