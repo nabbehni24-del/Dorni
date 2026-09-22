@@ -27,7 +27,7 @@ export function PushSettings() {
     setBusy(true);setMessage("");
     try {
       // Request permission synchronously from a user click, including Safari's gesture requirement.
-      if(action==="subscribe" && await Notification.requestPermission()!=="granted") throw new Error("الإشعارات مش مسموحة. فعّلها من إعدادات الموقع أو التلفون ثم جرّب مرة أخرى.");
+      if(action==="subscribe" && Notification.permission!=="granted" && await Notification.requestPermission()!=="granted") throw new Error("الإشعارات مش مسموحة. فعّلها من إعدادات الموقع أو التلفون ثم جرّب مرة أخرى.");
       const registration=await worker();
       let sub=await registration.pushManager.getSubscription();
       if(action==="subscribe"){
@@ -50,7 +50,8 @@ export function PushSettings() {
   return <section className="push-settings" aria-label="إشعارات الجهاز"><h2><Bell size={22}/> إشعارات التلفون</h2>
     <p>تنبيه على شاشة الهاتف حتى ودورني مسكّر، بعد موافقتك. إعدادات الصامت والتركيز والاتصال في تلفونك تتحكم في الصوت ووقت الظهور.</p>
     {!supported&&!busy?<p>على الآيفون افتح دورني من أيقونته بعد إضافته للشاشة الرئيسية، واستعمل إصدار iOS يدعم Web Push. على أندرويد استخدم متصفحاً يدعم الإشعارات.</p>:!configured&&!busy?<p>خدمة إشعارات الجهاز غير متاحة حالياً.</p>:<div className="push-actions"><button disabled={busy} onClick={()=>void change(active?"disable":"subscribe")}>{active?<BellOff size={18}/>:<Bell size={18}/>} {busy?"جاري التحقق...":active?"إيقاف إشعارات هذا الجهاز":"تفعيل إشعارات هذا الجهاز"}</button>{active&&<button disabled={busy} onClick={()=>void change("test")}>إرسال إشعار تجريبي</button>}</div>}
-    {message&&<p role="status">{message}</p>}
+    {message&&<p role="alert" aria-live="assertive">{message}</p>}
     <small>الاشتراك خاص بهذا الجهاز وحسابك الحالي؛ تسجيل الخروج يفصله. ما تحتاجش تخلّي التطبيق مفتوح.</small>
   </section>;
 }
+
