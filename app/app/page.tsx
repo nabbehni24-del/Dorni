@@ -1,6 +1,6 @@
 "use client";
 /* eslint-disable react-hooks/set-state-in-effect, @next/next/no-location-assign-relative-destination, @next/next/no-img-element */
-import { useCallback,useEffect,useMemo,useState } from "react";
+import { useCallback,useEffect,useMemo,useRef,useState } from "react";
 import QRCode from "qrcode";
 import { Bell,BookOpen,CarFront,Check,CircleUserRound,Copy,Headphones,LogOut,Menu,Plus,QrCode,RefreshCw,Settings,ShieldCheck,X } from "lucide-react";
 import { DorniBrand } from "@/components/dorni-brand";
@@ -18,9 +18,46 @@ const reportLabel:Record<string,string>={BLOCKING_EXIT:"السيارة تعيق 
 const activeCode=(v:Vehicle)=>v.code_assignments?.find(a=>!a.ended_at)?.codes??null;
 
 export default function OwnerApp(){
-  const [data,setData]=useState<Me|null>(null),[tab,setTab]=useState<"account"|"alerts"|"vehicles">("vehicles"),[menu,setMenu]=useState(false),[panel,setPanel]=useState<"support"|"guide"|"privacy"|"settings"|null>(null),[error,setError]=useState(""),[notice,setNotice]=useState(""),[busy,setBusy]=useState(false),[form,setForm]=useState({manufacturer:"",model:"",color:"",year:""}),[claim,setClaim]=useState({serialNumber:"",claimCode:"",vehicleId:""}),[ticket,setTicket]=useState({subject:"",description:""}),[qr,setQr]=useState<Record<string,string>>({});
-  const load=useCallback(async()=>{const r=await fetch("/api/me",{cache:"no-store"});if(r.status===401)return window.location.assign("/login");const j=await r.json();if(!r.ok)setError(j.error);else setData(j);},[]);
+  const [data,setData]=useState<Me|null>(null),[tab,setTab]=useState<"account"|"alerts"|"vehicles">("vehicles"),[menu,setMenu]=useState(false),[panel,setPanel]=useState<"support"|"guide"|"privacy"|"settings"|null>(null),[error,setError]=useState(""),[notice,setNotice]=useState(""),[incoming,setIncoming]=useState(0),[refreshError,setRefreshError]=useState(""),[busy,setBusy]=useState(false),[form,setForm]=useState({manufacturer:"",model:"",color:"",year:""}),[claim,setClaim]=useState({serialNumber:"",claimCode:"",vehicleId:""}),[ticket,setTicket]=useState({subject:"",description:""}),[qr,setQr]=useState<Record<string,string>>({});
+  const knownReportCounts=useRef<Map<string,number>|null>(null);
+  const acceptReports=useCallback((reports:Report[])=>{
+    const previous=knownReportCounts.current;
+    if(previous){
+      const added=reports.reduce((count,report)=>count+(report.status==="ACTIVE"?Math.max(0,report.duplicate_count-(previous.get(report.id)??0)):0),0);
+      if(added>0)setIncoming(count=>count+added);
+    }
+    knownReportCounts.current=new Map(reports.map(report=>[report.id,report.duplicate_count]));
+  },[]);
+  const load=useCallback(async()=>{const r=await fetch("/api/me",{cache:"no-store"});if(r.status===401)return window.location.assign("/login");const j=await r.json();if(!r.ok)setError(j.error);else {acceptReports(j.reports);setData(j);}},[acceptReports]);
   useEffect(()=>{void load();},[load]);
+  const ready=Boolean(data);
+  useEffect(()=>{
+    if(!ready)return;
+    let alive=true;
+    let inFlight=false;
+    async function refreshReports(){
+      if(!alive||inFlight||document.visibilityState==="hidden")return;
+      inFlight=true;
+      try{
+        const response=await fetch("/api/me/reports",{cache:"no-store"});
+        if(response.status===401){window.location.assign("/login");return;}
+        if(!response.ok)throw new Error("تعذر تحديث التنبيهات تلقائياً");
+        const result:{reports:Report[]}=await response.json();
+        if(!alive)return;
+        acceptReports(result.reports);
+        setData(current=>current?{...current,reports:result.reports}:current);
+        setRefreshError("");
+      }catch{if(alive)setRefreshError("تعذر تحديث التنبيهات تلقائياً؛ سنعيد المحاولة.");}
+      finally{inFlight=false;}
+    }
+    const onVisible=()=>{if(document.visibilityState==="visible")void refreshReports();};
+    const onFocus=()=>{void refreshReports();};
+    const timer=window.setInterval(()=>{void refreshReports();},5000);
+    document.addEventListener("visibilitychange",onVisible);
+    window.addEventListener("focus",onFocus);
+    window.addEventListener("online",onFocus);
+    return()=>{alive=false;window.clearInterval(timer);document.removeEventListener("visibilitychange",onVisible);window.removeEventListener("focus",onFocus);window.removeEventListener("online",onFocus);};
+  },[ready,acceptReports]);
   useEffect(()=>{if(!data)return;for(const v of data.vehicles){const code=activeCode(v);if(code&&!qr[code.id])void QRCode.toDataURL(`${window.location.origin}/t/${code.public_token}`,{width:260,margin:2,color:{dark:"#071d2b",light:"#ffffff"}}).then(img=>setQr(q=>({...q,[code.id]:img})));}},[data,qr]);
   const activeCodes=useMemo(()=>data?.vehicles.map(activeCode).filter(Boolean) as Code[]|undefined,[data]);
   async function post(url:string,payload:unknown){setBusy(true);setError("");setNotice("");const r=await fetch(url,{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify(payload)});const j=await r.json();setBusy(false);if(!r.ok){setError(j.error);return false;}await load();return true;}
@@ -32,7 +69,7 @@ export default function OwnerApp(){
   const accountIdentifier=data.user.email??data.user.phone??"حساب موثّق";
   return <main className="real-owner-page" dir="rtl"><WebMcpTools onChanged={load}/><header className="owner-real-header"><button className="menu-button" onClick={()=>setMenu(true)} aria-label="فتح القائمة"><Menu/></button><DorniBrand/><div><span className="phone-chip">{accountIdentifier}</span><button onClick={logout} aria-label="تسجيل الخروج"><LogOut/></button></div></header>
   {menu&&<div className="owner-drawer"><button className="drawer-backdrop" onClick={()=>setMenu(false)} aria-label="إغلاق"/><aside><button className="drawer-close" onClick={()=>setMenu(false)}><X/></button><DorniBrand/><nav><button onClick={()=>{setPanel("support");setMenu(false)}}><Headphones/> الدعم الفني</button><button onClick={()=>{setPanel("guide");setMenu(false)}}><BookOpen/> كيفية استخدام دورني</button><button onClick={()=>{setPanel("privacy");setMenu(false)}}><ShieldCheck/> الشروط والخصوصية</button><button onClick={()=>{setPanel("settings");setMenu(false)}}><Settings/> الإعدادات</button><button onClick={logout}><LogOut/> تسجيل الخروج</button></nav></aside></div>}
-  <section className="owner-real-content"><div className="owner-real-lead"><div><p className="eyebrow">حساب صاحب السيارة</p><h1>{panel?panel==="support"?"الدعم الفني":panel==="guide"?"كيفية استخدام دورني":panel==="privacy"?"الشروط والخصوصية":"الإعدادات":tab==="vehicles"?"سياراتي وبطاقاتي":tab==="alerts"?"التنبيهات الواردة":"بياناتي"}</h1></div><Badge className="soft-badge"><span className="live-dot"/> حساب فعّال</Badge></div>{error&&<div className="form-error block-error" role="alert">{error}</div>}{notice&&<div className="success-banner"><Check/> {notice}</div>}
+  <section className="owner-real-content"><div className="owner-real-lead"><div><p className="eyebrow">حساب صاحب السيارة</p><h1>{panel?panel==="support"?"الدعم الفني":panel==="guide"?"كيفية استخدام دورني":panel==="privacy"?"الشروط والخصوصية":"الإعدادات":tab==="vehicles"?"سياراتي وبطاقاتي":tab==="alerts"?"التنبيهات الواردة":"بياناتي"}</h1></div><Badge className="soft-badge"><span className="live-dot"/> حساب فعّال</Badge></div>{error&&<div className="form-error block-error" role="alert">{error}</div>}{notice&&<div className="success-banner"><Check/> {notice}</div>}{incoming>0&&<div className="incoming-alert" role="alert"><Bell/><strong>{incoming===1?"وصلك بلاغ جديد على سيارتك":`وصلك ${incoming} بلاغات جديدة على سيارتك`}</strong><button onClick={()=>{setPanel(null);setTab("alerts");setIncoming(0);}}>عرض التنبيهات</button><button className="incoming-dismiss" onClick={()=>setIncoming(0)} aria-label="إغلاق التنبيه"><X/></button></div>}{refreshError&&<p className="refresh-error" role="status">{refreshError}</p>}
   {panel?<section className="work-card settings-panel"><Button variant="ghost" onClick={()=>setPanel(null)}>رجوع للحساب</Button>{panel==="support"&&<><h2>افتح تذكرة دعم</h2><p>التذكرة تُحفظ ويتابعها فريق دورني، مش صفحة ميتة.</p><Input placeholder="عنوان المشكلة" value={ticket.subject} onChange={e=>setTicket({...ticket,subject:e.target.value})}/><Textarea placeholder="اشرح المشكلة" value={ticket.description} onChange={e=>setTicket({...ticket,description:e.target.value})}/><Button onClick={createTicket} disabled={busy||!ticket.subject||!ticket.description}>إرسال للدعم</Button></>}{panel==="guide"&&<div className="guide-steps"><h2>من البطاقة إلى التنبيه</h2><ol><li>أضف سيارتك.</li><li>اكشط منطقة رمز المطالبة في بطاقة دورني.</li><li>أدخل الرقم التسلسلي ورمز المطالبة لتفعيل البطاقة.</li><li>ثبّت البطاقة في مكان واضح.</li><li>أي شخص يمسح QR يختار سبباً جاهزاً، من غير ما يشوف رقمك.</li></ol></div>}{panel==="privacy"&&<><h2>خصوصيتك هي الأساس</h2><p>الماسح يرى نوع السيارة ولونها فقط. لا نعرض اسمك أو رقم هاتفك أو واتساب أو أي وسيلة تواصل مباشرة. روابط متابعة البلاغ مؤقتة وغير قابلة للتخمين.</p></>}{panel==="settings"&&<><h2>قنوات التنبيه</h2><p>القناة الأساسية: <b>{data.preferences.primary_channel}</b></p><p>إدارة واتساب وSMS والإشعارات الفورية ستظهر هنا بعد تفعيل كل مزوّد والتحقق من الوجهة.</p></>}</section>:<>
   <nav className="real-tabs"><button className={tab==="account"?"active":""} onClick={()=>setTab("account")}><CircleUserRound/> بياناتي</button><button className={tab==="alerts"?"active":""} onClick={()=>setTab("alerts")}><Bell/> التنبيهات <i>{data.reports.filter(r=>r.status==="ACTIVE").length}</i></button><button className={tab==="vehicles"?"active":""} onClick={()=>setTab("vehicles")}><CarFront/> سياراتي</button></nav>
   {tab==="vehicles"&&<div className="owner-work-grid"><div><article className="work-card"><div className="card-heading"><div><h2>إضافة سيارة</h2><p>المعلومات العامة فقط، لوحة السيارة غير مطلوبة</p></div><Plus/></div><div className="vehicle-form"><Input placeholder="الشركة" value={form.manufacturer} onChange={e=>setForm({...form,manufacturer:e.target.value})}/><Input placeholder="الموديل" value={form.model} onChange={e=>setForm({...form,model:e.target.value})}/><Input placeholder="اللون" value={form.color} onChange={e=>setForm({...form,color:e.target.value})}/><Input placeholder="السنة (اختياري)" value={form.year} onChange={e=>setForm({...form,year:e.target.value})}/><Button onClick={createVehicle} disabled={busy||!form.manufacturer||!form.model||!form.color}><Plus/> حفظ السيارة</Button></div></article>
