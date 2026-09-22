@@ -7,7 +7,7 @@
   },
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "node scripts/generate-pwa-icons.mjs && next build",
     "start": "next start",
     "lint": "eslint . --ignore-pattern .next --ignore-pattern dist --ignore-pattern build --ignore-pattern scripts --ignore-pattern examples",
     "typecheck": "tsc --noEmit --incremental false",
