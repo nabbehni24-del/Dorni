@@ -1,0 +1,12 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {readFileSync} from 'node:fs';
+import ts from 'typescript';
+const read=p=>readFileSync(new URL('../'+p,import.meta.url),'utf8');
+const js=ts.transpileModule(read('lib/owner-navigation.ts'),{compilerOptions:{module:ts.ModuleKind.ESNext}}).outputText;
+const {readOwnerView,ownerViewUrl}=await import(`data:text/javascript;base64,${Buffer.from(js).toString('base64')}`);
+test('bottom navigation contains only home, vehicles and alerts',()=>{const s=read('app/app/page.tsx');const nav=s.slice(s.indexOf('<nav className="owner-app-nav"'),s.indexOf('</nav>',s.indexOf('<nav className="owner-app-nav"')));assert.deepEqual([...nav.matchAll(/view:"([^"]+)"/g)].map(m=>m[1]),['account','vehicles','alerts']);});
+test('push deep link continues opening alerts and invalid views use home',()=>{assert.equal(readOwnerView('?tab=alerts'),'alerts');assert.equal(readOwnerView('?tab=not-real'),'account');assert.equal(readOwnerView(''),'account');});
+test('navigation supports all menu sections without dropping unrelated URL parameters',()=>{for(const view of ['account','vehicles','alerts','support','settings','guide','privacy']){assert.equal(readOwnerView(`?tab=${view}`),view);}assert.equal(ownerViewUrl('https://dorni.onrender.com/app?v=current','settings'),'/app?v=current&tab=settings');});
+test('navigation retains forms and panels, supports browser back and does not change push',()=>{const s=read('app/app/page.tsx');assert.match(s,/popstate/);assert.match(s,/aria-current/);assert.match(s,/hidden=\{tab!=="vehicles"\}/);assert.match(s,/visitedPanels.map/);assert.match(read('components/owner-center.tsx'),/<PushSettings\/>/);});
+test('disclosures use native summary keyboard semantics and retain children',()=>{const s=read('components/owner-disclosure.tsx');assert.match(s,/<details/);assert.match(s,/<summary>/);assert.match(s,/\{children\}/);assert.doesNotMatch(s,/open&&/);});
