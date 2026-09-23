@@ -20,6 +20,8 @@ Dorni is a privacy-first vehicle communication platform. A person scans an offic
 
 ## Local setup
 
+Before changing or deploying the application, read [the engineering handover](docs/ENGINEERING_HANDOVER.md). The foundation migration below is a starting point, not a complete recreation of the current production database. Reconcile the deployed migration history and later SQL before testing a fresh environment. Never run all SQL files indiscriminately against production.
+
 1. Copy `.env.example` to `.env.local` and fill the Supabase project values.
 2. Apply `supabase/migrations/20260917173000_dorni_foundation.sql` to a clean Supabase project.
 3. Enable Email/Password Auth, set the production Site URL, and configure SMTP for production email delivery.
@@ -48,3 +50,12 @@ npm run build
 - Important code, partner, report and export operations write audit events without secrets.
 
 See `docs/` for the domain model, permissions, state machines, notification routing and rollout plan.
+
+## Documentation map
+
+- [Engineering handover and release checklist](docs/ENGINEERING_HANDOVER.md)
+- [Owner workspace implementation and limitations](docs/OWNER_WORKSPACE.md)
+- [Web Push implementation](docs/WEB_PUSH.md)
+- [Historical PWA preparation](docs/PWA_READINESS.md)
+
+Implementation documents describe source behavior; deployment and device acceptance must be verified separately. Product plans are not evidence that every planned feature is implemented.
