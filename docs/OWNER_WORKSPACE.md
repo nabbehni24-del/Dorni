@@ -29,7 +29,7 @@ This is a functional subset of the broad supplied specification, not completion 
 
 - Login remains email/password. No phone authentication change, SMS OTP or WhatsApp verification without configured providers. No nonfunctional channel toggles.
 - Email identity change and new password reauthentication flows are not implemented here.
-- Arabic UI only. English needs an actual localization pass, not a persisted switch that leaves Arabic UI unchanged.
+- Language scope was expanded after this rollout; see [LOCALIZATION.md](./LOCALIZATION.md) for Arabic, English and Libyan interface coverage and remaining boundaries.
 - Legal publication and material-version reacceptance enforcement await approved documents. No invented legal retention policy.
 - Account deletion is a confirmed, deduplicated support REVIEW REQUEST only. It DOES NOT immediately deactivate, revoke cards, anonymize or erase the account. UI states this before both confirmations. Staff must verify identity and approve an operational/retention policy before a separate deletion implementation. A submitted request alone cannot trigger irreversible deletion. Users can pause their cards immediately using the existing settings action.
 - Replacement means retiring old card and activating a new authentic card. Physical fulfillment/payment is support-assisted.
@@ -38,4 +38,3 @@ This is a functional subset of the broad supplied specification, not completion 
 ## Verification
 
 `supabase/sql/test_owner_workspace_rollback.sql` verifies profile persistence, cross-owner rejection, archive guards, pause/resume/move/retire, ticket link ownership, private note filtering, closed-ticket rejection, staff access rejection, deletion confirmation and unauthenticated rejection. All fixture changes are rolled back. Local tests assert security contracts and notification preservation; run lint, typecheck and production build before release.
-
