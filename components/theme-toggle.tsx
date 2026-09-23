@@ -1,11 +1,14 @@
 "use client";
 
 import { Moon, Sun } from "lucide-react";
+import { usePathname } from "next/navigation";
 import { useTheme } from "next-themes";
 
 export function ThemeToggle() {
   const { resolvedTheme, setTheme } = useTheme();
 
+  const pathname = usePathname();
+  if(pathname === "/app") return null;
   return (
     <button
       type="button"
