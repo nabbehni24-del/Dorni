@@ -1,4 +1,5 @@
 "use client";
+import {useLocale} from "@/components/locale-provider";
 import { useEffect, useState } from "react";
 import { Bell, BellOff } from "lucide-react";
 import { requestJson, errorMessage } from "@/lib/client-api";
@@ -7,11 +8,13 @@ async function worker() {
   return Promise.race([navigator.serviceWorker.ready,new Promise<never>((_,reject)=>setTimeout(()=>reject(new Error("تعذر تجهيز إشعارات الجهاز. أعد فتح التطبيق وحاول مرة أخرى.")),12000))]);
 }
 export function PushSettings() {
+ const {t}=useLocale();
   const [configured,setConfigured]=useState(false),[active,setActive]=useState(false),[busy,setBusy]=useState(true),[supported,setSupported]=useState(false),[message,setMessage]=useState("");
   useEffect(()=>{
     let mounted=true;
     const capable="serviceWorker" in navigator && "PushManager" in window && "Notification" in window;
     async function load(){
+
       if(!capable){if(mounted){setSupported(false);setBusy(false);}return;}
       try {
         const c=await requestJson<{configured:boolean}>("/api/push");
@@ -47,11 +50,10 @@ export function PushSettings() {
       else setMessage("تم وضع إشعار الاختبار في طابور الإرسال. نجاح الوصول يتأكد لما تشوف إشعار الهاتف، مش بهذه الرسالة.");
     }catch(e){setMessage(errorMessage(e));}finally{setBusy(false);}
   }
-  return <section className="push-settings" aria-label="إشعارات الجهاز"><h2><Bell size={22}/> إشعارات التلفون</h2>
-    <p>تنبيه على شاشة الهاتف حتى ودورني مسكّر، بعد موافقتك. إعدادات الصامت والتركيز والاتصال في تلفونك تتحكم في الصوت ووقت الظهور.</p>
-    {!supported&&!busy?<p>على الآيفون افتح دورني من أيقونته بعد إضافته للشاشة الرئيسية، واستعمل إصدار iOS يدعم Web Push. على أندرويد استخدم متصفحاً يدعم الإشعارات.</p>:!configured&&!busy?<p>خدمة إشعارات الجهاز غير متاحة حالياً.</p>:<div className="push-actions"><button disabled={busy} onClick={()=>void change(active?"disable":"subscribe")}>{active?<BellOff size={18}/>:<Bell size={18}/>} {busy?"جاري التحقق...":active?"إيقاف إشعارات هذا الجهاز":"تفعيل إشعارات هذا الجهاز"}</button>{active&&<button disabled={busy} onClick={()=>void change("test")}>إرسال إشعار تجريبي</button>}</div>}
-    {message&&<p role="alert" aria-live="assertive">{message}</p>}
-    <small>الاشتراك خاص بهذا الجهاز وحسابك الحالي؛ تسجيل الخروج يفصله. ما تحتاجش تخلّي التطبيق مفتوح.</small>
+  return <section className="push-settings" aria-label={t("إشعارات الجهاز")}><h2><Bell size={22}/> {t("إشعارات التلفون")}</h2>
+    <p>{t("تنبيه على شاشة الهاتف حتى ودورني مسكّر، بعد موافقتك. إعدادات الصامت والتركيز والاتصال في تلفونك تتحكم في الصوت ووقت الظهور.")}</p>
+    {!supported&&!busy?<p>{t("على الآيفون افتح دورني من أيقونته بعد إضافته للشاشة الرئيسية، واستعمل إصدار iOS يدعم Web Push. على أندرويد استخدم متصفحاً يدعم الإشعارات.")}</p>:!configured&&!busy?<p>{t("خدمة إشعارات الجهاز غير متاحة حالياً.")}</p>:<div className="push-actions"><button disabled={busy} onClick={()=>void change(active?"disable":"subscribe")}>{active?<BellOff size={18}/>:<Bell size={18}/>} {busy?t("جاري التحقق..."):active?t("إيقاف إشعارات هذا الجهاز"):t("تفعيل إشعارات هذا الجهاز")}</button>{active&&<button disabled={busy} onClick={()=>void change("test")}>{t("إرسال إشعار تجريبي")}</button>}</div>}
+    {message&&<p role="alert" aria-live="assertive">{t(message)}</p>}
+    <small>{t("الاشتراك خاص بهذا الجهاز وحسابك الحالي؛ تسجيل الخروج يفصله. ما تحتاجش تخلّي التطبيق مفتوح.")}</small>
   </section>;
 }
-
