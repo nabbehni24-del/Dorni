@@ -1,4 +1,5 @@
 "use client";
+import {useLocale} from "@/components/locale-provider";
 import { createContext, useContext, useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -11,6 +12,7 @@ interface InstallEvent extends Event {
 const InstallContext = createContext<{ installed: boolean; prompt: InstallEvent | null; clear: () => void }>({ installed: false, prompt: null, clear: () => {} });
 
 export function PwaProvider({ children }: { children: React.ReactNode }) {
+ const {t}=useLocale();
   const pathname = usePathname();
   const [installed, setInstalled] = useState(false);
   const [prompt, setPrompt] = useState<InstallEvent | null>(null);
@@ -62,14 +64,15 @@ export function PwaProvider({ children }: { children: React.ReactNode }) {
   }
   const showInstall = !installed && ["/login", "/app", "/partner"].includes(pathname);
   return <InstallContext.Provider value={{ installed, prompt, clear: () => setPrompt(null) }}>
-    {offline && <div className="connection-banner" role="status"><WifiOff size={18} /> أنت بدون اتصال. تحتاج الإنترنت لإرسال البلاغات وحفظ التغييرات.</div>}
+    {offline && <div className="connection-banner" role="status"><WifiOff size={18} /> {t("أنت بدون اتصال. تحتاج الإنترنت لإرسال البلاغات وحفظ التغييرات.")}</div>}
     {children}
-    {showInstall && <Link className="install-shortcut" href="/install"><Smartphone size={18} /> تثبيت دورني</Link>}
-    {waiting && <div className="pwa-update" role="status"><span>نسخة جديدة من دورني جاهزة. احفظ تغييراتك ثم حدّث.</span><button onClick={applyUpdate}><RefreshCw size={16} /> تحديث الآن</button></div>}
+    {showInstall && <Link className="install-shortcut" href="/install"><Smartphone size={18} /> {t("تثبيت دورني")}</Link>}
+    {waiting && <div className="pwa-update" role="status"><span>{t("نسخة جديدة من دورني جاهزة. احفظ تغييراتك ثم حدّث.")}</span><button onClick={applyUpdate}><RefreshCw size={16} /> {t("تحديث الآن")}</button></div>}
   </InstallContext.Provider>;
 }
 
 export function InstallPanel() {
+ const {t}=useLocale();
   const { installed, prompt, clear } = useContext(InstallContext);
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
@@ -81,13 +84,13 @@ export function InstallPanel() {
     finally { setBusy(false); }
   }
   return <>
-    <span className="install-symbol"><Smartphone /></span><p className="eyebrow">دورني معاك</p>
-    <h1>{installed ? "دورني مثبت على جهازك" : "دورني على شاشة تلفونك"}</h1>
-    <p>افتح حسابك وسياراتك وتنبيهاتك من أيقونة دورني، بنفس بيانات الدخول.</p>
-    {installed ? <p className="success-banner"><Check /> تفتح التطبيق الآن في وضع مستقل.</p> : prompt ? <button className="install-primary" disabled={busy} onClick={install}><Download size={20} /> {busy ? "جاري التثبيت..." : "تثبيت دورني"}</button> : <p className="install-hint">لو خيار التثبيت مش ظاهر، اتبع خطوات جهازك تحت. وقد يكون دورني مثبتاً بالفعل.</p>}
-    {error && <p className="form-error" role="alert">{error}</p>}
-    <div className="install-instructions"><section><h2>آيفون</h2><ol><li>افتح دورني في Safari.</li><li>من قائمة المشاركة اختار «إضافة إلى الشاشة الرئيسية».</li><li>أكد الإضافة وافتح دورني من الأيقونة الجديدة.</li></ol></section><section><h2>أندرويد</h2><ol><li>افتح دورني في Chrome.</li><li>اضغط زر التثبيت، أو افتح قائمة المتصفح واختار «تثبيت التطبيق» أو «إضافة إلى الشاشة الرئيسية».</li><li>افتح دورني من الشاشة الرئيسية وسجّل دخولك.</li></ol></section></div>
-    <div className="install-hint"><h2>التنبيهات حالياً</h2><p>بعد التثبيت سجّل دخولك وافتح الإعدادات لتفعيل إشعارات هذا الجهاز وإرسال اختبار. التثبيت وحده لا يمنح إذن الإشعارات.</p></div>
-    <Link className="install-primary" href="/app">فتح حسابي</Link><Link href="/login">تسجيل الدخول أو إنشاء حساب</Link>
+    <span className="install-symbol"><Smartphone /></span><p className="eyebrow">{t("دورني معاك")}</p>
+    <h1>{installed ? t("دورني مثبت على جهازك") : t("دورني على شاشة تلفونك")}</h1>
+    <p>{t("افتح حسابك وسياراتك وتنبيهاتك من أيقونة دورني، بنفس بيانات الدخول.")}</p>
+    {installed ? <p className="success-banner"><Check /> {t("تفتح التطبيق الآن في وضع مستقل.")}</p> : prompt ? <button className="install-primary" disabled={busy} onClick={install}><Download size={20} /> {busy ? t("جاري التثبيت...") : t("تثبيت دورني")}</button> : <p className="install-hint">{t("لو خيار التثبيت مش ظاهر، اتبع خطوات جهازك تحت. وقد يكون دورني مثبتاً بالفعل.")}</p>}
+    {error && <p className="form-error" role="alert">{t(error)}</p>}
+    <div className="install-instructions"><section><h2>{t("آيفون")}</h2><ol><li>{t("افتح دورني في Safari.")}</li><li>{t("من قائمة المشاركة اختار «إضافة إلى الشاشة الرئيسية».")}</li><li>{t("أكد الإضافة وافتح دورني من الأيقونة الجديدة.")}</li></ol></section><section><h2>{t("أندرويد")}</h2><ol><li>{t("افتح دورني في Chrome.")}</li><li>{t("اضغط زر التثبيت، أو افتح قائمة المتصفح واختار «تثبيت التطبيق» أو «إضافة إلى الشاشة الرئيسية».")}</li><li>{t("افتح دورني من الشاشة الرئيسية وسجّل دخولك.")}</li></ol></section></div>
+    <div className="install-hint"><h2>{t("التنبيهات حالياً")}</h2><p>{t("بعد التثبيت سجّل دخولك وافتح الإعدادات لتفعيل إشعارات هذا الجهاز وإرسال اختبار. التثبيت وحده لا يمنح إذن الإشعارات.")}</p></div>
+    <Link className="install-primary" href="/app">{t("فتح حسابي")}</Link><Link href="/login">{t("تسجيل الدخول أو إنشاء حساب")}</Link>
   </>;
 }
