@@ -1,4 +1,5 @@
 "use client";
+import {useLocale} from "@/components/locale-provider";
 
 import { useEffect, useState } from "react";
 import { Check, Clock3, RefreshCw, ShieldCheck } from "lucide-react";
@@ -16,6 +17,7 @@ type ReportStatus = {
 };
 
 export function StatusClient({ token }: { token: string }) {
+ const {t,dir}=useLocale();
   const [data, setData] = useState<ReportStatus | null>(null);
   const [error, setError] = useState("");
 
@@ -47,28 +49,28 @@ export function StatusClient({ token }: { token: string }) {
   }, [token]);
 
   const answered = Boolean(data?.ownerResponse);
-  return <main className="public-shell" dir="rtl">
+  return <main className="public-shell" dir={dir}>
     <section className="status-card">
       {error && !data ? <>
         <div className="success-mark"><Clock3/></div>
-        <h1>رابط الحالة غير متاح</h1>
-        <p className="support-copy">{error}</p>
+        <h1>{t("رابط الحالة غير متاح")}</h1>
+        <p className="support-copy">{t(error)}</p>
       </> : !data ? <>
         <RefreshCw className="spin status-spinner"/>
-        <h1>جاري تحميل حالة البلاغ</h1>
+        <h1>{t("جاري تحميل حالة البلاغ")}</h1>
       </> : <>
         <div className={`success-mark status-mark ${answered ? "status-mark--responded" : "status-mark--waiting"}`}>
           <Check/>
         </div>
-        <p className="eyebrow">بلاغ محفوظ</p>
-        <h1>{answered ? responseLabel[data.ownerResponse!] ?? "رد صاحب السيارة" : "في انتظار رد صاحب السيارة"}</h1>
-        <p className="support-copy">هذه الحالة تُحدّث تلقائياً من رد صاحب السيارة المحفوظ في دورني.</p>
-        {error && <p className="refresh-error" role="status">{error}</p>}
+        <p className="eyebrow">{t("بلاغ محفوظ")}</p>
+        <h1>{answered ? t(responseLabel[data.ownerResponse!] ?? "رد صاحب السيارة") : t("في انتظار رد صاحب السيارة")}</h1>
+        <p className="support-copy">{t("هذه الحالة تُحدّث تلقائياً من رد صاحب السيارة المحفوظ في دورني.")}</p>
+        {error && <p className="refresh-error" role="status">{t(error)}</p>}
         <div className="status-steps">
-          <div className="status-step is-done"><span>1</span><div><strong>تم استلام البلاغ</strong><small>مسجّل في النظام</small></div></div>
-          <div className={`status-step ${answered ? "is-done" : "is-waiting"}`}><span>2</span><div><strong>رد صاحب السيارة</strong><small>{answered ? responseLabel[data.ownerResponse!] ?? "تم الرد" : "في انتظار الرد"}</small></div></div>
+          <div className="status-step is-done"><span>1</span><div><strong>{t("تم استلام البلاغ")}</strong><small>{t("مسجّل في النظام")}</small></div></div>
+          <div className={`status-step ${answered ? "is-done" : "is-waiting"}`}><span>2</span><div><strong>{t("رد صاحب السيارة")}</strong><small>{answered ? t(responseLabel[data.ownerResponse!] ?? "تم الرد") : t("في انتظار الرد")}</small></div></div>
         </div>
-        <div className="privacy-note"><ShieldCheck/><span>الرابط خاص بهذا البلاغ وينتهي تلقائياً.</span></div>
+        <div className="privacy-note"><ShieldCheck/><span>{t("الرابط خاص بهذا البلاغ وينتهي تلقائياً.")}</span></div>
       </>}
     </section>
   </main>;
