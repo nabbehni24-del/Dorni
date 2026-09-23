@@ -54,6 +54,7 @@ See `docs/` for the domain model, permissions, state machines, notification rout
 ## Documentation map
 
 - [Engineering handover and release checklist](docs/ENGINEERING_HANDOVER.md)
+- [Interface language implementation and scope](docs/LOCALIZATION.md)
 - [Owner workspace implementation and limitations](docs/OWNER_WORKSPACE.md)
 - [Web Push implementation](docs/WEB_PUSH.md)
 - [Historical PWA preparation](docs/PWA_READINESS.md)

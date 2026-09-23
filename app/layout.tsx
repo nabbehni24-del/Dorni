@@ -4,6 +4,7 @@ import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { PwaProvider } from "@/components/pwa-provider";
+import { LocaleProvider } from "@/components/locale-provider";
 
 const cairo = Cairo({
   subsets: ["arabic", "latin"],
@@ -34,10 +35,10 @@ export default function RootLayout({
     <html lang="ar" dir="rtl" className={cairo.variable} suppressHydrationWarning>
       <body className="antialiased">
         <ThemeProvider>
-          <PwaProvider>
+          <LocaleProvider><PwaProvider>
           {children}
           <ThemeToggle />
-          </PwaProvider>
+          </PwaProvider></LocaleProvider>
         </ThemeProvider>
       </body>
     </html>
