@@ -1,0 +1,14 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {readFileSync} from 'node:fs';
+import ts from 'typescript';
+import {renderToStaticMarkup} from 'react-dom/server';
+import {createElement} from 'react';
+const source=readFileSync(new URL('../components/owner-home.tsx',import.meta.url),'utf8');
+const js=ts.transpileModule(source,{compilerOptions:{module:ts.ModuleKind.ESNext,jsx:ts.JsxEmit.ReactJSX}}).outputText;
+const resolved=js.replace(/from ["']([^"']+)["']/g,(_,name)=>`from ${JSON.stringify(import.meta.resolve(name))}`);
+const {OwnerHome}=await import(`data:text/javascript;base64,${Buffer.from(resolved).toString('base64')}`);
+const render=(props={})=>renderToStaticMarkup(createElement(OwnerHome,{vehicles:[],reports:[],labels:{LIGHTS_ON:'الأنوار شغالة'},onCars(){},onAlerts(){},...props}));
+test('new owner home has a clear next action and no account settings clutter',()=>{const html=render();assert.match(html,/إضافة سيارة/);assert.doesNotMatch(html,/البريد|ملخص الحساب|كيف تستخدم|إعدادات الحساب/);});
+test('home surfaces pending alerts, not resolved reports',()=>{const html=render({reports:[{id:'1',status:'ACTIVE',report_type_code:'LIGHTS_ON',created_at:'2026-09-23T10:00:00Z',vehicles:null},{id:'2',status:'RESOLVED',report_type_code:'hidden-resolved',created_at:'2026-09-23T10:00:00Z',vehicles:null}]});assert.match(html,/1 تنبيهات/);assert.match(html,/الأنوار شغالة/);assert.doesNotMatch(html,/hidden-resolved/);});
+test('vehicle readiness follows current card assignment',()=>{const html=render({vehicles:[{id:'car',manufacturer:'Test',model:'Car',color:'أسود',code_assignments:[{ended_at:'2026-01-01',codes:{activation_state:'ACTIVE'}}]}]});assert.match(html,/تحتاج تفعيل بطاقة/);});
