@@ -1,6 +1,6 @@
 import sharp from "sharp";
 import { mkdir, readFile } from "node:fs/promises";
-const source = await readFile(new URL("../public/dorni-logo.svg", import.meta.url));
+const source = await readFile(new URL("../public/dawrni-app-icon.svg", import.meta.url));
 const directory = new URL("../public/icons/", import.meta.url);
 await mkdir(directory, { recursive: true });
 for (const [name, size] of [["icon-192.png",192],["icon-512.png",512],["apple-touch-icon.png",180]]) {
