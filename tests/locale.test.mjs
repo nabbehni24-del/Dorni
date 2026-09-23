@@ -1,0 +1,10 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {readFileSync} from 'node:fs';
+import ts from 'typescript';
+const read=path=>readFileSync(new URL('../'+path,import.meta.url),'utf8');
+const source=ts.transpileModule(read('lib/locale.ts'),{compilerOptions:{module:ts.ModuleKind.ESNext}}).outputText;
+const {validLocale,localeDirection,chooseText}=await import('data:text/javascript;base64,'+Buffer.from(source).toString('base64'));
+test('only the three supported locales are accepted',()=>{for(const l of ['ar','en','ar-LY'])assert.equal(validLocale(l),true);for(const l of [null,'fr','EN',''])assert.equal(validLocale(l),false);});
+test('locale direction and wording are independent',()=>{assert.equal(localeDirection('en'),'ltr');assert.equal(localeDirection('ar'),'rtl');assert.equal(localeDirection('ar-LY'),'rtl');assert.equal(chooseText('ar','الآن','Now','توا'),'الآن');assert.equal(chooseText('en','الآن','Now','توا'),'Now');assert.equal(chooseText('ar-LY','الآن','Now','توا'),'توا');});
+test('both owner brand links open account home, without signing out',()=>{const page=read('app/app/page.tsx');assert.equal((page.match(/<DorniBrand href="\/app"/g)||[]).length,2);assert.match(page,/e.preventDefault\(\);navigate\("account"\)/);assert.match(read('components/dorni-brand.tsx'),/href=\{href\}/);});
