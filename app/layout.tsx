@@ -19,7 +19,7 @@ export const metadata: Metadata = {
   icons: {
     icon: "/dawrni-app-icon.svg",
     shortcut: "/dawrni-app-icon.svg",
-    apple: "/icons/apple-touch-icon.png?v=brand2",
+    apple: "/icons/apple-touch-icon.png?v=brand3",
   },
 };
 
