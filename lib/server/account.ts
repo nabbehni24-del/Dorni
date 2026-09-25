@@ -6,6 +6,7 @@ export type AccountContext = {
   partnerRole: string | null;
   organizationId: string | null;
   organizationName: string | null;
+  organizationStatus: "PENDING" | "ACTIVE" | "SUSPENDED" | "REJECTED" | null;
   destination: "/admin" | "/partner" | "/app";
 };
 
@@ -16,3 +17,4 @@ export async function getAccountContext(supabase: SupabaseClient): Promise<Accou
   if (error || !data) throw error ?? new Error("ACCOUNT_CONTEXT_MISSING");
   return data as AccountContext;
 }
+
