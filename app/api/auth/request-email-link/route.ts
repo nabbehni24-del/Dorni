@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { createServerSupabase } from "@/lib/supabase/server";
 import { json } from "@/lib/server/http";
+import { publicOrigin } from "@/lib/server/public-origin";
 
 const schema = z.object({ email: z.string().trim().email().max(254) });
 
@@ -8,7 +9,7 @@ export async function POST(request: Request) {
   try {
     const { email } = schema.parse(await request.json());
     const supabase = await createServerSupabase();
-    const callbackUrl = new URL("/auth/callback", request.url);
+    const callbackUrl = new URL("/auth/callback", publicOrigin(request));
     callbackUrl.searchParams.set("next", "/app");
     const { error } = await supabase.auth.signInWithOtp({
       email: email.toLowerCase(),
@@ -22,3 +23,4 @@ export async function POST(request: Request) {
     return json({ error: "تعذر إرسال رابط الدخول. حاول مرة ثانية بعد قليل." }, 500);
   }
 }
+
