@@ -9,10 +9,11 @@ const allowedTypes = new Set<EmailOtpType>(["email", "magiclink", "recovery", "i
 export async function GET(request: Request) {
   const url = new URL(request.url);
   const nextParam = url.searchParams.get("next");
-  const next = nextParam?.startsWith("/") && !nextParam.startsWith("//") ? nextParam : "/app";
+  const requestedNext = nextParam?.startsWith("/") && !nextParam.startsWith("//") ? nextParam : null;
   const code = url.searchParams.get("code");
   const tokenHash = url.searchParams.get("token_hash");
   const type = url.searchParams.get("type") as EmailOtpType | null;
+  const next = requestedNext ?? (type === "recovery" ? "/reset-password" : "/app");
   const supabase = await createServerSupabase();
 
   let error = null;
@@ -25,6 +26,10 @@ export async function GET(request: Request) {
     login.searchParams.set("error", "email_link");
     return NextResponse.redirect(login);
   }
+  if (type === "recovery" || next === "/reset-password") {
+    return NextResponse.redirect(new URL("/reset-password", url.origin));
+  }
+
   const provisioning = await supabase.rpc("provision_my_account");
   if (provisioning.error) {
     const login = new URL("/login", url.origin);
@@ -46,3 +51,4 @@ export async function GET(request: Request) {
   if (inviteToken) response.cookies.delete("dorni_partner_invite");
   return response;
 }
+
