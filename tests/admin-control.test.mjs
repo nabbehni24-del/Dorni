@@ -8,14 +8,16 @@ const adminOverview=new URL("../app/api/admin/overview/route.ts",import.meta.url
 const adminPartnerReview=new URL("../app/api/admin/partners/[id]/route.ts",import.meta.url);
 const adminBatchReview=new URL("../app/api/admin/batch-requests/[id]/route.ts",import.meta.url);
 const partnerPage=new URL("../app/partner/page.tsx",import.meta.url);
+const access=new URL("../lib/server/access.ts",import.meta.url);
 
 test("new partner registrations stay pending and cannot generate before approval",async()=>{
-  const [sql,page]=await Promise.all([readFile(migration,"utf8"),readFile(partnerPage,"utf8")]);
+  const [sql,page,accessSource]=await Promise.all([readFile(migration,"utf8"),readFile(partnerPage,"utf8"),readFile(access,"utf8")]);
   assert.match(sql,/values\s*\(\s*v_company_name,\s*v_company_type,\s*'PENDING',\s*false/s);
   assert.match(sql,/PARTNER_APPLICATION_SUBMITTED/);
   assert.match(sql,/o\.status='ACTIVE'/);
   assert.match(page,/organization\.status==="ACTIVE"/);
   assert.match(page,/disabled=\{!active/);
+  assert.match(accessSource,/review_note,reviewed_at/);
 });
 
 test("admin mutations require the one super-admin role at both API and database layers",async()=>{
@@ -36,5 +38,4 @@ test("the admin control plane exposes approvals, operations, monitoring, and an 
   assert.match(source,/\/api\/admin\/partners\/\$\{org\.id\}/);
   assert.match(source,/\/api\/admin\/batch-requests\/\$\{item\.id\}/);
 });
-
 
