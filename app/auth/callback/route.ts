@@ -3,11 +3,13 @@ import { EmailOtpType } from "@supabase/supabase-js";
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { createServerSupabase } from "@/lib/supabase/server";
+import { publicOrigin } from "@/lib/server/public-origin";
 
 const allowedTypes = new Set<EmailOtpType>(["email", "magiclink", "recovery", "invite", "email_change", "signup"]);
 
 export async function GET(request: Request) {
   const url = new URL(request.url);
+  const origin = publicOrigin(request);
   const nextParam = url.searchParams.get("next");
   const requestedNext = nextParam?.startsWith("/") && !nextParam.startsWith("//") ? nextParam : null;
   const code = url.searchParams.get("code");
@@ -22,17 +24,17 @@ export async function GET(request: Request) {
   else error = new Error("Missing authentication parameters");
 
   if (error) {
-    const login = new URL("/login", url.origin);
+    const login = new URL("/login", origin);
     login.searchParams.set("error", "email_link");
     return NextResponse.redirect(login);
   }
   if (type === "recovery" || next === "/reset-password") {
-    return NextResponse.redirect(new URL("/reset-password", url.origin));
+    return NextResponse.redirect(new URL("/reset-password", origin));
   }
 
   const provisioning = await supabase.rpc("provision_my_account");
   if (provisioning.error) {
-    const login = new URL("/login", url.origin);
+    const login = new URL("/login", origin);
     login.searchParams.set("error", "account_provisioning");
     return NextResponse.redirect(login);
   }
@@ -42,12 +44,12 @@ export async function GET(request: Request) {
     const tokenHash = createHash("sha256").update(inviteToken).digest("hex");
     const claim = await supabase.rpc("claim_partner_invitation", { p_token_hash: tokenHash });
     if (claim.error) {
-      const login = new URL("/login", url.origin);
+      const login = new URL("/login", origin);
       login.searchParams.set("error", "partner_invite");
       return NextResponse.redirect(login);
     }
   }
-  const response = NextResponse.redirect(new URL(inviteToken ? "/partner" : next, url.origin));
+  const response = NextResponse.redirect(new URL(inviteToken ? "/partner" : next, origin));
   if (inviteToken) response.cookies.delete("dorni_partner_invite");
   return response;
 }
