@@ -3,10 +3,11 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 
 export type AccountContext = {
   internalRole: string | null;
-  partnerRole: string | null;
-  organizationId: string | null;
-  organizationName: string | null;
-  organizationStatus: "PENDING" | "ACTIVE" | "SUSPENDED" | "REJECTED" | null;
+  memberships: Array<{
+    membershipId:string; organizationId:string; organizationName:string; organizationType:string;
+    organizationStatus:"PENDING"|"ACTIVE"|"SUSPENDED"|"REJECTED"; institutionalEnabled:boolean;
+    legacyRole:string; roleId:string|null;
+  }>;
   destination: "/admin" | "/partner" | "/app";
 };
 
@@ -17,4 +18,3 @@ export async function getAccountContext(supabase: SupabaseClient): Promise<Accou
   if (error || !data) throw error ?? new Error("ACCOUNT_CONTEXT_MISSING");
   return data as AccountContext;
 }
-

@@ -1,0 +1,13 @@
+create index if not exists institutional_action_events_actor_id_idx on public.institutional_action_events(actor_id);
+create index if not exists institutional_action_reasons_action_type_idx on public.institutional_action_reasons(action_type);
+create index if not exists institutional_action_types_required_permission_idx on public.institutional_action_types(required_permission);
+create index if not exists institutional_actions_action_type_idx on public.institutional_actions(action_type);
+create index if not exists institutional_actions_code_id_idx on public.institutional_actions(code_id);
+create index if not exists institutional_actions_reason_code_idx on public.institutional_actions(reason_code);
+create index if not exists organization_entitlements_granted_by_idx on public.organization_entitlements(granted_by);
+create index if not exists organization_entitlements_permission_code_idx on public.organization_entitlements(permission_code);
+create index if not exists organization_entitlements_revoked_by_idx on public.organization_entitlements(revoked_by);
+create index if not exists organization_role_permissions_assigned_by_idx on public.organization_role_permissions(assigned_by);
+create index if not exists organization_roles_created_by_idx on public.organization_roles(created_by);
+create index if not exists partner_invitations_role_id_idx on public.partner_invitations(role_id);
+create index if not exists partner_organizations_institutional_enabled_by_idx on public.partner_organizations(institutional_enabled_by);
