@@ -1,0 +1,8 @@
+import {createHash} from "node:crypto";
+import {z} from "zod";
+import {body,json,requireUser,UnauthorizedError} from "@/lib/server/http";
+import {randomToken} from "@/lib/server/security";
+import {validPushOrigin} from "@/lib/server/push-origin";
+const invite=z.object({action:z.literal("invite"),organizationId:z.string().uuid(),email:z.string().email(),roleId:z.string().uuid()});
+const status=z.object({action:z.literal("status"),organizationId:z.string().uuid(),membershipId:z.string().uuid(),status:z.enum(["ACTIVE","SUSPENDED"])});
+export async function POST(request:Request){try{if(!validPushOrigin(request,process.env.NEXT_PUBLIC_APP_URL))return json({error:"عنوان الطلب غير مسموح"},403);const value=z.discriminatedUnion("action",[invite,status]).parse(await body(request));const {supabase}=await requireUser();if(value.action==="status"){const {data,error}=await supabase.rpc("org_set_member_status",{p_organization_id:value.organizationId,p_membership_id:value.membershipId,p_status:value.status});if(error)return json({error:"تعذر تحديث حالة الموظف"},403);return json({membership:data});}const token=randomToken(32);const tokenHash=createHash("sha256").update(token).digest("hex");const {data,error}=await supabase.rpc("org_invite_member",{p_organization_id:value.organizationId,p_email:value.email.toLowerCase(),p_role_id:value.roleId,p_token_hash:tokenHash});if(error)return json({error:"تعذر إنشاء الدعوة أو لا تملك الصلاحية"},403);return json({invitation:{...data,url:`${process.env.NEXT_PUBLIC_APP_URL??new URL(request.url).origin}/login?invite=${encodeURIComponent(token)}`}},201);}catch(error){return json({error:error instanceof UnauthorizedError?"UNAUTHORIZED":"بيانات الطلب غير صالحة"},error instanceof UnauthorizedError?401:400);}}
