@@ -33,13 +33,13 @@ Deno.serve(async request => {
     let accepted=0, failed=0;
     // Bounded parallelism; leases are longer than a complete batch's network timeout.
     for (let offset=0; offset<(jobs??[]).length; offset+=5) {
-      await Promise.all(jobs.slice(offset,offset+5).map(async (job: {id:string;lease_token:string;endpoint:string;p256dh:string;auth:string;report_id:string|null}) => {
+      await Promise.all(jobs.slice(offset,offset+5).map(async (job: {id:string;lease_token:string;endpoint:string;p256dh:string;auth:string;report_id:string|null;institutional_action_id:string|null}) => {
         let status=0;
         try {
           if (!allowedEndpoint(job.endpoint)) status=400;
           else {
             const response=await webpush.sendNotification({endpoint:job.endpoint,keys:{p256dh:job.p256dh,auth:job.auth}},
-              JSON.stringify({body:job.report_id?"عندك تنبيه جديد بخصوص سيارتك. افتح دورني للاطلاع عليه.":"هذا إشعار تجريبي من دورني. إشعارات الجهاز تعمل.",tag:job.report_id??job.id}),
+              JSON.stringify({body:job.institutional_action_id?"وصلك تنبيه موثّق من مؤسسة عبر دورني. افتح التطبيق للاطلاع والرد.":job.report_id?"عندك تنبيه جديد بخصوص سيارتك. افتح دورني للاطلاع عليه.":"هذا إشعار تجريبي من دورني. إشعارات الجهاز تعمل.",tag:job.institutional_action_id??job.report_id??job.id}),
               {vapidDetails:{subject:"mailto:nabbeh.ni24@gmail.com",publicKey:config.public_key,privateKey:config.private_key},TTL:300,urgency:"high",timeout:10000});
             status=response.statusCode;
           }

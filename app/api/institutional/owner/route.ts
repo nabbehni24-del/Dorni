@@ -1,0 +1,2 @@
+import {json,requireUser,UnauthorizedError} from "@/lib/server/http";
+export async function GET(){try{const {supabase}=await requireUser();const {data,error}=await supabase.rpc("get_owner_institutional_actions");if(error)throw error;return json({actions:data??[]});}catch(error){return json({error:error instanceof UnauthorizedError?"UNAUTHORIZED":"تعذر تحميل التنبيهات المؤسسية"},error instanceof UnauthorizedError?401:500);}}

@@ -1,0 +1,3 @@
+import {z} from "zod";
+import {json,requireUser,UnauthorizedError} from "@/lib/server/http";
+export async function GET(request:Request){try{const url=new URL(request.url);const organizationId=z.string().uuid().parse(url.searchParams.get("organizationId"));const from=url.searchParams.get("from");const to=url.searchParams.get("to");const {supabase}=await requireUser();const {data,error}=await supabase.rpc("get_organization_institutional_overview",{p_organization_id:organizationId,p_from:from||undefined,p_to:to||undefined});if(error)return json({error:"ما عندكش صلاحية لعرض بيانات المؤسسة"},403);return json(data);}catch(error){return json({error:error instanceof UnauthorizedError?"UNAUTHORIZED":"طلب غير صالح"},error instanceof UnauthorizedError?401:400);}}
