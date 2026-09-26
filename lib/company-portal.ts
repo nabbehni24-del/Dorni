@@ -3,6 +3,7 @@ export type CompanySection =
   | "codes"
   | "production"
   | "operations"
+  | "structure"
   | "team"
   | "roles"
   | "reports";
@@ -54,15 +55,17 @@ export type PartnerOverview = {
 };
 
 export const companySectionLabels: Record<CompanySection, string> = {
-  overview: "نظرة عامة",
-  codes: "الأكواد وQR",
-  production: "الدفعات والإنتاج",
-  operations: "العمليات الميدانية",
-  team: "الفريق",
-  roles: "الأدوار والصلاحيات",
-  reports: "التقارير والتدقيق",
+  overview: "مركز القيادة",
+  codes: "سجل الأصول وQR",
+  production: "الإمداد والمخزون",
+  operations: "مركز العمليات",
+  structure: "الهيكل التنظيمي",
+  team: "القوى العاملة",
+  roles: "الحوكمة والصلاحيات",
+  reports: "التحليلات وSLA",
 };
 
 export function isCompanySection(value: string | null): value is CompanySection {
   return Boolean(value && value in companySectionLabels);
 }
+
