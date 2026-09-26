@@ -1,0 +1,6 @@
+import {z} from "zod";
+import {body,json,requireUser,UnauthorizedError} from "@/lib/server/http";
+import {validPushOrigin} from "@/lib/server/push-origin";
+const permission=z.enum(["ORG_MEMBER_VIEW","ORG_MEMBER_INVITE","ORG_MEMBER_SUSPEND","ORG_ROLE_ASSIGN","ORG_AUDIT_VIEW","ORG_REPORT_VIEW","VEHICLE_MOVE_REQUEST"]);
+const schema=z.object({organizationId:z.string().uuid(),roleId:z.string().uuid().nullable().optional(),code:z.string().regex(/^[A-Z][A-Z0-9_]{2,60}$/),name:z.string().trim().min(2).max(100),permissions:z.array(permission).max(20)});
+export async function POST(request:Request){try{if(!validPushOrigin(request,process.env.NEXT_PUBLIC_APP_URL))return json({error:"عنوان الطلب غير مسموح"},403);const value=schema.parse(await body(request));const {supabase}=await requireUser();const {data,error}=await supabase.rpc("org_upsert_role",{p_organization_id:value.organizationId,p_role_id:value.roleId??null,p_code:value.code,p_name_ar:value.name,p_permissions:value.permissions});if(error)return json({error:error.message.includes("NOT_ENTITLED")?"المؤسسة غير مخولة بإحدى الصلاحيات":"تعذر حفظ الدور"},403);return json({role:data});}catch(error){return json({error:error instanceof UnauthorizedError?"UNAUTHORIZED":"بيانات الدور غير صالحة"},error instanceof UnauthorizedError?401:400);}}
