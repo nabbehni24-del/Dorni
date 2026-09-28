@@ -29,8 +29,18 @@ test('login uses the compact language picker instead of embedding account settin
  assert.doesNotMatch(login,/<LanguageSettings\s*\/>/);
  const picker=readFileSync(new URL('../components/language-settings.tsx',import.meta.url),'utf8');
  assert.match(picker,/aria-haspopup="listbox"/);
+ assert.match(picker,/aria-label=\{text\(/);
  assert.match(picker,/setOpen\(false\)/);
  assert.match(picker,/event\.key === "Escape"|event\.key==='Escape'/);
+});
+test('login keeps theme and language controls inside its responsive header',()=>{
+ const login=readFileSync(new URL('../app/login/page.tsx',import.meta.url),'utf8');
+ const toggle=readFileSync(new URL('../components/theme-toggle.tsx',import.meta.url),'utf8');
+ const css=readFileSync(new URL('../app/globals.css',import.meta.url),'utf8');
+ assert.match(login,/<ThemeToggle placement="header"\s*\/>/);
+ assert.match(toggle,/pathname === "\/login"/);
+ assert.match(css,/\.theme-toggle--header\s*\{[^}]*position:\s*static/s);
+ assert.match(css,/\.auth-header-actions\{display:flex;align-items:center/);
 });
 test('all message entries have English and Arabic variants and interpolate counts',()=>{
  for(const [key,value]of Object.entries(ownerMessages)){assert.ok(value.en,key);assert.ok(value.ar,key);assert.ok(value.ly,key);}

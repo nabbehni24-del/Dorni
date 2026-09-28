@@ -15,6 +15,7 @@ import {
 import { DorniBrand } from "@/components/dorni-brand";
 import { Button } from "@/components/ui/button";
 import { LoginLanguageSwitcher } from "@/components/language-settings";
+import { ThemeToggle } from "@/components/theme-toggle";
 import { Input } from "@/components/ui/input";
 
 type Portal = "owner" | "partner";
@@ -120,6 +121,7 @@ function LoginContent() {
           <span className="secure-chip">
             <ShieldCheck /> {t("تسجيل الدخول إلى دورني")}
           </span>
+          <ThemeToggle placement="header" />
           <LoginLanguageSwitcher />
         </div>
       </header>
