@@ -36,6 +36,11 @@ export function LoginLanguageSwitcher() {
         type="button"
         aria-haspopup="listbox"
         aria-expanded={open}
+        aria-label={text(
+          `لغة الواجهة: ${localeHints[locale]}`,
+          `Interface language: ${localeHints[locale]}`,
+          `لغة التطبيق: ${localeHints[locale]}`,
+        )}
         onClick={() => setOpen((value) => !value)}
       >
         <span className="login-language-icon">

@@ -5,16 +5,16 @@ import { Moon, Sun } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { useTheme } from "next-themes";
 
-export function ThemeToggle() {
+export function ThemeToggle({ placement = "floating" }: { placement?: "floating" | "header" }) {
  const {t}=useLocale();
   const { resolvedTheme, setTheme } = useTheme();
 
   const pathname = usePathname();
-  if(pathname === "/app") return null;
+  if(placement === "floating" && (pathname === "/app" || pathname === "/login")) return null;
   return (
     <button
       type="button"
-      className="theme-toggle"
+      className={`theme-toggle${placement === "header" ? " theme-toggle--header" : ""}`}
       onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
       aria-label={t("تبديل الوضع الفاتح والداكن")}
       title={t("تبديل المظهر")}
