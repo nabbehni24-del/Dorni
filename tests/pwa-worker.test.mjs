@@ -21,6 +21,15 @@ test("installation caches only a public offline document", async () => {
   w.events.install({ waitUntil: value => promise = value }); await promise;
   assert.deepEqual(w.stored, ["/offline.html"]);
 });
+test("installed Dorni uses the corrected full-bleed brand icon", async () => {
+  const manifest = await readFile(new URL("../app/manifest.ts", import.meta.url), "utf8");
+  const layout = await readFile(new URL("../app/layout.tsx", import.meta.url), "utf8");
+  const generator = await readFile(new URL("../scripts/generate-pwa-icons.mjs", import.meta.url), "utf8");
+  assert.match(manifest, /brand4/);
+  assert.match(layout, /icons\/icon-192\.png\?v=brand4/);
+  assert.match(generator, /dawrni-app-icon\.png\.base64/);
+  assert.match(generator, /black preview matte/);
+});
 test("worker leaves API responses, mutations and external requests untouched", () => {
   const w = worker();
   for (const request of [
