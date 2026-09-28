@@ -23,6 +23,15 @@ test('language selector has three real choices and exactly one selected option',
  const html=render('en',createElement(LanguageSettings));
  assert.equal((html.match(/type="radio"/g)||[]).length,3);assert.equal((html.match(/checked=""/g)||[]).length,1);assert.match(html,/value="en"/);assert.match(html,/العربية \(بالليبي\)/);
 });
+test('login uses the compact language picker instead of embedding account settings',()=>{
+ const login=readFileSync(new URL('../app/login/page.tsx',import.meta.url),'utf8');
+ assert.match(login,/LoginLanguageSwitcher/);
+ assert.doesNotMatch(login,/<LanguageSettings\s*\/>/);
+ const picker=readFileSync(new URL('../components/language-settings.tsx',import.meta.url),'utf8');
+ assert.match(picker,/aria-haspopup="listbox"/);
+ assert.match(picker,/setOpen\(false\)/);
+ assert.match(picker,/event\.key === "Escape"|event\.key==='Escape'/);
+});
 test('all message entries have English and Arabic variants and interpolate counts',()=>{
  for(const [key,value]of Object.entries(ownerMessages)){assert.ok(value.en,key);assert.ok(value.ar,key);assert.ok(value.ly,key);}
  assert.equal(translateOwner('en','تنبيهات تحتاج ردّك: {count}',{count:2}),'Alerts awaiting your reply: 2');
@@ -33,3 +42,4 @@ test('language persistence is isolated from notification subscriptions and accou
  assert.match(source,/localStorage.setItem\(storageKey,value\)/);assert.match(source,/addEventListener\('storage'/);assert.match(source,/document.documentElement.dir/);
  assert.doesNotMatch(source,/fetch\(|pushManager|signOut|location.reload/);
 });
+
