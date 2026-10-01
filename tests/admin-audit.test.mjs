@@ -28,5 +28,5 @@ test('audit RPC protects live sessions, bounds exports and never returns raw met
  const sql=read('supabase/sql/admin_audit_workspace.sql');assert.match(sql,/private.support_allowed\('view'\)/);assert.match(sql,/is distinct from 'SUPER_ADMIN'/);assert.match(sql,/security invoker/);assert.match(sql,/revoke all.*from public,anon/);assert.match(sql,/EXPORT_TOO_LARGE/);assert.match(sql,/created_at<=snap/);assert.match(sql,/AUDIT_LOG_EXPORTED/);assert.doesNotMatch(sql,/select \*/i);
 });
 test('activity has dedicated data source and mobile cards prevent intrinsic table overflow',()=>{
- assert.match(read('app/admin/activity/page.tsx'),/AdminAudit/);assert.match(read('components/admin-audit.tsx'),/AbortController/);assert.match(read('components/admin-audit.css'),/\.audit-table-wrap\{display:none;\}/);assert.match(read('components/workspace-shell.css'),/grid-template-columns: minmax\(0, 1fr\)/);
+ assert.match(read('app/admin/activity/page.tsx'),/AdminAudit/);assert.match(read('components/admin-audit.tsx'),/AbortController/);assert.match(read('components/admin-audit.css'),/\.audit-table-wrap\{display:none;\}/);assert.match(read('components/admin-audit.css'),/label:nth-of-type\(n\+3\)/);assert.match(read('components/workspace-shell.css'),/grid-template-columns: minmax\(0, 1fr\)/);
 });
