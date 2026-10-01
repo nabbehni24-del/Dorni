@@ -35,6 +35,11 @@ begin
   result:=public.report_support(h);
   if not (result#>>'{support,canCall}')::boolean or jsonb_array_length(result#>'{support,messages}')<>0 then raise exception 'FAIL private note/contact';end if;
   perform set_config('role','authenticated',true);
+  perform public.support_center_admin('save',config||'{"phones":[]}'::jsonb);
+  if (public.report_support(h)#>>'{support,canCall}')::boolean then raise exception 'FAIL empty phones enabled call';end if;
+  perform public.support_center_admin('save',config||'{"enabled":false}'::jsonb);
+  if (public.report_support(h)#>>'{support,canCall}')::boolean then raise exception 'FAIL disabled center enabled call';end if;
+  perform public.support_center_admin('save',config);
   perform public.support_workspace('reply',jsonb_build_object('id',tid,'body','PUBLIC QA REPLY','internal',false,'requestId',gen_random_uuid()));
   perform set_config('role','anon',true);
   result:=public.report_support(h);
