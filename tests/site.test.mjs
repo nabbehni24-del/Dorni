@@ -28,6 +28,8 @@ test('demo is clearly labelled and cannot send reports or collect credentials',(
 
 test('original illustrations remain without tilted phone mockups or screenshots',()=>{
  assert.match(html,/assets\/person-scanner.png/);assert.match(html,/assets\/person-notified.png/);
- assert.match(html,/original-identity.css/);
+ assert.match(html,/assets\/style.css/);assert.match(html,/assets\/journey.css/);
+ const sections=[...html.matchAll(/<section class="([^"]+)"/g)].map(m=>m[1]);
+ assert.deepEqual(sections,['hero','section how','section journey','section demo','section privacy','section business','section faq','final-cta']);
  assert.doesNotMatch(html,/class="preview-phone"|class="screen-(?:front|back)"|src="assets\/(?:report|status|notifications)-screen/);
 });

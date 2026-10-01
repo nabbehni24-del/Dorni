@@ -1,22 +1,18 @@
-/* Educational only: no API calls, real QR tokens, forms or customer records. */
-// Keep content visible without JavaScript or when reduced motion is requested.
-if ('IntersectionObserver' in window && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
-  const reveals = new IntersectionObserver(entries => {
-    entries.forEach(entry => { if (entry.isIntersecting) { entry.target.classList.add('is-visible'); reveals.unobserve(entry.target); } });
-  }, {threshold:0.08});
-  document.querySelectorAll('.section-head,.feature-card,.showcase-grid,.privacy-story-grid,.setup-grid,.business-box,.faq-grid').forEach(element => {
-    element.classList.add('reveal-ready'); reveals.observe(element);
-  });
-}
-const menu = document.querySelector('#mobile-menu');
-const menuToggle = document.querySelector('.menu-toggle');
-function closeMenu(restore = false) {menu.hidden=true;menuToggle.setAttribute('aria-expanded','false');menuToggle.setAttribute('aria-label','فتح القائمة');if(restore)menuToggle.focus();}
-menuToggle.addEventListener('click',()=>{const open=menu.hidden;menu.hidden=!open;menuToggle.setAttribute('aria-expanded',String(open));menuToggle.setAttribute('aria-label',open?'إغلاق القائمة':'فتح القائمة');});
+/* Educational walkthrough: no real reports or tickets are submitted. */
+const header=document.querySelector('.site-header');
+const menuToggle=document.querySelector('.menu-button');
+const menu=document.querySelector('.mobile-nav');
+function closeMenu(restore=false){header.classList.remove('open');menuToggle.setAttribute('aria-expanded','false');menuToggle.setAttribute('aria-label','فتح القائمة');if(restore)menuToggle.focus();}
+menuToggle.addEventListener('click',()=>{const open=header.classList.toggle('open');menuToggle.setAttribute('aria-expanded',String(open));menuToggle.setAttribute('aria-label',open?'إغلاق القائمة':'فتح القائمة');});
 menu.querySelectorAll('a').forEach(a=>a.addEventListener('click',()=>closeMenu()));
-document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!menu.hidden)closeMenu(true);});
-document.addEventListener('click',e=>{if(!menu.hidden&&!e.target.closest('.header'))closeMenu();});
-matchMedia('(min-width: 901px)').addEventListener('change',e=>{if(e.matches)closeMenu();});
-
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&header.classList.contains('open'))closeMenu(true);});
+document.addEventListener('click',e=>{if(!e.target.closest('.site-header'))closeMenu();});
+matchMedia('(min-width:981px)').addEventListener('change',e=>{if(e.matches)closeMenu();});
+if('IntersectionObserver' in window&&!matchMedia('(prefers-reduced-motion: reduce)').matches){
+ document.body.classList.add('motion-ready');
+ const observer=new IntersectionObserver(entries=>entries.forEach(entry=>{if(entry.isIntersecting){entry.target.classList.add('visible');observer.unobserve(entry.target);}}),{threshold:.08});
+ document.querySelectorAll('.reveal').forEach(element=>observer.observe(element));
+}
 const tabs=[...document.querySelectorAll('[data-step]')];
 const panels=[...document.querySelectorAll('.demo-panel')];
 const previous=document.querySelector('#demo-prev');

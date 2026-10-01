@@ -8,7 +8,11 @@ Static Arabic RTL website, deployed separately from the application from the `la
 
 `node --test tests/site.test.mjs`
 
-## 2026-10-01 redesign
+## 2026-10-01 original-layout restoration
+
+The original `f9580a9` document is the layout baseline again. Original `assets/style.css` remains unchanged. The original header, hero, three overview cards, navy section, privacy orbit, company banner, FAQ and final CTA remain in their original order. Phone mockups and screenshots are removed by request; original illustrations remain. The interactive walkthrough is inserted after the overview, with its styles isolated using CSS scope in `journey.css`. `integration.css` contains only integration and illustration adjustments. The prior redesign stylesheets are retained for recovery but not loaded.
+
+The notes below describe the earlier redesign and its functional tests, not the restored visual layout.
 
 - Dorni's current supplied identity; lightweight HTML/CSS demonstration instead of old screenshots and multi-megabyte illustrations.
 - Four user-driven stages: scan, report, owner response, support. Explicitly educational; no real report, call, ticket or QR token. Shows immediate escalation availability on the owner unavailable response, not automated calling.
