@@ -4,6 +4,11 @@ import {readFileSync,existsSync} from 'node:fs';
 const base=new URL('../',import.meta.url);
 const html=readFileSync(new URL('index.html',base),'utf8');
 const script=readFileSync(new URL('assets/site.js',base),'utf8');
+
+test('mobile navigation includes the actual login destination',()=>{
+ const menu=html.match(/<nav class="mobile-nav"[^>]*>([\s\S]*?)<\/nav>/)[1];
+ assert.match(menu,/<a href="https:\/\/dorni.onrender.com\/login">تسجيل الدخول<\/a>/);
+});
 test('all section links, tab relationships and icon references resolve',()=>{
  const ids=[...html.matchAll(/\bid="([^"]+)"/g)].map(m=>m[1]);assert.equal(ids.length,new Set(ids).size);
  for(const match of html.matchAll(/(?:href="#|aria-controls="|aria-labelledby=")([^"\s]+)"/g))assert.ok(ids.includes(match[1]),match[1]);
