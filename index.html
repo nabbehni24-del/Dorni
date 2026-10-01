@@ -8,9 +8,10 @@
   <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Alexandria:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="icon" href="assets/dorni-icon-current.png"><link rel="stylesheet" href="assets/site.css?v=2">
-  <script src="assets/site.js?v=2" defer></script>
+  <link rel="stylesheet" href="assets/original-identity.css?v=1">
+  <script src="assets/site.js?v=3" defer></script>
 </head>
-<body>
+<body id="top">
 <svg class="icon-defs" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><defs>
   <symbol id="i-qr" viewBox="0 0 24 24"><path d="M3 3h6v6H3zm12 0h6v6h-6zM3 15h6v6H3zm12 0h3v3h3v3h-6zm6-3v3M12 3v9H3m9 3v6m3-9h3"/></symbol>
   <symbol id="i-bell" viewBox="0 0 24 24"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4"/></symbol>
@@ -24,7 +25,7 @@
   <symbol id="i-alert" viewBox="0 0 24 24"><path d="m12 3 10 18H2zM12 9v5m0 3v1"/></symbol>
 </defs></svg>
 <a class="skip" href="#main">انتقل للمحتوى</a>
-<header class="header" id="top"><div class="wrap nav">
+<header class="header"><div class="wrap nav">
   <a class="brand" href="#top" aria-label="دورني — الرئيسية"><img src="assets/dorni-wordmark-optimized.png" width="140" height="68" alt="دورني"></a>
   <nav class="desktop-nav" aria-label="القائمة الرئيسية"><a href="#how">جرّب دورني</a><a href="#features">المزايا</a><a href="#start">كيف تبدأ</a><a href="#faq">أسئلة شائعة</a></nav>
   <div class="nav-actions"><a class="login-link" href="https://dorni.onrender.com/login">تسجيل الدخول</a><a class="btn primary small" href="https://dorni.onrender.com/app?tab=vehicles">فعّل بطاقتك</a><button class="menu-toggle" aria-label="فتح القائمة" aria-expanded="false" aria-controls="mobile-menu"><span></span><span></span></button></div>
@@ -32,20 +33,17 @@
 <main id="main">
   <section class="hero"><div class="wrap hero-grid">
     <div class="hero-copy"><p class="eyebrow"><span class="dot"></span> بطاقة صغيرة. تواصل أسهل.</p>
-      <h1>سيارتك قريبة،<br>حتى وأنت <em>بعيد.</em></h1>
+      <h1>نبّه صاحب السيارة<br><em>بدون ما تعرف رقمه</em></h1>
       <p class="lead">خلّي اللي جنب سيارتك ينبّهك، بدون ما تخلّي رقمك على الزجاج. مسح رمز، بلاغ واضح، وردّ تعرف منه شن صار.</p>
       <div class="actions"><a class="btn primary" href="https://dorni.onrender.com/app?tab=vehicles">ابدأ مع دورني <svg><use href="#i-arrow"/></svg></a><a class="btn outline" href="#how">جرّب طريقة التواصل</a></div>
       <p class="hero-note"><svg><use href="#i-shield"/></svg> رقمك لا يظهر للمبلّغ <span>·</span> الإبلاغ من المتصفح</p>
     </div>
     <div class="hero-art" aria-label="رسم توضيحي لرحلة تنبيه دورني">
-      <div class="art-orbit" aria-hidden="true"></div><div class="art-word" aria-hidden="true">DORNI</div>
+      <div class="scene-sun" aria-hidden="true"></div>
+      <img class="scene-street" src="assets/libya-street.png" alt="" aria-hidden="true" width="1536" height="1024">
+      <img class="scene-person" src="assets/person-scanner.png" alt="شخص يمسح بطاقة دورني بهاتفه" width="1024" height="1536">
       <div class="mini-tag"><svg><use href="#i-qr"/></svg><div><b>بطاقة سيارتك</b><small>بداية تواصل أبسط</small></div></div>
-      <div class="preview-phone"><div class="speaker" aria-hidden="true"></div><div class="phone-brand"><img src="assets/dorni-wordmark-optimized.png" alt="دورني" width="92" height="44"><span>مثال توضيحي</span></div>
-        <div class="car-avatar"><svg><use href="#i-car"/></svg></div><h2>سيارتك تحتاج انتباهك</h2><p>المركبة تعيق المرور</p>
-        <div class="preview-event"><span class="icon-bubble"><svg><use href="#i-bell"/></svg></span><div><b>بلاغ جديد</b><small>شخص بالقرب من سيارتك نبّهك</small></div></div>
-        <div class="preview-reply"><svg><use href="#i-check"/></svg><div><b>أنا في الطريق</b><small>يظهر ردّك في صفحة المتابعة</small></div></div>
-        <div class="phone-footer"><svg><use href="#i-shield"/></svg> تواصل داخل دورني</div>
-      </div>
+      <div class="scene-message"><span class="large-icon"><svg><use href="#i-bell"/></svg></span><div><small>مثال لبلاغ دورني</small><b>سيارتك تحتاج انتباهك</b><p>تنبيه واضح. بدون تبادل أرقام.</p></div></div>
       <div class="art-caption"><span class="dot"></span> من الرمز إلى الردّ</div>
     </div>
   </div></section>
@@ -75,6 +73,8 @@
     <noscript><p class="info-note">لتجربة المراحل التفاعلية، فعّل JavaScript. مسار دورني: مسح البطاقة، اختيار السبب، متابعة ردّ المالك، ثم طلب الدعم عند توفره.</p></noscript>
   </div></section>
 
+  <section class="section showcase"><div class="wrap showcase-grid"><div><p class="eyebrow">تجربة واضحة للطرفين</p><h2>تنبيه مفهوم،<br><em>ومتابعة ما تضيعش.</em></h2><p class="lead">من إرسال البلاغ إلى ردّ المالك، خلّي الحالة قدامك. ولما تحتاج مساعدة، ينتقل البلاغ بسياقه لفريق الدعم.</p><ul class="tick-list"><li>سبب واضح للموقف</li><li>متابعة ردّ صاحب السيارة</li><li>تصعيد مرتبط بالبطاقة والسيارة</li></ul><a class="btn primary" href="#how">جرّب الرحلة بنفسك <svg><use href="#i-arrow"/></svg></a></div><div class="showcase-art"><div class="showcase-halo" aria-hidden="true"></div><img class="notified-person" src="assets/person-notified.png" alt="رسم توضيحي لصاحب السيارة يستقبل تنبيهاً" loading="lazy"><div class="reply-note"><svg><use href="#i-chat"/></svg><div><small>مثال لردّ المالك</small><b>أنا في الطريق إلى السيارة</b></div></div></div></div></section>
+  <section class="section privacy-story"><div class="wrap privacy-story-grid"><div class="privacy-orbit" aria-hidden="true"><img src="assets/dorni-icon-current.png" alt="" width="140" height="140" loading="lazy"><span class="orbit-label orbit-a">رقمك مخفي</span><span class="orbit-label orbit-b">بلاغ واضح</span><span class="orbit-label orbit-c">متابعة داخل دورني</span></div><div><p class="eyebrow">الخصوصية من البداية</p><h2>رقمك ورقمه<br><em>مش لازم يطلعوا.</em></h2><p class="lead">خلي التواصل عن طريق البطاقة. رقم المالك وبريده ما يظهروا للمبلّغ، والردّ والمتابعة يصيروا داخل تجربة دورني.</p></div></div></section>
   <section class="section features" id="features"><div class="wrap"><div class="section-head align-start"><p class="eyebrow">وراء كل بطاقة</p><h2>تواصل مرتب.<br><em>وتحكم من مكان واحد.</em></h2></div><div class="feature-grid">
     <article class="feature-card feature-dark"><span class="large-icon"><svg><use href="#i-shield"/></svg></span><h3>رقمك يظل لك.</h3><p>خلّي وسيلة التنبيه على السيارة، مش بيانات اتصالك الشخصية. المبلّغ يتواصل من خلال البلاغ.</p><div class="privacy-example"><span>بيانات اتصال المالك</span><b aria-label="غير ظاهرة">••• ••• •••</b><small>لا تظهر في صفحة المسح</small></div></article>
     <article class="feature-card"><span class="large-icon"><svg><use href="#i-chat"/></svg></span><h3>ردّ واضح للطرفين</h3><p>راجع ردّ صاحب السيارة في صفحة متابعة البلاغ، واطلب الدعم عند توفر التصعيد.</p><span class="mini-reply"><svg><use href="#i-check"/></svg>أنا في الطريق إلى السيارة</span></article>

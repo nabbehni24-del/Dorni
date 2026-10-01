@@ -1,4 +1,13 @@
 /* Educational only: no API calls, real QR tokens, forms or customer records. */
+// Keep content visible without JavaScript or when reduced motion is requested.
+if ('IntersectionObserver' in window && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+  const reveals = new IntersectionObserver(entries => {
+    entries.forEach(entry => { if (entry.isIntersecting) { entry.target.classList.add('is-visible'); reveals.unobserve(entry.target); } });
+  }, {threshold:0.08});
+  document.querySelectorAll('.section-head,.feature-card,.showcase-grid,.privacy-story-grid,.setup-grid,.business-box,.faq-grid').forEach(element => {
+    element.classList.add('reveal-ready'); reveals.observe(element);
+  });
+}
 const menu = document.querySelector('#mobile-menu');
 const menuToggle = document.querySelector('.menu-toggle');
 function closeMenu(restore = false) {menu.hidden=true;menuToggle.setAttribute('aria-expanded','false');menuToggle.setAttribute('aria-label','فتح القائمة');if(restore)menuToggle.focus();}

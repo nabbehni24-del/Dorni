@@ -25,3 +25,9 @@ test('demo is clearly labelled and cannot send reports or collect credentials',(
  assert.doesNotMatch(script,/\bfetch\s*\(|XMLHttpRequest|sendBeacon|localStorage|sessionStorage|document\.cookie/);
  assert.match(script,/لم تُنشأ|supportResult/);assert.match(script,/aria-selected/);assert.match(script,/ArrowLeft/);assert.match(script,/Escape/);
 });
+
+test('original illustrations remain without tilted phone mockups or screenshots',()=>{
+ assert.match(html,/assets\/person-scanner.png/);assert.match(html,/assets\/person-notified.png/);
+ assert.match(html,/original-identity.css/);
+ assert.doesNotMatch(html,/class="preview-phone"|class="screen-(?:front|back)"|src="assets\/(?:report|status|notifications)-screen/);
+});
