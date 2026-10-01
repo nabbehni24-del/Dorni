@@ -6,9 +6,10 @@ import { Bell, Car, ChevronLeft, Globe, Languages, Mail, Moon, Paintbrush, Shiel
 import { useLocale } from '@/components/locale-provider';
 import { locales, localeNames, type Locale } from '@/lib/locale';
 import './settings-home.css';
+import {SettingsHeader} from './settings-header';
 
 type Mode = 'system' | 'light' | 'dark';
-export function SettingsHome({ onOpen }: { onOpen: (group: string) => void }) {
+export function SettingsHome({ onOpen, onBack }: { onOpen: (group: string) => void; onBack:()=>void }) {
   const { locale, setLocale, text } = useLocale();
   const { theme, resolvedTheme, setTheme } = useTheme();
   const [draftMode, setDraftMode] = useState<Mode | null>(null);
@@ -55,7 +56,7 @@ export function SettingsHome({ onOpen }: { onOpen: (group: string) => void }) {
       if (modeChanged) setTheme(mode);
       if (languageChanged) setLocale(language);
       setDraftMode(null); setDraftLocale(null); setReview(false);
-      setStatus(text('تم حفظ تفضيلاتك على هذا الجهاز.', 'Preferences saved on this device.'));
+      setStatus(language === 'en' ? 'Preferences saved on this device.' : 'تم حفظ تفضيلاتك على هذا الجهاز.');
     } catch {
       setStatus(text('تعذر الحفظ على هذا الجهاز. تغييراتك ما زالت موجودة للمراجعة.', 'Could not save on this device. Your changes are still available to review.'));
     }
@@ -79,16 +80,13 @@ export function SettingsHome({ onOpen }: { onOpen: (group: string) => void }) {
       { id: 'deletion', icon: Trash2, title: text('طلب حذف الحساب', 'Request account deletion'), subtitle: text('طلب مراجعة من فريق الدعم', 'Request a review by support') },
     ] },
   ];
-  return <section className="dorni-settings" data-preview={draftMode ? (dark ? 'dark' : 'light') : undefined}>
-    <header className="ds-heading">
-      {page !== 'home' && <button className="ds-back" onClick={() => setPage('home')} aria-label={text('كل الإعدادات', 'All settings')}><ChevronLeft /></button>}
-      <h2>{page === 'home' ? text('الإعدادات', 'Settings') : page === 'appearance' ? text('المظهر', 'Appearance') : text('اللغة', 'Language')}</h2>
-      <p>{text('خلّي تجربة دورني تناسبك.', 'Make Dorni feel like yours.')}</p>
-    </header>
+  return <section className="dorni-settings">
+    <SettingsHeader title={page === 'home' ? text('الإعدادات', 'Settings') : page === 'appearance' ? text('المظهر', 'Appearance') : text('اللغة', 'Language')} onBack={()=>{if(page!=='home'){setPage('home');return;}if(changes){setReview(true);return;}onBack();}}/>
+    <p className="ds-intro">{text('خصّص تجربتك وأدر حسابك.', 'Personalize your experience and manage your account.')}</p>
     {status && <p className="ds-status" role="status">{status}</p>}
     {page === 'home' && <>
       <button className="ds-mode" role="switch" aria-checked={dark} aria-label={text('الوضع الداكن', 'Dark mode')} onClick={() => { setDraftMode(dark ? 'light' : 'dark'); setStatus(''); }}>
-        <span className="ds-icon">{dark ? <Moon /> : <Sun />}</span><span className="ds-label"><strong>{dark ? text('الوضع الداكن', 'Dark mode') : text('الوضع الفاتح', 'Light mode')}</strong><small>{text('اضغط لتجربة المظهر الآخر', 'Tap to preview the other theme')}</small></span><span className="ds-switch" aria-hidden="true"><span>{dark ? <Moon /> : <Sun />}</span></span>
+        <span className="ds-icon">{dark ? <Moon /> : <Sun />}</span><span className="ds-label"><strong>{dark ? text('الوضع الداكن', 'Dark mode') : text('الوضع الفاتح', 'Light mode')}</strong><small>{text('يُطبّق المظهر بعد حفظ التغييرات', 'Applied after saving changes')}</small></span><span className="ds-switch" aria-hidden="true"><span>{dark ? <Moon /> : <Sun />}</span></span>
       </button>
       <section className="ds-group"><h3>{text('التخصيص', 'Personalization')}</h3><div className="ds-card">
         <button className="ds-row" onClick={() => setPage('appearance')}><span className="ds-icon"><Paintbrush /></span><span className="ds-label"><strong>{text('المظهر', 'Appearance')}</strong><small>{text('هوية دورني', 'Dorni identity')} · {modeName(mode)}</small></span><ChevronLeft className="ds-chevron" /></button>
@@ -96,10 +94,10 @@ export function SettingsHome({ onOpen }: { onOpen: (group: string) => void }) {
       </div></section>
       {rows.map(section => <section className="ds-group" key={section.heading}><h3>{section.heading}</h3><div className="ds-card">{section.items.map(item => <button className="ds-row" key={item.id} onClick={() => open(item.id)}><span className="ds-icon"><item.icon /></span><span className="ds-label"><strong>{item.title}</strong><small>{item.subtitle}</small></span><ChevronLeft className="ds-chevron" /></button>)}</div></section>)}
     </>}
-    {page === 'appearance' && <><div className="ds-preview"><span className="ds-icon">{dark ? <Moon /> : <Sun />}</span><h3>{text('تنبيه جديد عن سيارتك', 'New alert about your vehicle')}</h3><p>{text('معاينة المظهر قبل الحفظ', 'Preview the appearance before saving')}</p></div><fieldset className="ds-options"><legend>{text('اختر المظهر', 'Choose appearance')}</legend>{(['system', 'light', 'dark'] as const).map(value => <label key={value}><span>{modeName(value)}</span><input type="radio" name="settings-mode" checked={mode === value} onChange={() => setDraftMode(value)} /></label>)}</fieldset></>}
+    {page === 'appearance' && <><div className="ds-preview" data-mode={dark ? 'dark' : 'light'}><span className="ds-icon">{dark ? <Moon /> : <Sun />}</span><h3>{text('تنبيه جديد عن سيارتك', 'New alert about your vehicle')}</h3><p>{text('معاينة المظهر قبل الحفظ', 'Preview the appearance before saving')}</p></div><fieldset className="ds-options"><legend>{text('اختر المظهر', 'Choose appearance')}</legend>{(['system', 'light', 'dark'] as const).map(value => <label key={value}><span>{modeName(value)}</span><input type="radio" name="settings-mode" checked={mode === value} onChange={() => setDraftMode(value)} /></label>)}</fieldset></>}
     {page === 'language' && <><div className="ds-preview"><h3 lang={language}>{language === 'en' ? 'Hello' : language === 'ar-LY' ? 'أهلاً بيك' : 'مرحباً'}</h3><p>{text('لغة القوائم والنصوص داخل دورني', 'Language for menus and text in Dorni')}</p></div><fieldset className="ds-options"><legend>{text('اللغات المتاحة', 'Available languages')}</legend>{locales.map(value => <label key={value}><span lang={value}>{localeNames[value]}</span><input type="radio" name="settings-language" checked={language === value} onChange={() => setDraftLocale(value)} /></label>)}</fieldset></>}
     <p className="ds-device-note">{text('المظهر واللغة يُحفظان على هذا الجهاز. إعدادات الحساب والإشعارات لها أزرار حفظها الخاصة.', 'Appearance and language are saved on this device. Account and notification settings have their own save controls.')}</p>
-    {changes > 0 && <div className="ds-savebar"><span role="status">{text(`${changes} تغييرات`, `${changes} changes`)}</span><button onClick={() => { setDraftMode(null); setDraftLocale(null); setStatus(''); }}>{text('تراجع', 'Discard')}</button><button className="ds-primary" onClick={() => setReview(true)}>{text('مراجعة', 'Review')}</button></div>}
+    {changes > 0 && <div className="ds-savebar"><span role="status">{text(changes === 1 ? 'تغيير واحد' : 'تغييران', changes === 1 ? '1 change' : '2 changes')}</span><button onClick={() => { setDraftMode(null); setDraftLocale(null); setStatus(''); }}>{text('تراجع', 'Discard')}</button><button className="ds-primary" onClick={() => setReview(true)}>{text('مراجعة', 'Review')}</button></div>}
     {review && <dialog className="ds-dialog" ref={dialog} aria-labelledby="ds-review-title" onCancel={() => setReview(false)}><header><h2 id="ds-review-title">{text('مراجعة التغييرات', 'Review changes')}</h2><button onClick={() => setReview(false)} aria-label={text('إغلاق', 'Close')}><X /></button></header><p>{text('راجع اختياراتك قبل حفظها على هذا الجهاز.', 'Review your choices before saving them on this device.')}</p><dl>{modeChanged && <div><dt>{text('المظهر', 'Appearance')}</dt><dd>{modeName(theme ?? 'system')} ← {modeName(mode)}</dd></div>}{languageChanged && <div><dt>{text('اللغة', 'Language')}</dt><dd>{localeNames[locale]} ← {localeNames[language]}</dd></div>}</dl>{status && <p role="status">{status}</p>}<footer><button onClick={() => { setDraftMode(null); setDraftLocale(null); setReview(false); }}>{text('تجاهل التغييرات', 'Discard changes')}</button><button className="ds-primary" onClick={save}>{text('حفظ التغييرات', 'Save changes')}</button></footer></dialog>}
   </section>;
 }
