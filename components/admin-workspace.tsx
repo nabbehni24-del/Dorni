@@ -106,8 +106,8 @@ export function AdminWorkspace({
     }
   }, []);
   // Fetch asynchronously; existing data remains visible while refreshing.
-  // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     void load();
   }, [load]);
   async function submit(kind: "company" | "batch") {

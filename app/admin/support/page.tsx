@@ -42,8 +42,8 @@ export default function SupportTeamPage() {
     }
   }, []);
   // State is populated by the asynchronous response, not derived in the effect.
-  // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     void load();
   }, [load]);
   function reset() {
