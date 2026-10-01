@@ -52,6 +52,17 @@ for (let offset = 0; offset < exactArtwork.length; offset += 4) {
 const fullBleed = await sharp(exactArtwork, { raw: info }).png().toBuffer();
 const directory = new URL("../public/icons/", import.meta.url);
 await mkdir(directory, { recursive: true });
+// Android uses the badge's alpha silhouette, not the launcher icon's colors.
+// Extract the existing white brand glyph; never include its orange square.
+const badgePixels = Buffer.alloc(sourcePixels.length);
+for (let offset = 0; offset < sourcePixels.length; offset += 4) {
+  const white = Math.min(sourcePixels[offset], sourcePixels[offset + 1], sourcePixels[offset + 2]);
+  badgePixels[offset] = badgePixels[offset + 1] = badgePixels[offset + 2] = 255;
+  badgePixels[offset + 3] = white > 225 ? sourcePixels[offset + 3] : 0;
+}
+await sharp(badgePixels, { raw: info }).trim().resize(80,80,{fit:'contain',background:'#00000000'})
+  .extend({top:8,bottom:8,left:8,right:8,background:'#00000000'}).png()
+  .toFile(new URL('notification-badge-v1.png',directory).pathname.replace(/^\/([A-Za-z]:)/,'$1'));
 for (const [name, size] of [["icon-192.png",192],["icon-512.png",512],["apple-touch-icon.png",180]]) {
   await sharp(fullBleed).resize(size,size).png().toFile(new URL(name,directory).pathname.replace(/^\/([A-Za-z]:)/,"$1"));
 }

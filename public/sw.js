@@ -25,7 +25,7 @@ self.addEventListener("push", event => {
   try { message = event.data?.json() ?? {}; } catch { /* Show a safe generic alert. */ }
   event.waitUntil(self.registration.showNotification("دورني", {
     body: typeof message.body === "string" ? message.body.slice(0,180) : "عندك تنبيه جديد. افتح دورني للاطلاع عليه.",
-    icon: "/icons/icon-192.png", badge: "/icons/icon-192.png",
+    icon: "/icons/icon-192.png", badge: "/icons/notification-badge-v1.png",
     tag: typeof message.tag === "string" ? message.tag.slice(0,100) : "dorni-alert",
     data: { url: "/app?tab=alerts" }, dir: "rtl", lang: "ar",
   }));
