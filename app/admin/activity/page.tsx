@@ -1,2 +1,2 @@
-import { AdminWorkspace } from "@/components/admin-workspace";
-export default function ActivityPage(){return <AdminWorkspace section="activity"/>;}
+import { AdminAudit } from "@/components/admin-audit";
+export default function ActivityPage(){return <AdminAudit/>;}

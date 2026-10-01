@@ -1,0 +1,11 @@
+# Admin audit workspace
+
+Dedicated `/admin/activity` and `/api/admin/activity` replace the overview's 50-row audit preview. Filters run in Postgres over the requested period: inclusive Libya calendar dates, exact action/account kind/entity type and event/entity reference substring. Periods are bounded to 366 inclusive days; pages contain 25/50/100 rows with a timestamp snapshot and `(created_at,id)` ordering. Refresh starts a new snapshot. Metrics count the complete matching set (total, today's subset, distinct identified actors, action types), not only the visible page. Null/system actors do not inflate the identified-actor count.
+
+CSV is a same-origin POST, authenticated again at export time, using the same filters and snapshot. UTF-8 BOM, quoting and formula neutralization support safe Arabic Excel import. At most 10,000 rows are exported; larger sets fail explicitly rather than truncate. Exports record an AUDIT_LOG_EXPORTED event. Only allowlisted IDs, action/kind/entity and timestamps are returned; raw metadata, actor contacts, activation links and support bodies are excluded. No client service-role key or new table grants.
+
+The private definer RPC checks an active profile, live session and SUPER_ADMIN membership. The public wrapper is invoker; anon execution is revoked. Existing security advisor counts are unchanged: private deny-direct-access INFO, legacy definer WARN, and [leaked-password protection disabled](https://supabase.com/docs/guides/auth/password-security#password-strength-and-leaked-password-protection).
+
+Layout: bounded zero-minimum grid tracks and explicit content width prevent intrinsic tables from widening the mobile shell. Below 640px, log cards replace the table; filters and metrics use a two-column/stacked layout. Async reads abort on filter change and keep the previous result visibly busy during refresh. Export is disabled until draft filters are applied.
+
+Verification: 111 Node tests, TypeScript, ESLint, production webpack build; tests/admin-audit.sql runs actual RPC permissions, stable pages, combined filters, matching export snapshot, export audit event, Libya midnight boundaries, 10,000-row rejection and session revocation. All SQL test fixtures roll back.

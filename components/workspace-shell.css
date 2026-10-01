@@ -109,6 +109,8 @@
   cursor: pointer;
 }
 .ws-content {
+  min-width: 0;
+  width: 100%;
   padding: 28px clamp(16px, 3vw, 42px);
   max-width: 1660px;
   margin: auto;
@@ -179,6 +181,8 @@
 }
 .ws-stack {
   display: grid;
+  min-width: 0;
+  grid-template-columns: minmax(0, 1fr);
   gap: 22px;
 }
 .ws-panel h2 {
