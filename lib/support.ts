@@ -23,4 +23,4 @@ export type SupportTicket = { id: string; subject: string; category: string; sta
 export type SupportMessage = { id: string; body: string; internal: boolean; created_at: string; mine: boolean; author_kind: string; author_name: string };
 export type SupportOverview = { userId: string; permissions: SupportPermission[]; admin: boolean; metrics: Record<string, number>; total: number; tickets: SupportTicket[]; agents: { id: string; name: string }[] };
 export type SupportThread = { ticket: SupportTicket; messages: SupportMessage[] };
-export type SupportStaff = { id: string; name: string; email: string; active: boolean; permissions: SupportPermission[] };
+export type SupportStaff = { id: string; name: string; email: string; active: boolean; activated?: boolean; permissions: SupportPermission[] };

@@ -1,9 +1,8 @@
 "use client";
 import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { ArrowRight, CheckCircle2, Headphones, Inbox, LockKeyhole, RefreshCw, Search, Send, Users } from "lucide-react";
+import { ArrowRight, CheckCircle2, Headphones, Inbox, LockKeyhole, RefreshCw, Search, Send } from "lucide-react";
 import { useSupportLive } from "./use-support-live";
-import { ThemeToggle } from "./theme-toggle";
 import { statusLabels, ticketStatuses, type SupportOverview, type SupportThread } from "@/lib/support";
 import s from "./support-workspace.module.css";
 
@@ -89,9 +88,8 @@ export function SupportDashboard() {
   // Never silently turn a drafted private note into a public reply after revocation.
   const isNote = internal || !can("reply");
   return <main className={s.workspace} dir="rtl">
-    <header className={s.header}><div className={s.brand}><Headphones /><div><b>دورني <span>/ الدعم</span></b><small>مساحة عمل الفريق</small></div></div><nav><Link href={data?.admin ? "/admin" : "/app"}><ArrowRight />{data?.admin ? "الإدارة" : "حسابي"}</Link>{data?.admin && <Link href="/admin/support"><Users />فريق الدعم</Link>}<ThemeToggle placement="header" /></nav></header>
     <div className={s.content}>
-      <div className={s.title}><div><p className={s.eyebrow}>رعاية المستخدمين</p><h1>كل محادثة، تستحق الاهتمام.</h1><p>تابع الطلبات، تعاون مع الفريق، وساعد المستخدم على الوصول للحل.</p></div><span className={s.connection}><i data-live={live} />{live ? "متصل بالتحديث المباشر" : "تحديث تلقائي كل 15 ثانية"}</span></div>
+      <div className={s.title}><div><h2>صندوق التذاكر</h2><p>اختر تذكرة للرد، الإسناد أو متابعة الحالة.</p></div><span className={s.connection}><i data-live={live} />{live ? "متصل بالتحديث المباشر" : "تحديث تلقائي كل 15 ثانية"}</span></div>
       {error && <div className={s.error} role="alert">{error}<button onClick={() => { setError(""); refresh(); }}>إعادة المحاولة</button></div>}
       {notice && <p className={s.notice} role="status"><CheckCircle2 />{notice}</p>}
       {denied ? <section className={s.empty}><LockKeyhole /><h2>الوصول مخصص لفريق الدعم</h2><p>سجّل الدخول بحساب الموظف، أو اطلب من الأدمن تفعيل صلاحياتك.</p><Link href="/login">تسجيل الدخول</Link></section> : !data ? <div className={s.empty}><RefreshCw /><p>جاري تحميل مساحة العمل…</p></div> : <>

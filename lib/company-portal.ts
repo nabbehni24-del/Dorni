@@ -6,7 +6,8 @@ export type CompanySection =
   | "structure"
   | "team"
   | "roles"
-  | "reports";
+  | "reports"
+  | "settings";
 
 export type PartnerBatch = {
   id: string;
@@ -63,6 +64,7 @@ export const companySectionLabels: Record<CompanySection, string> = {
   team: "القوى العاملة",
   roles: "الحوكمة والصلاحيات",
   reports: "التحليلات وSLA",
+  settings: "الإعدادات",
 };
 
 export function isCompanySection(value: string | null): value is CompanySection {

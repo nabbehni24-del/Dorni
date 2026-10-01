@@ -1,0 +1,296 @@
+.ws-shell {
+  display: grid;
+  grid-template-columns: 248px minmax(0, 1fr);
+  min-height: 100svh;
+  background: var(--background);
+  color: var(--foreground);
+}
+.ws-shell svg {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+}
+.ws-sidebar {
+  position: sticky;
+  top: 0;
+  height: 100svh;
+  display: flex;
+  flex-direction: column;
+  padding: 28px 18px;
+  border-inline-end: 1px solid var(--border);
+  background: var(--card);
+  overflow-y: auto;
+}
+.ws-caption {
+  font-size: 12px;
+  color: var(--muted-foreground);
+  padding: 22px 12px 12px;
+}
+.ws-shell nav {
+  display: grid;
+  gap: 6px;
+}
+.ws-shell nav a {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  padding: 12px 14px;
+  border-radius: 10px;
+  font-size: 14px;
+  text-decoration: none;
+  color: var(--muted-foreground);
+  min-height: 46px;
+}
+.ws-shell nav a:hover {
+  background: var(--secondary);
+  color: var(--foreground);
+}
+.ws-shell nav a[aria-current="page"] {
+  background: var(--secondary);
+  color: var(--primary);
+  font-weight: 750;
+  box-shadow: inset -3px 0 var(--primary);
+}
+.ws-sidebar-footer {
+  margin-top: auto;
+  padding: 28px 10px 0;
+  display: flex;
+  gap: 10px;
+  color: var(--muted-foreground);
+  font-size: 12px;
+}
+.ws-sidebar-footer small {
+  display: block;
+  margin-top: 6px;
+  font-size: 11px;
+}
+.ws-main {
+  min-width: 0;
+}
+.ws-topbar {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px 32px;
+  background: var(--card);
+  border-bottom: 1px solid var(--border);
+  min-height: 82px;
+}
+.ws-topbar h1 {
+  font-size: 20px;
+  font-weight: 750;
+  margin: 2px 0;
+}
+.ws-topbar small {
+  font-size: 11px;
+  color: var(--muted-foreground);
+}
+.ws-header-actions {
+  margin-inline-start: auto;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.ws-header-actions button,
+.ws-menu,
+.ws-close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 44px;
+  min-height: 44px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--card);
+  color: var(--foreground);
+  cursor: pointer;
+}
+.ws-content {
+  padding: 28px clamp(16px, 3vw, 42px);
+  max-width: 1660px;
+  margin: auto;
+}
+.ws-menu {
+  display: none;
+}
+.ws-drawer {
+  margin: 0 0 0 auto;
+  width: min(310px, 88vw);
+  height: 100dvh;
+  max-height: 100dvh;
+  padding: 24px;
+  border: 0;
+  border-inline-end: 1px solid var(--border);
+  background: var(--card);
+  color: var(--foreground);
+}
+.ws-drawer::backdrop {
+  background: #0008;
+}
+.ws-close {
+  margin-inline-start: auto;
+  margin-bottom: 16px;
+}
+.ws-skip {
+  position: fixed;
+  top: -100px;
+  z-index: 100;
+  padding: 12px;
+  background: var(--card);
+}
+.ws-skip:focus {
+  top: 10px;
+}
+.ws-shell :is(button, a, input, select):focus-visible {
+  outline: 3px solid var(--ring);
+  outline-offset: 3px;
+}
+.ws-shell .portal-page,
+.ws-shell .admin-control {
+  min-height: 0;
+  display: block;
+  background: none;
+}
+.ws-shell .portal-header,
+.ws-shell .admin-control-sidebar,
+.ws-shell .admin-control-main > header {
+  display: none;
+}
+.ws-shell .portal-content,
+.ws-shell .admin-control-content {
+  padding: 0;
+  max-width: none;
+}
+.ws-shell .admin-control-main {
+  margin: 0;
+  min-width: 0;
+}
+.ws-shell .loading-screen {
+  min-height: 45vh;
+}
+.ws-panel {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 24px;
+}
+.ws-stack {
+  display: grid;
+  gap: 22px;
+}
+.ws-panel h2 {
+  font-size: 19px;
+  font-weight: 750;
+  margin-bottom: 10px;
+}
+.ws-panel p {
+  color: var(--muted-foreground);
+  line-height: 1.9;
+}
+.ws-panel label {
+  display: grid;
+  gap: 8px;
+  margin: 16px 0;
+}
+.ws-panel input,
+.ws-panel select {
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  background: var(--background);
+  color: var(--foreground);
+  width: 100%;
+  min-width: 0;
+}
+.ws-panel button {
+  min-height: 44px;
+  padding: 10px 18px;
+  background: var(--primary);
+  color: var(--primary-foreground);
+  border-radius: 9px;
+}
+.ws-panel button:disabled {
+  opacity: 0.5;
+}
+.ws-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.ws-kpis {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: 16px;
+}
+.ws-kpis article {
+  display: grid;
+  gap: 8px;
+  padding: 20px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+}
+.ws-kpis strong {
+  font-size: 30px;
+}
+.ws-kpis small {
+  color: var(--muted-foreground);
+}
+.ws-table-wrap {
+  overflow: auto;
+}
+.ws-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: start;
+  font-size: 14px;
+}
+.ws-table th,
+.ws-table td {
+  padding: 15px 12px;
+  border-bottom: 1px solid var(--border);
+  text-align: start;
+}
+.ws-table th {
+  color: var(--muted-foreground);
+  font-weight: 600;
+}
+.ws-empty {
+  padding: 32px;
+  text-align: center;
+  color: var(--muted-foreground);
+}
+@media (max-width: 900px) {
+  .ws-shell {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .ws-sidebar {
+    display: none;
+  }
+  .ws-menu {
+    display: flex;
+  }
+  .ws-topbar {
+    padding: 12px 16px;
+  }
+  .ws-content {
+    padding: 20px 14px;
+  }
+  .ws-topbar h1 {
+    font-size: 17px;
+  }
+  .ws-header-actions {
+    gap: 6px;
+  }
+  .ws-panel {
+    padding: 18px;
+  }
+  .ws-kpis {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
