@@ -18,9 +18,9 @@ export const metadata: Metadata = {
   applicationName: "دورني",
   appleWebApp: { capable: true, title: "دورني", statusBarStyle: "default" },
   icons: {
-    icon: "/icons/icon-192.png?v=brand5",
-    shortcut: "/icons/icon-192.png?v=brand5",
-    apple: "/icons/apple-touch-icon.png?v=brand5",
+    icon: "/icons/icon-192.png?v=brand6",
+    shortcut: "/icons/icon-192.png?v=brand6",
+    apple: "/icons/apple-touch-icon.png?v=brand6",
   },
 };
 

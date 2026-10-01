@@ -26,8 +26,8 @@ test("installed Dorni uses the corrected full-bleed brand icon", async () => {
   const layout = await readFile(new URL("../app/layout.tsx", import.meta.url), "utf8");
   const brand = await readFile(new URL("../components/dorni-brand.tsx", import.meta.url), "utf8");
   const generator = await readFile(new URL("../scripts/generate-pwa-icons.mjs", import.meta.url), "utf8");
-  assert.match(manifest, /brand5/);
-  assert.match(layout, /icons\/icon-192\.png\?v=brand5/);
+  assert.match(manifest, /brand6/);
+  assert.match(layout, /icons\/icon-192\.png\?v=brand6/);
   assert.match(brand, /dawrni-wordmark-brand5\.png/);
   assert.match(generator, /dawrni-app-icon\.png\.base64/);
   assert.match(generator, /never traced, redrawn, stretched or re-proportioned/);
