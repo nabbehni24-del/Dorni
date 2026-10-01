@@ -1,0 +1,15 @@
+.panel { text-align:start; margin-block:24px; }
+.panel h2 {font-size:1.2rem;margin-bottom:12px;}
+.panel p {line-height:1.85;white-space:pre-wrap;overflow-wrap:anywhere;}
+.reference {display:block;padding:12px;background:var(--muted);border:1px solid var(--border);border-radius:12px;overflow-wrap:anywhere;user-select:all;font-size:.8rem;margin-block:8px;}
+.action {display:flex;align-items:center;justify-content:center;min-height:48px;padding:12px 20px;margin-top:16px;border-radius:14px;background:#b6381d;color:white;font-weight:700;text-decoration:none;width:100%;border:0;cursor:pointer;}
+.action:disabled {opacity:.6;cursor:wait;}
+.action:focus-visible,.contacts a:focus-visible,.back:focus-visible {outline:3px solid #f88957;outline-offset:4px;}
+.muted {font-size:.875rem;opacity:.8;margin-block:16px;}
+.messages {display:grid;gap:12px;margin-block:16px;}
+.messages article {padding:16px;border:1px solid var(--border);border-radius:16px;text-align:start;}
+.messages time {font-size:.75rem;opacity:.7;}
+.contacts {display:grid;gap:12px;margin-block:20px;}
+.contacts a {display:grid;gap:8px;padding:20px;border:1px solid var(--border);border-radius:16px;text-decoration:none;color:inherit;}
+.contacts span {font-size:1.4rem;color:#df653e;text-align:start;}
+.back {display:inline-block;margin-bottom:24px;}

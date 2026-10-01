@@ -1,0 +1,14 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
+import ts from 'typescript';
+import { z } from 'zod';
+const read=p=>readFileSync(new URL('../'+p,import.meta.url),'utf8');
+const js=ts.transpile(read('lib/support-center.ts').replace('import { z } from "zod";',''),{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2022});
+const exports={};new Function('exports','z',js)(exports,z);
+const schema=exports.supportCenterSchema;
+const valid={enabled:true,escalationMinutes:2,callMinutes:5,hours:'',instructions:'',phones:[]};
+test('support center accepts empty contacts and immediate or bounded waits',()=>{assert.ok(schema.safeParse(valid).success);assert.ok(schema.safeParse({...valid,callMinutes:0}).success);assert.ok(schema.safeParse({...valid,phones:[{label:'Support',number:'+218910000000'}]}).success);});
+test('support center rejects unsafe phones and invalid policy values',()=>{for(const number of ['javascript:alert(1)','+123;456','123','+123 456'])assert.equal(schema.safeParse({...valid,phones:[{label:'A',number}]}).success,false);for(const callMinutes of [-1,1441,1.5,NaN])assert.equal(schema.safeParse({...valid,callMinutes}).success,false);assert.equal(schema.safeParse({...valid,role:'SUPER_ADMIN'}).success,false);});
+test('public escalation is POST only and status tokens are hashed',()=>{const src=read('app/api/public/status/[token]/route.ts');assert.match(src,/validPushOrigin/);assert.match(src,/await digest\(token\)/);assert.match(src,/return run\(context,"status"\)/);assert.match(src,/return run\(context,"escalate"\)/);});
+test('public report rendering never includes staff-only owner context',()=>{const src=read('components/status-client.tsx');assert.doesNotMatch(src,/ownerName|ownerId|report_context/);assert.match(src,/document.hidden/);assert.match(src,/support\.canCall/);assert.match(src,/support\.contact\.phones/);});

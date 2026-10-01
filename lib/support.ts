@@ -22,5 +22,5 @@ export const staffMutation = z.object({ id: id.optional(), email: z.string().tri
 export type SupportTicket = { id: string; subject: string; category: string; status: string; assigned_to: string | null; created_at: string; updated_at: string; requester_name: string; assignee_name?: string; description?: string };
 export type SupportMessage = { id: string; body: string; internal: boolean; created_at: string; mine: boolean; author_kind: string; author_name: string };
 export type SupportOverview = { userId: string; permissions: SupportPermission[]; admin: boolean; metrics: Record<string, number>; total: number; tickets: SupportTicket[]; agents: { id: string; name: string }[] };
-export type SupportThread = { ticket: SupportTicket; messages: SupportMessage[] };
+export type SupportThread = { ticket: SupportTicket & { report_context?: {reportId:string;type:string;status:string;ownerResponse:string|null;createdAt:string;serial:string;vehicle:string;ownerId:string;ownerName:string}|null }; messages: SupportMessage[] };
 export type SupportStaff = { id: string; name: string; email: string; active: boolean; activated?: boolean; permissions: SupportPermission[] };
