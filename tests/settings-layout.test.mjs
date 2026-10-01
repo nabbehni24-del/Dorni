@@ -2,6 +2,17 @@ import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 const read=path=>readFileSync(new URL(`../${path}`,import.meta.url),'utf8');
+test('preferences apply immediately without drafts, review, or discard controls',()=>{
+ const home=read('components/settings-home.tsx');
+ assert.ok(home.includes('setTheme(value)'));
+ assert.ok(home.includes('setLocale(value)'));
+ assert.ok(home.includes('onChange={() => changeMode(value)}'));
+ assert.ok(home.includes('onChange={() => changeLanguage(value)}'));
+ for(const removed of ['draftMode','draftLocale','setReview','ds-savebar','<dialog','beforeunload']) assert.ok(!home.includes(removed));
+ const css=read('components/settings-home.css');
+ assert.ok(css.includes('>.owner-real-header{display:none}'));
+ assert.ok(css.includes('.settings-navigation{position:sticky;top:0;'));
+});
 
 test('settings uses an unframed panel and its own consistent back header',()=>{
  const app=read('app/app/page.tsx');

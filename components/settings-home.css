@@ -1,9 +1,10 @@
+.owner-app-shell:has(.settings-screen:not([hidden]))>.owner-real-header{display:none}
 .owner-app-shell:has(.settings-screen:not([hidden])) .owner-real-lead{display:none}
 .owner-app-shell:has(.settings-screen:not([hidden])) .owner-real-content{max-width:720px;padding:0 20px calc(130px + env(safe-area-inset-bottom))}
 .settings-screen{border:0;background:none;padding:0;box-shadow:none;min-width:0}
 .settings-screen .owner-center{max-width:none;gap:20px;min-width:0}
 .dorni-settings{--ds-card:var(--card);--ds-text:var(--foreground);--ds-muted:var(--muted-foreground);--ds-border:var(--border);--ds-accent:var(--primary);color:var(--ds-text);width:100%;display:grid;gap:24px;min-width:0}
-.settings-navigation{position:sticky;top:78px;z-index:46;display:grid;grid-template-columns:44px minmax(0,1fr) 44px;align-items:center;gap:12px;margin-inline:-20px;padding:10px 20px;background:var(--background);border-bottom:1px solid var(--border)}
+.settings-navigation{position:sticky;top:0;z-index:46;display:grid;grid-template-columns:44px minmax(0,1fr) 44px;align-items:center;gap:12px;margin-inline:-20px;padding:10px 20px;background:var(--background);border-bottom:1px solid var(--border)}
 .settings-screen .settings-navigation h2{margin:0;font-size:21px;text-align:center;line-height:1.5;color:var(--foreground);outline:none}
 .settings-screen .settings-navigation button{display:grid;place-items:center;width:44px;height:44px;min-height:44px;padding:10px;background:transparent;border:1px solid var(--border);border-radius:50%;color:var(--foreground)}
 [dir=rtl] .settings-navigation button svg{transform:rotate(180deg)}
@@ -31,14 +32,11 @@
 .ds-options label:first-of-type{border-radius:20px 20px 0 0}.settings-screen .ds-options label:last-of-type{border-bottom:1px solid var(--border);border-radius:0 0 20px 20px}
 .settings-screen .ds-options input{width:22px;height:22px;min-height:22px;accent-color:var(--primary)}
 .settings-screen .ds-device-note{font-size:13px;line-height:1.9;color:var(--muted-foreground);margin:0}
-.ds-savebar{position:fixed;bottom:calc(86px + env(safe-area-inset-bottom));left:50%;transform:translateX(-50%);width:calc(100% - 32px);max-width:648px;z-index:56;display:flex;align-items:center;gap:8px;padding:12px;border-radius:18px;background:var(--card);border:1px solid var(--border);box-shadow:0 8px 30px #0002}
-.ds-savebar>span{flex:1;font-size:13px;font-weight:700;color:var(--primary)}.settings-screen .ds-savebar button{font-size:14px;color:var(--foreground);background:transparent;min-height:44px;padding:8px 12px}
-.owner-center .ds-primary{background:#b43b20!important;color:#fff!important;border-color:transparent!important}
-.ds-dialog{margin:auto;width:min(92vw,520px);max-height:85svh;overflow:auto;padding:24px;border:1px solid var(--border);border-radius:24px;background:var(--card);color:var(--foreground)}
-.ds-dialog::backdrop{background:#020711a8;backdrop-filter:blur(4px)}.ds-dialog header,.ds-dialog footer{display:flex;align-items:center;justify-content:space-between;gap:12px}.ds-dialog header h2{font-size:21px}.ds-dialog dl{display:grid;gap:16px;margin:24px 0}.ds-dialog dl>div{padding:16px;border:1px solid var(--border);border-radius:14px}.ds-dialog dd{margin:8px 0 0;color:var(--muted-foreground)}.ds-dialog footer{flex-wrap:wrap}.ds-dialog button{min-height:44px}
 .ds-status{padding:14px;border:1px solid var(--border);border-radius:14px}.settings-screen :focus-visible{outline:3px solid var(--primary);outline-offset:3px}
 .settings-screen .owner-center>form,.settings-screen .owner-session,.settings-screen .owner-vehicle,.settings-screen .owner-danger-area,.settings-screen .owner-center>details{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:20px;min-width:0}
 .settings-screen .owner-center input,.settings-screen .owner-center select,.settings-screen .owner-center textarea{font-size:16px;max-width:100%}.settings-screen .owner-center>p{line-height:1.9;overflow-wrap:anywhere}.settings-screen .owner-center>button{min-height:48px}
-@media(max-width:480px){.owner-app-shell:has(.settings-screen:not([hidden])) .owner-real-content{padding-inline:16px}.settings-navigation{top:64px;margin-inline:-16px;padding-inline:16px}.settings-screen .ds-row,.settings-screen .ds-mode{gap:12px;padding:16px 14px}.ds-dialog{padding:20px}}
+@media(max-width:480px){.owner-app-shell:has(.settings-screen:not([hidden])) .owner-real-content{padding-inline:16px}.settings-navigation{top:0;margin-inline:-16px;padding-inline:16px}.settings-screen .ds-row,.settings-screen .ds-mode{gap:12px;padding:16px 14px}.ds-dialog{padding:20px}}
 @media(max-width:360px){.settings-screen .ds-mode>.ds-icon{display:none}.settings-screen .ds-row{gap:10px;padding-inline:12px}.ds-label strong{font-size:15px}}
 @media(prefers-reduced-motion:reduce){.ds-switch>span{transition:none}}
+.settings-screen .ds-options label:has(input:checked){background:color-mix(in srgb,var(--primary) 8%,var(--card));box-shadow:inset 3px 0 var(--primary)}
+.settings-screen .ds-row:active,.settings-screen .ds-mode:active{background:var(--muted)}
