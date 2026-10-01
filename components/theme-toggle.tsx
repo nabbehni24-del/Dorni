@@ -10,7 +10,7 @@ export function ThemeToggle({ placement = "floating" }: { placement?: "floating"
   const { resolvedTheme, setTheme } = useTheme();
 
   const pathname = usePathname();
-  if(placement === "floating" && (pathname === "/app" || pathname === "/login")) return null;
+  if(placement === "floating" && (pathname === "/app" || pathname === "/login" || pathname === "/support" || pathname === "/admin/support")) return null;
   return (
     <button
       type="button"

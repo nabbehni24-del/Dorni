@@ -1,6 +1,7 @@
 "use client";
 import {useLocale} from "@/components/locale-provider";
-import { useCallback,useEffect,useState } from 'react';
+import { useCallback,useEffect,useRef,useState } from 'react';
+import { useSupportLive } from '@/components/use-support-live';
 import Link from 'next/link';
 import { requestJson,errorMessage } from '@/lib/client-api';
 import { PushSettings } from '@/components/push-settings';
@@ -29,7 +30,9 @@ export function OwnerCenter({panel,name,email,onChanged,onCars,onBack=onCars,sta
  // Initial account data is fetched asynchronously; no local state is derived in this effect.
  // eslint-disable-next-line react-hooks/set-state-in-effect
  useEffect(()=>{void load();},[load]);
- async function openTicket(t:Ticket){setError('');setSelected(t);setMessages([]);try{const r=await requestJson<{data:Message[]}>(`/api/owner?action=messages&id=${t.id}`);setMessages(r.data);}catch(e){setError(errorMessage(e));}}
+ const currentTicket=useRef('');
+ useSupportLive(()=>{void load();if(selected){const id=selected.id;void requestJson<{data:Message[]}>(`/api/owner?action=messages&id=${id}`).then(r=>{if(currentTicket.current===id)setMessages(r.data);}).catch(()=>{});}},panel==='support');
+ async function openTicket(t:Ticket){currentTicket.current=t.id;setError('');setSelected(t);setMessages([]);try{const r=await requestJson<{data:Message[]}>(`/api/owner?action=messages&id=${t.id}`);if(currentTicket.current===t.id)setMessages(r.data);}catch(e){setError(errorMessage(e));}}
  async function act(action:string,payload:Record<string,unknown>,success:string){if(busy)return false;setBusy(true);setError('');setNotice('');try{await requestJson('/api/owner',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({action,data:payload})});setNotice(success);await load();await onChanged();return true;}catch(e){setError(errorMessage(e));return false;}finally{setBusy(false);}}
  async function confirmed(){if(!confirm)return;const c=confirm;setConfirm(null);if(c.action==='sessions'){setBusy(true);try{await requestJson('/api/owner/sessions',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({confirm:'LOGOUT_OTHERS'})});setNotice('تم إنهاء الجلسات الأخرى. قد يستغرق اكتمال تسجيل الخروج بعض الوقت. هذا الجهاز يبقى متصلاً.');await load();}catch(e){setError(errorMessage(e));}finally{setBusy(false);}}else await act(c.action,c.data,'تم حفظ العملية في حسابك.');}
  if(!data)return <div className="owner-center" dir={dir}>{panel==='settings'&&<SettingsHeader title={t('الإعدادات')} onBack={onBack}/>}<p role="status">{t(error||"جاري تحميل بيانات حسابك…")}</p>{error&&<button onClick={()=>void load()}>{t("إعادة المحاولة")}</button>}</div>;

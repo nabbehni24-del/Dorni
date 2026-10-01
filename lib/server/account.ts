@@ -8,7 +8,7 @@ export type AccountContext = {
     organizationStatus:"PENDING"|"ACTIVE"|"SUSPENDED"|"REJECTED"; institutionalEnabled:boolean;
     legacyRole:string; roleId:string|null;
   }>;
-  destination: "/admin" | "/partner" | "/app";
+  destination: "/admin" | "/partner" | "/app" | "/support";
 };
 
 export async function getAccountContext(supabase: SupabaseClient): Promise<AccountContext> {
