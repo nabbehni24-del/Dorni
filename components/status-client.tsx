@@ -1,118 +1,81 @@
 "use client";
 import {useLocale} from "@/components/locale-provider";
-
-import { useEffect, useState } from "react";
-import { Check, Clock3, RefreshCw, ShieldCheck } from "lucide-react";
+import {useEffect,useState} from "react";
 import Link from "next/link";
-import { type ReportSupport } from "@/lib/support-center";
-import { statusLabels } from "@/lib/support";
+import {ArrowRight,Check,CheckCircle2,Clock3,Copy,Headphones,Phone,RefreshCw,ShieldCheck,WifiOff,CarFront} from "lucide-react";
+import {DorniBrand} from "./dorni-brand";
+import {useReportStatus} from "./use-report-status";
+import {statusLabels} from "@/lib/support";
+import {copyText} from "@/lib/client-api";
 import s from "./report-support.module.css";
 
-const responseLabel: Record<string, string> = {
-  ON_MY_WAY: "صاحب السيارة جاي",
-  RESOLVED: "تم حل الموضوع",
-  CANNOT_REACH_NOW: "صاحب السيارة مش قادر يوصل توا",
-};
-
-type ReportStatus = {
-  status: string;
-  ownerResponse: string | null;
-  updatedAt: string;
-  support: ReportSupport;
-};
-
-export function StatusClient({ token, contactMode = false }: { token: string; contactMode?: boolean }) {
- const {t,dir}=useLocale();
-  const [data, setData] = useState<ReportStatus | null>(null);
-  const [error, setError] = useState("");
-  const [busy, setBusy] = useState(false);
-  async function escalate() {
-    if (busy) return;
-    setBusy(true); setError("");
-    try {
-      const response = await fetch(`/api/public/status/${token}`, {method:"POST"});
-      const result = await response.json();
-      if (!response.ok) throw new Error(result.error || "تعذر طلب الدعم");
-      setData(result);
-    } catch(e) { setError(e instanceof Error?e.message:"تعذر الاتصال"); }
-    finally { setBusy(false); }
-  }
-
-  useEffect(() => {
-    let alive = true;
-    let inFlight = false;
-    async function load() {
-      if (inFlight || document.hidden) return;
-      inFlight = true;
-      try {
-        const response = await fetch(`/api/public/status/${token}`, { cache: "no-store" });
-        const result = await response.json();
-        if (!alive) return;
-        if (!response.ok) {
-          setError(result.error ?? "تعذر تحميل حالة البلاغ");
-          if (response.status === 404) setData(null);
-        } else {
-          setError("");
-          setData(result);
-        }
-      } catch {
-        if (alive) setError("تعذر تحديث حالة البلاغ؛ سنعيد المحاولة.");
-      } finally {
-        inFlight = false;
-      }
-    }
-    void load();
-    const timer = window.setInterval(() => { void load(); }, 5000);
-    const resume = () => { void load(); };
-    document.addEventListener("visibilitychange",resume);
-    return () => { alive = false; window.clearInterval(timer); document.removeEventListener("visibilitychange",resume); };
-  }, [token]);
-
-  const answered = Boolean(data?.ownerResponse);
-  const support = data?.support;
-  if(contactMode) return <main className="public-shell" dir={dir}><section className={`status-card ${s.panel}`}>
-    <Link href={`/status/${token}`} className={s.back}>← {t("رجوع لمتابعة البلاغ")}</Link><h1>{t("اتصل بمركز الدعم")}</h1>
-    {error&&<p role="alert">{t(error)}</p>}
-    {!data&&!error?<p>{t("جاري التحميل…")}</p>:support?.canCall&&support.contact?<>
-      <p>{t("أعطِ الموظف رقم التذكرة للوصول إلى تفاصيل البلاغ.")}</p><code className={s.reference} dir="ltr">{support.ticket?.id}</code>
-      {support.contact.hours&&<p>{support.contact.hours}</p>}{support.contact.instructions&&<p>{support.contact.instructions}</p>}
-      <div className={s.contacts}>{support.contact.phones.map((phone,i)=><a key={i} href={`tel:${phone.number}`}><strong>{phone.label}</strong><span dir="ltr">{phone.number}</span><small>{t("اضغط للاتصال")}</small></a>)}</div>
-    </>:<p>{t("الاتصال بالمركز غير متاح لهذه الحالة الآن. تابع ردود الدعم من صفحة البلاغ.")}</p>}
-    <p className={s.muted}>{t("دورني ليس بديلاً عن خدمات الطوارئ عند وجود خطر مباشر.")}</p>
-  </section></main>;
-  return <main className="public-shell" dir={dir}>
-    <section className="status-card">
-      {error && !data ? <>
-        <div className="success-mark"><Clock3/></div>
-        <h1>{t("رابط الحالة غير متاح")}</h1>
-        <p className="support-copy">{t(error)}</p>
-      </> : !data ? <>
-        <RefreshCw className="spin status-spinner"/>
-        <h1>{t("جاري تحميل حالة البلاغ")}</h1>
-      </> : <>
-        <div className={`success-mark status-mark ${answered ? "status-mark--responded" : "status-mark--waiting"}`}>
-          <Check/>
-        </div>
-        <p className="eyebrow">{t("بلاغ محفوظ")}</p>
-        <h1>{answered ? t(responseLabel[data.ownerResponse!] ?? "رد صاحب السيارة") : t("في انتظار رد صاحب السيارة")}</h1>
-        <p className="support-copy">{t("هذه الحالة تُحدّث تلقائياً من رد صاحب السيارة المحفوظ في دورني.")}</p>
-        {error && <p className="refresh-error" role="status">{t(error)}</p>}
-        <div className="status-steps">
-          <div className="status-step is-done"><span>1</span><div><strong>{t("تم استلام البلاغ")}</strong><small>{t("مسجّل في النظام")}</small></div></div>
-          <div className={`status-step ${answered ? "is-done" : "is-waiting"}`}><span>2</span><div><strong>{t("رد صاحب السيارة")}</strong><small>{answered ? t(responseLabel[data.ownerResponse!] ?? "تم الرد") : t("في انتظار الرد")}</small></div></div>
-        </div>
-        {support && <section className={s.panel} aria-label={t("متابعة الدعم الفني")}>
-          <h2>{t("الدعم الفني")}</h2>
-          {support.ticket?<>
-            <p role="status">{t(statusLabels[support.ticket.status] || "قيد المتابعة")}</p>
-            <small>{t("رقم التذكرة")}</small><code className={s.reference} dir="ltr">{support.ticket.id}</code>
-            <p>{t("وصلت الحالة للدعم مع بيانات الكود والسيارة. تظهر ردود الفريق هنا تلقائياً.")}</p>
-            <div className={s.messages} aria-live="polite">{support.messages.map(message=><article key={message.id}><strong>{t("فريق دورني")}</strong><p>{message.body}</p><time>{new Date(message.createdAt).toLocaleString("ar-LY")}</time></article>)}</div>
-            {support.canCall?<Link className={s.action} href={`/status/${token}/contact`}>{t("اتصل بمركز الدعم")}</Link>:support.messages.length===0&&!['RESOLVED','CLOSED'].includes(support.ticket.status)&&<p className={s.muted}>{t("بانتظار رد الدعم. خيار الاتصال يظهر عند إتاحته حسب إعدادات المركز.")}</p>}
-          </>:support.canEscalate?<><p>{t("ما زالت المشكلة قائمة؟ أرسل الحالة لفريق الدعم لمتابعتها.")}</p><button className={s.action} disabled={busy} onClick={()=>void escalate()}>{busy?t("جاري إرسال الحالة…"):t("طلب مساعدة من الدعم")}</button></>:<p className={s.muted}>{t(!support.enabled?"استقبال التصعيد متوقف مؤقتاً.":answered&&data.ownerResponse!=="CANNOT_REACH_NOW"?"تم استلام رد صاحب السيارة.":["RESOLVED","BLOCKED","EXPIRED"].includes(data.status)?"البلاغ لم يعد مفتوحاً للتصعيد.":"إذا لم يرد صاحب السيارة، سيظهر خيار طلب الدعم بعد مدة الانتظار.")}</p>}
-        </section>}
-        <div className="privacy-note"><ShieldCheck/><span>{t("الرابط خاص بهذا البلاغ وينتهي تلقائياً.")}</span></div>
-      </>}
-    </section>
+const responses:Record<string,string>={ON_MY_WAY:"صاحب السيارة في الطريق",RESOLVED:"تم حل الموضوع",CANNOT_REACH_NOW:"صاحب السيارة لا يستطيع الوصول حالياً"};
+const reasons:Record<string,string>={BLOCKING_EXIT:"السيارة تعيق الخروج",PLEASE_MOVE:"طلب تحريك السيارة",LIGHTS_ON:"الأنوار مضاءة",DOOR_OR_WINDOW_OPEN:"باب أو نافذة مفتوحة",VEHICLE_DAMAGE:"مشكلة بالسيارة",URGENT_ATTENTION:"تنبيه عاجل"};
+function Countdown({at,offset}:{at:string;offset:number}) {
+  const [now,setNow]=useState(()=>Date.now());
+  useEffect(()=>{const timer=setInterval(()=>{if(!document.hidden)setNow(Date.now());},1000);return()=>clearInterval(timer);},[]);
+  const seconds=Math.max(0,Math.ceil((Date.parse(at)-now-offset)/1000));
+  return <span dir="ltr" className={s.countdown}>{Math.floor(seconds/60)}:{String(seconds%60).padStart(2,"0")}</span>;
+}
+export function StatusClient({token,contactMode=false}:{token:string;contactMode?:boolean}) {
+  const {t,dir}=useLocale();
+  const state=useReportStatus(token);
+  const {data,error,unavailable,offline,live,refreshing,busy,checkedAt,clockOffset,refresh,escalate}=state;
+  const [notice,setNotice]=useState("");
+  const support=data?.support;
+  const resolved=data?.status==="RESOLVED"||data?.ownerResponse==="RESOLVED";
+  const closed=Boolean(data&&["RESOLVED","EXPIRED","BLOCKED"].includes(data.status));
+  const answered=Boolean(data?.ownerResponse);
+  const supportAnswered=Boolean(support?.messages.length);
+  const supportClosed=Boolean(support?.ticket&&["RESOLVED","CLOSED"].includes(support.ticket.status));
+  const title=resolved?"تم حل البلاغ":data?.status==="BLOCKED"?"هذا البلاغ غير متاح للمتابعة":data?.status==="EXPIRED"?"انتهت مدة البلاغ":answered?(responses[data!.ownerResponse!]||"وصل رد صاحب السيارة"):"بلاغك وصل للنظام";
+  async function copy(value:string,label:string){try{await copyText(value);setNotice(label);}catch(e){setNotice(e instanceof Error?e.message:"تعذر النسخ");}}
+  return <main className={s.page} dir={dir}>
+    <header className={s.header}><DorniBrand/><span><ShieldCheck size={16}/>{t("متابعة آمنة")}</span></header>
+    <div className={s.topline}>
+      {contactMode?<Link className={s.back} href={"/status/"+token}><ArrowRight size={18}/>{t("متابعة البلاغ")}</Link>:<span>{t("متابعة البلاغ")}</span>}
+      <span className={s.connection} data-live={live&&!error}>{offline?<WifiOff size={14}/>:<i/>}{t(offline?"غير متصل":error?"نعيد الاتصال":live?"تحديث مباشر":"تحديث تلقائي")}</span>
+    </div>
+    {error&&<div className={s.error} role="alert"><p>{t(error)}</p><button disabled={refreshing||offline} onClick={()=>void refresh(true)}><RefreshCw size={16}/>{t("إعادة المحاولة")}</button></div>}
+    {offline&&<p className={s.warning} role="status">{t("انقطع الإنترنت. آخر حالة محفوظة ظاهرة أمامك، ونحدّثها عند رجوع الاتصال.")}</p>}
+    {!data?<section className={s.hero}>
+      <div className={s.symbol}>{unavailable?<Clock3/>:<RefreshCw className={refreshing?"spin":""}/>}</div>
+      <h1>{t(unavailable?"رابط المتابعة غير متاح":error?"تعذر الاتصال مؤقتاً":"جاري فتح بلاغك…")}</h1>
+      <p>{t(unavailable?"قد يكون الرابط منتهياً أو ناتجاً عن محاولة قديمة. امسح بطاقة السيارة مجدداً لإرسال بلاغ والحصول على رابط جديد.":"لا تحتاج لإرسال بلاغ آخر. سنحاول تحميل الحالة مجدداً.")}</p>
+    </section>:contactMode?<section className={s.hero}>
+      <div className={s.symbol}><Phone/></div><h1>{t("اتصل بمركز الدعم")}</h1>
+      {support?.canCall&&support.contact?<>
+        <p>{t("أعطِ الموظف رقم التذكرة للوصول إلى ملف الحالة.")}</p>
+        <button className={s.referenceButton} onClick={()=>void copy(support.ticket!.id,"تم نسخ رقم التذكرة")}><code dir="ltr">{support.ticket!.id}</code><Copy size={16}/></button>
+        {support.contact.hours&&<p>{support.contact.hours}</p>}{support.contact.instructions&&<p>{support.contact.instructions}</p>}
+        <div className={s.contacts}>{support.contact.phones.map((phone,i)=><a key={i} href={"tel:"+phone.number}><Phone/><div><strong>{phone.label}</strong><span dir="ltr">{phone.number}</span><small>{t("اضغط للاتصال")}</small></div></a>)}</div>
+      </>:<><p>{t(supportAnswered?"وصل رد من الدعم. ارجع للمتابعة لقراءته.":"الاتصال بالمركز غير متاح لهذه الحالة الآن.")}</p><Link className={s.action} href={"/status/"+token}>{t("العودة للمتابعة")}</Link></>}
+    </section>:<>
+      <section className={s.hero} data-resolved={resolved}>
+        <div className={s.symbol}>{resolved?<CheckCircle2/>:answered?<CarFront/>:<Check/>}</div>
+        <p className={s.eyebrow}>{t(resolved?"اكتملت المتابعة":answered?"رد صاحب السيارة":"تم تسجيل البلاغ")}</p>
+        <h1 aria-live="polite">{t(title)}</h1>
+        <p>{t(resolved?"شكراً لتنبيهك واهتمامك.":answered?"هذا هو آخر رد محفوظ من صاحب السيارة.":"في انتظار رد صاحب السيارة. خليك في الصفحة؛ الرد يظهر تلقائياً.")}</p>
+        <div className={s.vehicle}><CarFront size={22}/><div><strong>{data.vehicle?.manufacturer} {data.vehicle?.model}</strong><span>{data.vehicle?.color} · {t(reasons[data.reportType]||data.reportType)}</span></div><span className={s.ref} dir="ltr">#{data.reference}</span></div>
+      </section>
+      <ol className={s.steps} aria-label={t("مراحل البلاغ")}>
+        {[["إرسال البلاغ",true],["رد صاحب السيارة",answered],["متابعة الدعم",Boolean(support?.ticket)]].map(([label,done],i)=><li key={String(label)} data-done={Boolean(done)}><span>{done?<Check size={16}/>:i+1}</span><strong>{t(String(label))}</strong></li>)}
+      </ol>
+      {support&&<section className={s.panel} aria-label={t("متابعة الدعم الفني")}>
+        <div className={s.sectionTitle}><Headphones/><div><h2>{t("فريق دورني معاك")}</h2><p>{t(support.ticket?"متابعة الحالة مع الدعم الفني":"إذا لم يصلك رد، نساعدك في متابعة الحالة")}</p></div>{support.ticket&&<span className={s.badge}>{t(statusLabels[support.ticket.status]||"قيد المتابعة")}</span>}</div>
+        {support.ticket?<>
+          <div className={s.ticketLine}><span>{t("رقم التذكرة")}</span><button onClick={()=>void copy(support.ticket!.id,"تم نسخ رقم التذكرة")} aria-label={t("نسخ رقم التذكرة")}><code dir="ltr">{support.ticket.id.slice(0,8)}</code><Copy size={15}/></button></div>
+          <p className={s.muted}>{t("وصلت الحالة للفريق مع بيانات الكود والسيارة. لا تحتاج لإعادة إرسالها.")}</p>
+          <div className={s.messages} aria-live="polite">{support.messages.map(message=><article key={message.id}><header><Headphones size={17}/><strong>{t("فريق دورني")}</strong><time>{new Date(message.createdAt).toLocaleTimeString("ar-LY",{hour:"2-digit",minute:"2-digit"})}</time></header><p>{message.body}</p></article>)}</div>
+          {!supportAnswered&&!supportClosed&&<div className={s.wait}><Clock3/><span>{t("بانتظار رد الفريق")}</span></div>}
+          {support.canCall?<Link className={s.action} href={"/status/"+token+"/contact"}><Phone size={18}/>{t("اتصل بمركز الدعم")}</Link>:!supportAnswered&&!supportClosed&&!closed&&<p className={s.muted}>{t("خيار الاتصال يظهر عند إتاحته حسب إعدادات المركز.")}</p>}
+          {supportClosed&&<p className={s.success}><CheckCircle2 size={18}/>{t("تم إنهاء تذكرة الدعم.")}</p>}
+        </>:support.canEscalate?<><p>{t("ما زالت المشكلة قائمة؟ ننقل البلاغ للفريق لمتابعته مع صاحب السيارة.")}</p><button className={s.action} disabled={busy||offline} onClick={()=>void escalate()}>{busy?<RefreshCw size={18} className="spin"/>:<Headphones size={18}/>} {t(busy?"جاري تأكيد طلب الدعم…":"طلب مساعدة من الدعم")}</button></>:<div className={s.wait}><Clock3/><div><strong>{t(!support.enabled?"استقبال التصعيد متوقف مؤقتاً":closed?"انتهت متابعة هذا البلاغ":answered&&data.ownerResponse!=="CANNOT_REACH_NOW"?"تم استلام رد صاحب السيارة":"ننتظر رد صاحب السيارة")}</strong>{support.enabled&&!closed&&(!answered||data.ownerResponse==="CANNOT_REACH_NOW")&&<p>{t("إتاحة طلب الدعم خلال")} <Countdown at={support.escalationAt} offset={clockOffset}/></p>}</div></div>}
+      </section>}
+      <div className={s.tools}><button disabled={refreshing||offline||busy} onClick={()=>void refresh(true)}><RefreshCw size={16} className={refreshing?"spin":""}/>{t("تحديث الحالة")}</button><button onClick={()=>void copy(window.location.href,"تم نسخ رابط المتابعة")}><Copy size={16}/>{t("نسخ رابط المتابعة")}</button></div>
+      {checkedAt>0&&<p className={s.checked}>{t("آخر تحقق")} {new Date(checkedAt).toLocaleTimeString("ar-LY",{hour:"2-digit",minute:"2-digit",second:"2-digit"})}</p>}
+    </>}
+    {notice&&<p role="status" className={s.success}>{t(notice)}</p>}
+    <footer className={s.footer}><ShieldCheck size={18}/><p>{t("احتفظ بالرابط؛ أي شخص معه الرابط يستطيع متابعة هذا البلاغ حتى انتهاء مدته.")}<br/>{t("دورني ليس بديلاً عن خدمات الطوارئ عند وجود خطر مباشر.")}</p></footer>
   </main>;
 }

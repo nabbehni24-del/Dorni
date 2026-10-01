@@ -487,6 +487,69 @@ QR والمسح|QR and scan
 بلاغات جديدة: {count}|New alerts: {count}
 بطاقات فعّالة: {count}|Active cards: {count}
 بلاغات مماثلة: {count}|Similar reports: {count}
+متابعة آمنة|Secure tracking
+متابعة البلاغ|Track report
+تحديث مباشر|Live updates
+تحديث تلقائي|Automatic updates
+نعيد الاتصال|Reconnecting
+غير متصل|Offline
+جاري فتح بلاغك…|Opening your report…
+تعذر الاتصال مؤقتاً|Temporarily unable to connect
+رابط المتابعة غير متاح|Tracking link unavailable
+قد يكون الرابط منتهياً أو ناتجاً عن محاولة قديمة. امسح بطاقة السيارة مجدداً لإرسال بلاغ والحصول على رابط جديد.|This link may have expired or come from an older attempt. Scan the vehicle card again to obtain a new tracking link.
+لا تحتاج لإرسال بلاغ آخر. سنحاول تحميل الحالة مجدداً.|No need to send another report. We will try loading the status again.
+انقطع الإنترنت. آخر حالة محفوظة ظاهرة أمامك، ونحدّثها عند رجوع الاتصال.|You are offline. Your last known status remains visible and will refresh when the connection returns.
+بلاغك وصل للنظام|Your report has been received
+تم حل البلاغ|Report resolved
+هذا البلاغ غير متاح للمتابعة|This report is unavailable
+انتهت مدة البلاغ|This report has expired
+صاحب السيارة في الطريق|The vehicle owner is on the way
+صاحب السيارة لا يستطيع الوصول حالياً|The vehicle owner cannot get there right now
+وصل رد صاحب السيارة|The owner has replied
+اكتملت المتابعة|Tracking complete
+تم تسجيل البلاغ|Report recorded
+شكراً لتنبيهك واهتمامك.|Thank you for your help and care.
+هذا هو آخر رد محفوظ من صاحب السيارة.|This is the latest reply from the vehicle owner.
+في انتظار رد صاحب السيارة. خليك في الصفحة؛ الرد يظهر تلقائياً.|Waiting for the owner. Stay on this page; replies appear automatically.
+طلب تحريك السيارة|Please move the vehicle
+مشكلة بالسيارة|Vehicle problem
+مراحل البلاغ|Report progress
+متابعة الدعم|Support follow-up
+فريق دورني معاك|Dorni support is here
+متابعة الحالة مع الدعم الفني|Follow up with the support team
+إذا لم يصلك رد، نساعدك في متابعة الحالة|If there is no response, we can help follow up
+وصلت الحالة للفريق مع بيانات الكود والسيارة. لا تحتاج لإعادة إرسالها.|The team has received the case with its code and vehicle details. No need to send it again.
+رقم التذكرة|Ticket number
+نسخ رقم التذكرة|Copy ticket number
+تم نسخ رقم التذكرة|Ticket number copied
+بانتظار رد الفريق|Waiting for the support team
+خيار الاتصال يظهر عند إتاحته حسب إعدادات المركز.|The call option appears when eligible under the support center settings.
+اتصل بمركز الدعم|Call the support center
+اضغط للاتصال|Tap to call
+أعطِ الموظف رقم التذكرة للوصول إلى ملف الحالة.|Give the agent your ticket number to locate the case.
+وصل رد من الدعم. ارجع للمتابعة لقراءته.|Support has replied. Return to tracking to read the reply.
+الاتصال بالمركز غير متاح لهذه الحالة الآن.|Calling the center is not currently available for this case.
+العودة للمتابعة|Back to tracking
+تم إنهاء تذكرة الدعم.|This support ticket has been closed.
+ما زالت المشكلة قائمة؟ ننقل البلاغ للفريق لمتابعته مع صاحب السيارة.|Still having trouble? Send the case to support for follow-up with the owner.
+طلب مساعدة من الدعم|Request support
+جاري تأكيد طلب الدعم…|Confirming your support request…
+استقبال التصعيد متوقف مؤقتاً|Escalation is temporarily unavailable
+انتهت متابعة هذا البلاغ|Tracking has ended for this report
+تم استلام رد صاحب السيارة|The owner has replied
+ننتظر رد صاحب السيارة|Waiting for the vehicle owner
+إتاحة طلب الدعم خلال|Support available in
+تحديث الحالة|Refresh status
+نسخ رابط المتابعة|Copy tracking link
+تم نسخ رابط المتابعة|Tracking link copied
+آخر تحقق|Last checked
+احتفظ بالرابط؛ أي شخص معه الرابط يستطيع متابعة هذا البلاغ حتى انتهاء مدته.|Keep this link safe. Anyone with the link can follow this report until it expires.
+دورني ليس بديلاً عن خدمات الطوارئ عند وجود خطر مباشر.|Dorni does not replace emergency services when there is immediate danger.
+العودة لمتابعة بلاغك السابق|Return to your previous report
+اختار السبب، أرسل التنبيه، وتابع الرد من نفس الصفحة.|Choose a reason, send the alert and follow the response on one page.
+إرسال التنبيه ومتابعته|Send alert and track it
+جاري تأكيد البلاغ…|Confirming your report…
+عند وجود خطر مباشر، تواصل مع خدمات الطوارئ.|Contact emergency services if there is immediate danger.
 BLOCKING_EXIT|Blocking my exit|السيارة تعيق الخروج|السيارة سادّة عليّ
 PLEASE_MOVE|Please move the vehicle|الرجاء تحريك السيارة|بالله حرّك السيارة
 LIGHTS_ON|Lights left on|الأنوار مضاءة|الأنوار شغّالة

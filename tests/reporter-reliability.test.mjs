@@ -1,0 +1,11 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {readFileSync} from 'node:fs';
+import ts from 'typescript';
+const read=p=>readFileSync(new URL('../'+p,import.meta.url),'utf8');
+const exports={};new Function('exports',ts.transpile(read('lib/report-attempt.ts'),{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2022}))(exports);
+test('report capabilities contain 256 random bits in a URL-safe encoding',()=>{const tokens=new Set(Array.from({length:100},()=>exports.newReportToken()));assert.equal(tokens.size,100);for(const token of tokens)assert.match(token,/^[A-Za-z0-9_-]{43}$/);});
+test('pending attempts round-trip and invalid local data is ignored',()=>{const attempt={reason:'BLOCKING_EXIT',statusToken:exports.newReportToken(),sessionToken:exports.newReportToken()};assert.deepEqual(exports.readAttempt(JSON.stringify(attempt)),attempt);for(const value of [null,'null','{}','broken',JSON.stringify({...attempt,statusToken:'guessable'})])assert.equal(exports.readAttempt(value),null);});
+test('submission persists capability before fetch and clears only after confirmation',()=>{const source=read('components/public-report-client.tsx');assert.ok(source.indexOf('sessionStorage.setItem(storageKey,JSON.stringify(attempt.current))')<source.indexOf('fetch("/api/public/reports"'));assert.match(source,/statusToken:attempt.current.statusToken/);assert.match(source,/sending.current/);assert.match(source,/NEW_ATTEMPT_REQUIRED/);});
+test('live events invalidate only, retain fallback and abort obsolete requests',()=>{const source=read('components/use-report-status.ts');assert.match(source,/\.on\("broadcast",\{event:"refresh"\},update\)/);assert.match(source,/live\?15000:5000/);assert.match(source,/AbortController/);assert.match(source,/version.current!==current/);assert.match(source,/removeChannel/);assert.match(source,/visibilitychange/);assert.match(source,/response.status===404/);assert.match(source,/setData\(null\)/);});
+test('broadcasts never contain report rows or support messages',()=>{const source=read('supabase/sql/reporter_reliability.sql');assert.match(source,/realtime.send\('\{\}'::jsonb,'refresh'/);assert.doesNotMatch(source,/broadcast_changes/);assert.match(source,/new.is_internal then return new/);assert.match(source,/REPORT_LIVE_SIGNAL_FAILED/);});
