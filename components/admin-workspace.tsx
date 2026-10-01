@@ -1,5 +1,5 @@
 "use client";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { requestJson, errorMessage, copyText } from "@/lib/client-api";
 import { Button } from "@/components/ui/button";
@@ -37,6 +37,7 @@ type Overview = {
   supportTickets: { id: string; subject: string; status: string }[];
 };
 const labels: Record<string, string> = {
+  ACKNOWLEDGED: "تم الاطلاع",
   REJECTED: "مرفوضة",
   BLOCKING_EXIT: "تعيق الخروج",
   PLEASE_MOVE: "طلب تحريك السيارة",
@@ -86,6 +87,9 @@ export function AdminWorkspace({
     [invite, setInvite] = useState("");
   const [editing, setEditing] = useState<Company | null>(null),
     [productionExport, setProductionExport] = useState("");
+  const editHeading = useRef<HTMLHeadingElement>(null);
+  const editingId=editing?.id;
+  useEffect(() => { if (editingId) { editHeading.current?.focus(); editHeading.current?.scrollIntoView({block:"center",behavior:"smooth"}); } }, [editingId]);
   const [partner, setPartner] = useState({
     name: "",
     type: "CORPORATE",
@@ -285,7 +289,7 @@ export function AdminWorkspace({
         <>
           {editing && (
             <section className="ws-panel">
-              <h2>إدارة {editing.name}</h2>
+              <h2 ref={editHeading} tabIndex={-1}>إدارة {editing.name}</h2>
               <form
                 onSubmit={async (e) => {
                   e.preventDefault();
@@ -398,8 +402,8 @@ export function AdminWorkspace({
               </form>
             </section>
           )}
-          <section className="ws-panel">
-            <h2>إنشاء شركة</h2>
+          <details className="ws-panel">
+            <summary className="ws-add-company">إنشاء شركة جديدة</summary>
             <form
               onSubmit={(e) => {
                 e.preventDefault();
@@ -488,7 +492,7 @@ export function AdminWorkspace({
                 </button>
               </div>
             )}
-          </section>
+          </details>
           <section className="ws-panel">
             <div className="ws-toolbar">
               <h2>الشركات ({data.organizations.length})</h2>

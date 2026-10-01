@@ -121,7 +121,7 @@ export default function SupportTeamPage() {
         <div className={s.title}>
           <div>
             <p className={s.eyebrow}>إدارة الوصول</p>
-            <h1>الفريق المناسب. بالصلاحيات المناسبة.</h1>
+            <h2>حسابات الموظفين وصلاحيات الوصول</h2>
             <p>
               دور الدعم مستقل عن الأدمن؛ لا يمنح إدارة الحسابات أو الشركاء أو
               الأكواد.

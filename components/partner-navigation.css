@@ -1,6 +1,13 @@
 .partner-menu-button {
   display: none;
 }
+.company-shell .company-sidebar { background:var(--card);color:var(--foreground);border-inline-end:1px solid var(--border);display:flex;flex-direction:column;height:100svh;overflow-y:auto; }
+.company-shell .company-org-card,.company-shell .company-sidebar-status { background:var(--secondary);border-color:var(--border); }
+.company-shell .company-sidebar nav button { color:var(--muted-foreground);font-size:14px; }
+.company-shell .company-sidebar nav button.active { color:var(--primary);background:var(--secondary);box-shadow:inset -3px 0 var(--primary); }
+.company-shell .company-sidebar nav button:hover { color:var(--foreground);background:var(--secondary); }
+.company-shell .company-sidebar-status { position:static;margin-top:auto; }
+.company-shell .company-sidebar-status p,.company-shell .company-org-card small { color:var(--muted-foreground); }
 .partner-drawer {
   margin: 0 0 0 auto;
   width: min(310px, 88vw);

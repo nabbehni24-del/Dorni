@@ -186,6 +186,8 @@
   font-weight: 750;
   margin-bottom: 10px;
 }
+.ws-add-company { cursor:pointer;font-weight:750;color:var(--primary);min-height:32px; }
+.ws-add-company:focus-visible { outline:3px solid var(--ring);outline-offset:4px; }
 .ws-panel p {
   color: var(--muted-foreground);
   line-height: 1.9;
