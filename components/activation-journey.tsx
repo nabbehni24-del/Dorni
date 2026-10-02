@@ -8,6 +8,7 @@ import {ServiceDetail,ServiceFacts,type ServiceView} from './service-detail';
 import './activation-journey.css';
 import {serviceDuration} from '@/lib/service-view';
 import {useRouter} from 'next/navigation';
+import {watchActivationFragment} from '@/lib/activation-fragment';
 type Vehicle={id:string;manufacturer:string;model:string;color:string;occupied:boolean};
 type Journey={state:string;journeyId:string;serial?:string;plan?:string;unit?:string;duration?:number;versionId?:string|null;vehicles?:Vehicle[];service?:ServiceView};
 const messages:Record<string,string>={INVALID:'تعذر التحقق من البطاقة. راجع رمز التفعيل الخاص أو حاول لاحقًا.',USED:'هذه البطاقة مرتبطة بحساب بالفعل. سجّل الدخول بحساب مالكها أو تواصل مع الدعم.',SUSPENDED:'هذه البطاقة معلقة إداريًا. تواصل مع الدعم قبل التفعيل.',MISSING:'افتح رابط التفعيل الخاص ببطاقتك. إذا أكدت بريدك في متصفح آخر، ارجع إلى المتصفح الذي بدأت منه أو امسح رابط التفعيل مجددًا.',ACCOUNT_CHANGED:'بدأت هذه الرحلة بحساب آخر. ادخل بنفس الحساب أو افتح رابط التفعيل الخاص من جديد.',CONTEXT_CHANGED:'تم فتح بطاقة أخرى في هذا المتصفح. حدّث الصفحة وراجع البطاقة قبل التأكيد.',TERMS_CHANGED:'تغيرت الخدمة المرفقة بالبطاقة. حدّث الصفحة لمراجعتها قبل التأكيد.',VEHICLE_OCCUPIED:'المركبة المختارة لديها بطاقة بالفعل. اختر مركبة أخرى؛ لن نستبدل بطاقتها تلقائيًا.',VEHICLE_UNAVAILABLE:'المركبة لم تعد متاحة. حدّث القائمة واختر مركبتك.',RETRY:'تعذر إكمال العملية. أعد المحاولة؛ سنتحقق أولًا إن كان التفعيل قد اكتمل.',UNAVAILABLE:'تعذر عرض خدمة البطاقة. افتح مركباتي أو تواصل مع الدعم.'};
@@ -30,12 +31,14 @@ export function ActivationJourney(){
   if(!r.ok)throw Error(t('تعذر حفظ رابط التفعيل. امسحه مجددًا.'));
   draftLoaded.current=false;setManual(false);await load();
  }
- useEffect(()=>{if(started.current)return;started.current=true;
+ useEffect(()=>{const unwatch=watchActivationFragment(window);
+  if(!started.current){started.current=true;
   void(async()=>{try{const url=new URL(window.location.href),params=new URLSearchParams(url.hash.slice(1));
    let s=params.get('serial')??url.searchParams.get('serial'),c=params.get('code')??url.searchParams.get('code');
    window.history.replaceState(null,'','/claim');
    if(s&&c){const request=capture(s,c);s=null;c=null;await request;}else await load();
-  }catch(e){setError(e instanceof Error?e.message:t('تعذر تحميل التفعيل'));}})();
+  }catch(e){setError(e instanceof Error?e.message:t('تعذر تحميل التفعيل'));}})();}
+  return unwatch;
  // Capture the original URL once, also under React Strict Mode.
  // eslint-disable-next-line react-hooks/exhaustive-deps
  },[]);
