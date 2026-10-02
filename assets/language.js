@@ -49,9 +49,25 @@
  document.querySelectorAll('[data-language-select]').forEach(select=>{
   select.querySelector('[value="ar-LY"]').textContent='اللغة العربية (ليبيا)';
   select.addEventListener('change',()=>apply(select.value,true));
-  const short=document.createElement('span');short.className='language-short';short.setAttribute('aria-hidden','true');
-  select.parentElement.appendChild(short);
-  const updateShort=()=>{short.textContent=locale==='en'?'EN':'AR';};
+  select.hidden=true;
+  const control=select.parentElement;
+  const short=document.createElement('button');short.type='button';short.className='language-trigger';short.setAttribute('aria-expanded','false');
+  const choices=document.createElement('div');choices.className='language-options';choices.hidden=true;
+  const names={'ar':'العربية','ar-LY':'اللغة العربية (ليبيا)','en':'English'};
+  const close=(focus=false)=>{choices.hidden=true;short.setAttribute('aria-expanded','false');if(focus)short.focus();};
+  allowed.forEach(value=>{
+   const button=document.createElement('button');button.type='button';button.dataset.locale=value;
+   const flag=document.createElement('img');flag.src='assets/flag-'+({'ar':'sa','ar-LY':'ly','en':'gb'}[value])+'.svg';flag.alt='';
+   const label=document.createElement('span');label.textContent=names[value];
+   const check=document.createElement('span');check.className='language-check';check.textContent='✓';check.setAttribute('aria-hidden','true');
+   button.append(flag,label,check);button.addEventListener('click',()=>{apply(value,true);close(true);});choices.appendChild(button);
+  });
+  short.addEventListener('click',()=>{const open=choices.hidden;choices.hidden=!open;short.setAttribute('aria-expanded',String(open));});
+  control.addEventListener('keydown',event=>{if(event.key==='Escape'){close(true);event.stopPropagation();}if(event.key==='ArrowDown'||event.key==='ArrowUp'){event.preventDefault();choices.hidden=false;short.setAttribute('aria-expanded','true');const buttons=[...choices.children];const index=buttons.indexOf(document.activeElement);buttons[(index+(event.key==='ArrowDown'?1:buttons.length-1)+buttons.length)%buttons.length].focus();}});
+  document.addEventListener('click',event=>{if(!control.contains(event.target))close();});
+  control.addEventListener('focusout',event=>{if(!control.contains(event.relatedTarget))close();});
+  control.append(short,choices);
+  const updateShort=()=>{short.textContent=locale==='en'?'EN':'AR';short.setAttribute('aria-label',t('اللغة')+': '+names[locale]);choices.querySelectorAll('button').forEach(button=>button.setAttribute('aria-pressed',String(button.dataset.locale===locale)));};
   window.addEventListener('dorni:languagechange',updateShort);updateShort();
  });
  apply(locale);

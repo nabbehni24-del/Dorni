@@ -1,4 +1,14 @@
-/* Compact native language control keeps full accessible option names. */
+/* Custom dropdown avoids the mobile operating-system select dialog. */
+.language-control select[hidden]{display:none}
+.language-trigger{width:92px;min-height:44px;padding:8px 25px 8px 32px;border:1px solid #e5eaf0;border-radius:11px;background:#f5f8fb;color:var(--navy);font-family:inherit;font-size:12px;font-weight:700;cursor:pointer}
+.language-trigger:focus-visible,.language-options button:focus-visible{outline:2px solid var(--orange);outline-offset:2px}
+.language-options[hidden]{display:none}
+.language-options{position:absolute;top:calc(100% + 8px);inset-inline-end:0;width:230px;max-width:calc(100vw - 32px);padding:6px;border:1px solid var(--line);border-radius:16px;background:#fff;box-shadow:0 12px 32px #071c3126;z-index:110}
+.language-options button{display:flex;align-items:center;gap:10px;width:100%;min-height:48px;padding:10px;border:0;border-radius:10px;background:#fff;color:var(--navy);font:inherit;font-size:12px;text-align:start;cursor:pointer}
+.language-options button:hover,.language-options button[aria-pressed=true]{background:var(--cream)}
+.language-options img{width:22px;height:15px;object-fit:cover;border-radius:2px}
+.language-check{margin-inline-start:auto;color:var(--orange);visibility:hidden}
+.language-options button[aria-pressed=true] .language-check{visibility:visible}
 .language-control select{width:92px!important;min-height:44px;color:transparent!important;background:#f5f8fb;border-color:#e5eaf0;padding-inline-start:0!important}
 .language-control select option{color:#071c31;background:#fff}
 .language-short{position:absolute;inset-inline-start:39px;pointer-events:none;font-size:12px;font-weight:700;color:var(--navy)}
