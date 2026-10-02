@@ -1,7 +1,11 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
+import { allowedMutationOrigin } from "./lib/server/request-origin";
 
 export async function proxy(request: NextRequest) {
+  if (!allowedMutationOrigin(request, process.env.NEXT_PUBLIC_APP_URL)) {
+    return NextResponse.json({error:"FORBIDDEN_ORIGIN"},{status:403,headers:{"Cache-Control":"no-store"}});
+  }
   let response = NextResponse.next({ request });
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const key = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
