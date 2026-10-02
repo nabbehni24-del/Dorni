@@ -5,6 +5,7 @@ import { cookies } from "next/headers";
 import { createServerSupabase } from "@/lib/supabase/server";
 import { publicOrigin } from "@/lib/server/public-origin";
 import {activationDestination} from '@/lib/server/activation-context';
+import {callbackErrorReason} from '@/lib/auth-callback-recovery';
 
 const allowedTypes = new Set<EmailOtpType>(["email", "magiclink", "recovery", "invite", "email_change", "signup"]);
 
@@ -26,7 +27,8 @@ export async function GET(request: Request) {
 
   if (error) {
     const login = new URL("/login", origin);
-    login.searchParams.set("error", "email_link");
+    login.searchParams.set("error", callbackErrorReason(error));
+    if (requestedNext === '/claim' || await activationDestination('/app') === '/claim') login.searchParams.set('next', '/claim');
     return NextResponse.redirect(login);
   }
   if (type === "recovery" || next === "/reset-password") {

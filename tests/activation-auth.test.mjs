@@ -6,7 +6,7 @@ import ts from 'typescript';
 import {z} from 'zod';
 function load(path,imports={}){
  const exports={};const js=ts.transpileModule(readFileSync(new URL('../'+path,import.meta.url),'utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2022}}).outputText;
- new Function('require','exports',js)(name=>{if(name==='server-only')return {};if(name==='node:crypto')return crypto;if(name==='zod')return {z};if(name in imports)return imports[name];throw Error('Unexpected import '+name);},exports);return exports;
+ new Function('require','exports',js)(name=>{if(name==='server-only')return {};if(name==='node:crypto')return crypto;if(name==='zod')return {z};if(name==='@/lib/auth-callback-recovery')return load('lib/auth-callback-recovery.ts');if(name in imports)return imports[name];throw Error('Unexpected import '+name);},exports);return exports;
 }
 test('private link -> signup -> email confirmation -> same activation context, with no credential in URLs or JSON',async()=>{
  const before=process.env.CLAIM_PEPPER;process.env.CLAIM_PEPPER='synthetic-activation-test-secret-not-production';
