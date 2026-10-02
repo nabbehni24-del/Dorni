@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://dorni-landing.onrender.com/sitemap.xml

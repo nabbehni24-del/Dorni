@@ -14,6 +14,9 @@ if('IntersectionObserver' in window&&!matchMedia('(prefers-reduced-motion: reduc
  document.querySelectorAll('.reveal').forEach(element=>observer.observe(element));
 }
 const tabs=[...document.querySelectorAll('[data-step]')];
+// Preserve direct links to the previously expanded walkthrough.
+function openWalkthroughHash(){if(location.hash==='#walkthrough'||/^#(?:panel|step)-[0-3]$/.test(location.hash)){document.querySelector('.demo-explorer').open=true;}}
+openWalkthroughHash();window.addEventListener('hashchange',openWalkthroughHash);
 const panels=[...document.querySelectorAll('.demo-panel')];
 const previous=document.querySelector('#demo-prev');
 const counter=document.querySelector('#demo-counter');

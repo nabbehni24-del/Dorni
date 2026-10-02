@@ -4,15 +4,31 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="theme-color" content="#ff5a22">
-  <meta name="description" content="دورني يوصّل تنبيهك لصاحب السيارة بسرعة، بدون مشاركة أرقام شخصية.">
-  <title>دورني | نبّه صاحب السيارة بخصوصية</title>
+  <meta name="description" content="سيارة مسكرة عليك؟ دورني يسهّل تنبيه صاحبها بدون تبادل أرقام: امسح البطاقة، اختار السبب وأرسل. اطلب بطاقتك أو فعّل بطاقة عندك، للأفراد والأعمال.">
+  <title>دورني | نبّه صاحب السيارة بدون ما تعرف رقمه</title>
+  <link rel="canonical" href="https://dorni-landing.onrender.com/">
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="ar_LY">
+  <meta property="og:site_name" content="دورني">
+  <meta property="og:title" content="دورني — نبّه صاحب السيارة بدون ما تعرف رقمه">
+  <meta property="og:description" content="امسح الرمز، اختار السبب وأرسل التنبيه. تعرّف على دورني واطلب بطاقتك أو فعّل بطاقتك الحالية.">
+  <meta property="og:url" content="https://dorni-landing.onrender.com/">
+  <meta property="og:image" content="https://dorni-landing.onrender.com/assets/dorni-share.jpg">
+  <meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="شعار دورني ورسوم الشارع والشخص من هوية الموقع">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="دورني — نبّه صاحب السيارة بخصوصية">
+  <meta name="twitter:description" content="امسح الرمز، اختار السبب وأرسل. للأفراد والأعمال.">
+  <meta name="twitter:image" content="https://dorni-landing.onrender.com/assets/dorni-share.jpg">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Alexandria:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='15' fill='%23ff5a22'/%3E%3Cpath d='M20 43c-7-7-5-19 4-24 4-2 8-2 12 0-8 1-13 8-11 15 2 7 10 10 16 6-3 7-13 9-21 3Z' fill='%23fff5df'/%3E%3Cpath d='M41 15c5 2 8 5 10 10M39 21c3 1 5 3 6 6' fill='none' stroke='%23fff5df' stroke-width='4' stroke-linecap='round'/%3E%3C/svg%3E">
+  <link rel="icon" type="image/png" href="assets/dorni-icon-current.png">
+  <link rel="apple-touch-icon" href="assets/dorni-icon-current.png">
   <link rel="stylesheet" href="assets/style.css">
 <link rel="stylesheet" href="assets/journey.css">
 <link rel="stylesheet" href="assets/integration.css">
+<link rel="stylesheet" href="assets/conversion.css?v=1">
 </head>
 <body id="top">
 <svg class="icon-defs" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><defs>
@@ -26,22 +42,27 @@
   <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M20 12H4m6-6-6 6 6 6"/></symbol>
   <symbol id="i-window" viewBox="0 0 24 24"><path d="M4 4h16v16H4zm8 0v16M4 12h16"/></symbol>
   <symbol id="i-alert" viewBox="0 0 24 24"><path d="m12 3 10 18H2zM12 9v5m0 3v1"/></symbol>
+  <symbol id="i-garage" viewBox="0 0 24 24"><path d="m2 9 10-6 10 6M4 8v13h16V8M7 21V11h10v10M7 14h10M7 17h10"/></symbol>
+  <symbol id="i-shop" viewBox="0 0 24 24"><path d="M3 10h18l-2-6H5zM4 10v11h16V10M8 21v-6h5v6M3 10q2 4 5 0 3 4 5 0 3 4 5 0 2 4 3 0"/></symbol>
 </defs></svg>
   <a class="skip-link" href="#main">انتقل للمحتوى</a>
   <header class="site-header">
     <div class="container nav-wrap">
-      <a class="brand" href="#top" aria-label="دورني - الرئيسية"><img src="assets/dorni-wordmark-optimized.png" alt="دورني"></a>
+      <a class="brand" href="#top" aria-label="دورني - الرئيسية"><img src="assets/dorni-wordmark-optimized.png" alt="دورني" width="420" height="161"></a>
       <nav class="desktop-nav" aria-label="التنقل الرئيسي">
-        <a href="#how">كيف يعمل</a><a href="#privacy">الخصوصية</a><a href="#business">للشركات</a><a href="#faq">الأسئلة الشائعة</a>
+        <a href="#how" data-event="how_click" data-location="header">كيف يعمل</a><a href="#privacy">الخصوصية</a><a href="#business" data-event="business_click" data-location="header">للأعمال</a><a href="#faq">الأسئلة الشائعة</a>
       </nav>
       <div class="nav-actions">
         <a class="text-link desktop-only" href="https://dorni.onrender.com/login">تسجيل الدخول</a>
-        <a class="button button-primary button-small" href="https://dorni.onrender.com/app?tab=vehicles">فعّل بطاقتك</a>
-        <button class="menu-button" type="button" aria-label="فتح القائمة" aria-expanded="false"><span></span><span></span><span></span></button>
+        <a class="text-link desktop-only" href="https://dorni.onrender.com/app?tab=vehicles" data-event="activation_click" data-location="header">تفعيل بطاقة</a>
+        <a class="button button-primary button-small" href="#get-dorni" data-event="get_dorni_click" data-location="header">احصل على دورني</a>
+        <button class="menu-button" type="button" aria-label="فتح القائمة" aria-expanded="false" aria-controls="mobile-nav"><span></span><span></span><span></span></button>
       </div>
     </div>
-    <nav class="mobile-nav" aria-label="التنقل على الهاتف">
-      <a href="#how">كيف يعمل</a><a href="#privacy">الخصوصية</a><a href="#business">للشركات</a><a href="#faq">الأسئلة الشائعة</a>
+    <nav class="mobile-nav" id="mobile-nav" aria-label="التنقل على الهاتف">
+      <a href="#how" data-event="how_click" data-location="menu">كيف يعمل</a><a href="#privacy">الخصوصية</a><a href="#business" data-event="business_click" data-location="menu">للأعمال</a><a href="#faq">الأسئلة الشائعة</a>
+      <a href="#get-dorni" data-event="get_dorni_click" data-location="menu">احصل على دورني</a>
+      <a href="https://dorni.onrender.com/app?tab=vehicles" data-event="activation_click" data-location="menu">عندي بطاقة — تفعيل</a>
       <a href="https://dorni.onrender.com/login">تسجيل الدخول</a>
     </nav>
   </header>
@@ -55,25 +76,40 @@
           <h1>نبّه صاحب السيارة<br><em>بدون ما تعرف رقمه</em></h1>
           <p>دورني يوصّل التنبيه بسرعة ويحافظ على خصوصية الطرفين. امسح الرمز، اختار السبب، وأرسل.</p>
           <div class="hero-actions">
-            <a class="button button-primary" href="https://dorni.onrender.com/app?tab=vehicles">فعّل بطاقتك <span aria-hidden="true">◫</span></a>
-            <a class="button button-secondary" href="#how">شوف كيف يعمل</a>
+            <a class="button button-primary" href="#get-dorni" data-event="get_dorni_click" data-location="hero">احصل على دورني</a>
+            <a class="button button-secondary" href="https://dorni.onrender.com/app?tab=vehicles" data-event="activation_click" data-location="hero">عندي بطاقة — تفعيل</a>
           </div>
+          <a class="how-link" href="#how" data-event="how_click" data-location="hero">شوف كيف يعمل <span aria-hidden="true">↓</span></a>
           <div class="trust-row" aria-label="مزايا الخدمة">
             <span><b>✓</b> بدون أرقام شخصية</span><span><b>⚡</b> الإبلاغ من المتصفح</span>
           </div>
         </div>
         <div class="hero-visual reveal">
           <div class="sun" aria-hidden="true"></div>
-          <img class="street" src="assets/libya-street.png" alt="مشهد شارع برسوم دورني">
-          <img class="scanner-person" src="assets/person-scanner.png" alt="شخص يستخدم دورني">
+          <img class="street" src="assets/libya-street.webp" alt="" width="1200" height="698" decoding="async">
+          <img class="scanner-person" src="assets/person-scanner.webp" alt="شخص يستخدم دورني" width="640" height="948" fetchpriority="high" decoding="async">
           <div class="floating-note"><span>✓</span><div><b>التنبيه جاهز</b><small>بدون بيانات اتصال</small></div></div>
         </div>
       </div>
     </section>
 
-    <section class="section how" id="how">
+    <section class="section problems" id="situations" aria-labelledby="situations-title">
       <div class="container">
-        <div class="section-heading reveal"><span class="kicker">ثلاث خطوات فقط</span><h2>كيف يعمل دورني؟</h2><p>من أول مسح للرمز حتى وصول التنبيه لصاحب السيارة.</p></div>
+        <div class="section-heading reveal"><span class="kicker">أكيد صار لك موقف منها</span><h2 id="situations-title">مواقف تصير كل يوم.</h2></div>
+        <div class="problem-grid">
+          <article class="problem-card reveal"><div class="problem-scene"><svg aria-hidden="true"><use href="#i-car"/></svg><span class="blocked-line" aria-hidden="true"></span><svg aria-hidden="true"><use href="#i-car"/></svg></div><h3>سيارة مسكرة عليك</h3><p>تبي تطلع، وصاحبها مش موجود.</p></article>
+          <article class="problem-card reveal"><div class="problem-scene"><svg aria-hidden="true"><use href="#i-garage"/></svg><svg aria-hidden="true"><use href="#i-car"/></svg></div><h3>قدّام جراج البيت</h3><p>المدخل مسكّر، ومش عارف تنادي من.</p></article>
+          <article class="problem-card reveal"><div class="problem-scene"><svg aria-hidden="true"><use href="#i-shop"/></svg><svg aria-hidden="true"><use href="#i-car"/></svg></div><h3>قدّام المحل</h3><p>سيارة تمنع التحميل أو التنزيل.</p></article>
+          <article class="problem-card reveal"><div class="problem-scene"><svg aria-hidden="true"><use href="#i-window"/></svg><svg aria-hidden="true"><use href="#i-alert"/></svg></div><h3>تحتاج انتباه صاحبها</h3><p>أنوار شغالة، نافذة مفتوحة، أو مشكلة ظاهرة.</p></article>
+        </div>
+        <p class="problem-bridge">المشكلة مش إنك شفت السيارة.<br><strong>المشكلة: كيف توصل لصاحبها؟</strong></p>
+        <p class="solution-line">هنا يجي دورني. بطاقة على السيارة تفتح لك طريق التنبيه، بدون ما تعرف رقم صاحبها.</p>
+      </div>
+    </section>
+
+    <section class="section how" id="how" data-view-event="how_view">
+      <div class="container">
+        <div class="section-heading reveal"><span class="kicker">ثلاث خطوات فقط</span><h2>كيف يعمل دورني؟</h2><p>امسح الرمز، اختار السبب، وأرسل التنبيه.</p></div>
         <div class="steps">
           <article class="step-card reveal"><span class="step-number">01</span><div class="step-icon">⌗</div><h3>امسح الرمز</h3><p>افتح كاميرا هاتفك وامسح رمز دورني الموجود على السيارة.</p></article>
           <article class="step-card reveal"><span class="step-number">02</span><div class="step-icon">☷</div><h3>اختار السبب</h3><p>حدد المشكلة من قائمة واضحة، بدون كتابة أو مشاركة بيانات.</p></article>
@@ -82,8 +118,20 @@
       </div>
     </section>
 
-<section class="section journey" id="walkthrough"><div class="wrap">
-    <div class="section-head"><p class="eyebrow">جرّبها بنفسك</p><h2>مش مجرد رمز.<br><em>خطوات واضحة، حتى بعد البلاغ.</em></h2><p>استكشف تجربة المبلّغ، من أول مسح للبطاقة إلى متابعة الردّ وطلب الدعم.</p></div>
+    <section class="section demo" id="app">
+      <div class="container demo-grid">
+        <div class="demo-copy reveal">
+          <span class="kicker light">تجربة واضحة للطرفين</span><h2>تنبيه مفهوم، وردّ أسرع</h2>
+          <p>مُرسل التنبيه يوضّح الموقف، وصاحب المركبة يراجع الحالة ويردّ من حسابه.</p>
+          <div class="two-journeys"><article><h3>مُرسل التنبيه</h3><ol><li>امسح البطاقة</li><li>اختار السبب</li><li>نبّه</li></ol></article><article><h3>صاحب المركبة</h3><ol><li>يصلك التنبيه</li><li>تعرف الحالة</li><li>تتخذ الإجراء</li></ol></article></div>
+          <p class="response-explainer">من الردود المتاحة: «أنا في الطريق»، «تم حل الموضوع»، أو «لا أستطيع الوصول». تابع الردّ من صفحة الحالة؛ تسجيل البلاغ وحده مش تأكيد إن المالك شافه.</p>
+        </div>
+        <div class="owner-art reveal"><div class="owner-sun" aria-hidden="true"></div><img src="assets/person-notified.webp" alt="رسم توضيحي لصاحب السيارة يستقبل تنبيهاً" loading="lazy" decoding="async" width="640" height="960"><div class="floating-note"><span>✓</span><div><b>أنا في الطريق</b><small>مثال لردّ صاحب السيارة</small></div></div></div>
+      </div>
+    </section>
+
+<section class="section journey" id="walkthrough"><div class="container"><details class="demo-explorer"><summary><span>جرّب رحلة التنبيه والدعم<small>شرح تفاعلي اختياري، بدون إرسال بلاغ حقيقي</small></span><b aria-hidden="true">+</b></summary><div class="walkthrough-content"><div class="wrap">
+    <div class="section-head"><p class="eyebrow">جرّبها بنفسك</p><h2>مش مجرد رمز.<br><em>خطوات واضحة، حتى بعد البلاغ.</em></h2><p>استكشف تجربة مُرسل التنبيه، من أول مسح للبطاقة إلى متابعة الردّ وطلب الدعم.</p></div>
     <div class="demo-disclaimer"><span class="dot"></span> محاكاة تعليمية — لا ترسل بلاغاً ولا تتصل بأي شخص.</div>
     <div class="step-tabs" role="tablist" aria-label="مراحل تجربة دورني">
       <button id="step-0" role="tab" aria-selected="true" aria-controls="panel-0" data-step="0"><span>01</span><b>امسح الرمز</b></button>
@@ -104,54 +152,59 @@
     </div>
     <div class="demo-controls"><button id="demo-prev" disabled>الخطوة السابقة</button><span id="demo-counter" role="status">الخطوة 1 من 4</span><button id="demo-reset">ابدأ من جديد ↻</button></div>
     <noscript><p class="info-note">لتجربة المراحل التفاعلية، فعّل JavaScript. مسار دورني: مسح البطاقة، اختيار السبب، متابعة ردّ المالك، ثم طلب الدعم عند توفره.</p></noscript>
-  </div></section>
+  </div></div></details></div></section>
 
-    <section class="section demo" id="app">
-      <div class="container demo-grid">
-        <div class="demo-copy reveal">
-          <span class="kicker light">تجربة واضحة للطرفين</span><h2>تنبيه مفهوم، وردّ أسرع</h2>
-          <p>صاحب السيارة يستلم سبب التنبيه ويحدّث حالته. المبلّغ يتابع ردّ المالك ويطلب الدعم عند توفر التصعيد.</p>
-          <ul class="check-list"><li><span>✓</span> أسباب جاهزة للمواقف الأكثر شيوعاً</li><li><span>✓</span> تحديث مباشر لحالة البلاغ</li><li><span>✓</span> تصعيد للدعم مرتبط بالسيارة والبطاقة</li></ul>
-        </div>
-        <div class="owner-art reveal"><div class="owner-sun" aria-hidden="true"></div><img src="assets/person-notified.png" alt="رسم توضيحي لصاحب السيارة يستقبل تنبيهاً" loading="lazy"><div class="floating-note"><span>✓</span><div><b>أنا في الطريق</b><small>مثال لردّ صاحب السيارة</small></div></div></div>
+    <section class="section privacy" id="privacy" data-view-event="privacy_view">
+      <div class="container privacy-grid">
+        <div class="privacy-visual reveal"><div class="privacy-orbit"><img src="assets/dorni-icon-current.png" alt="أيقونة دورني" width="140" height="140" loading="lazy"><span class="orbit orbit-one">رقمك مخفي</span><span class="orbit orbit-two">رابط متابعة مؤقت</span><span class="orbit orbit-three">بلاغ واضح</span></div></div>
+        <div class="privacy-copy reveal"><span class="kicker">الخصوصية من البداية</span><h2>رقمك ورقمه<br>مش لازم يطلعوا</h2><p>رقم صاحب المركبة وبريده ما يظهروا في صفحة المسح. التنبيه والردّ يمرّوا من خلال دورني، بدون تبادل مباشر لأرقام الهاتف.</p><div class="privacy-flow" aria-label="مُرسل التنبيه، ثم دورني، ثم صاحب المركبة"><span>مُرسل التنبيه</span><b aria-hidden="true">←</b><strong>دورني</strong><b aria-hidden="true">←</b><span>صاحب المركبة</span></div><div class="privacy-points"><div><b>بدون تبادل أرقام</b><small>الرقم الشخصي مش وسيلة التواصل</small></div><div><b>رابط متابعة مؤقت</b><small>لمتابعة الردّ بعد البلاغ. احتفظ به ولا تشاركه.</small></div></div></div>
       </div>
     </section>
 
-    <section class="section privacy" id="privacy">
-      <div class="container privacy-grid">
-        <div class="privacy-visual reveal"><div class="privacy-orbit"><img src="assets/dorni-icon-current.png" alt="أيقونة دورني"><span class="orbit orbit-one">رقمك مخفي</span><span class="orbit orbit-two">رابط مؤقت</span><span class="orbit orbit-three">تنبيه آمن</span></div></div>
-        <div class="privacy-copy reveal"><span class="kicker">الخصوصية من البداية</span><h2>رقمك ورقمه<br>مش لازم يطلعوا</h2><p>التواصل يصير داخل تجربة دورني. لا اسم المرسل يظهر، ولا رقم صاحب السيارة، ولا يتم فتح محادثة شخصية بين الطرفين.</p><div class="privacy-points"><div><b>بدون تبادل أرقام</b><small>لا مكالمات ولا رسائل مباشرة</small></div><div><b>سبب واضح ومحدد</b><small>تنبيهات جاهزة تقلل سوء الفهم</small></div></div></div>
+    <section class="section get-dorni" id="get-dorni" aria-labelledby="get-title">
+      <div class="container purchase-grid">
+        <div class="reveal"><span class="kicker">لصاحب السيارة</span><h2 id="get-title">احصل على دورني.</h2><p class="purchase-lead">بطاقة تربط سيارتك بوسيلة تنبيه، بدل ما تخلّي رقمك على الزجاج.</p><ol class="purchase-steps"><li><b>اطلب التفاصيل</b><span>راسلنا بعدد البطاقات اللي تحتاجها.</span></li><li><b>اتفق معنا</b><span>نوضّح لك المتاح وطريقة الحصول على البطاقة قبل تأكيد الطلب.</span></li><li><b>فعّل بطاقتك</b><span>بعد ما تحصل عليها، اربطها بسيارتك من حسابك.</span></li></ol></div>
+        <div class="request-card reveal"><span class="request-icon" aria-hidden="true"><svg><use href="#i-qr"/></svg></span><h3>تبي بطاقة لسيارتك؟</h3><p>الطلبات والاستفسارات نستقبلوها بالبريد. ما فيش دفع أو تأكيد شراء داخل الصفحة.</p><a class="button button-primary" href="mailto:dorni.2026@gmail.com?subject=طلب%20بطاقة%20دورني&amp;body=مرحباً،%20أرغب%20في%20الحصول%20على%20بطاقة%20دورني.%0Aعدد%20البطاقات:%20%0Aأرجو%20توضيح%20التفاصيل%20وطريقة%20الحصول%20عليها." data-event="card_order_start" data-location="purchase">اطلب بطاقتك بالبريد <svg aria-hidden="true"><use href="#i-arrow"/></svg></a><small>يفتح تطبيق البريد؛ راجع الرسالة واضغط إرسال هناك.</small><div class="email-fallback"><span>أو راسلنا مباشرة:</span><a href="mailto:dorni.2026@gmail.com" dir="ltr">dorni.2026@gmail.com</a></div><div class="existing-card"><b>عندك بطاقة بالفعل؟</b><a href="https://dorni.onrender.com/app?tab=vehicles" data-event="activation_click" data-location="purchase">فعّل بطاقتك من حسابك ←</a></div></div>
       </div>
     </section>
 
     <section class="section business" id="business">
       <div class="container business-card reveal">
-        <div><span class="kicker light">للأساطيل والشركات</span><h2>كل سيارة أسهل في الوصول</h2><p>بطاقات دورني حل عملي للمركبات التابعة للشركات، خدمات التوصيل والأساطيل الصغيرة.</p></div>
-        <a class="button button-light" href="https://dorni.onrender.com/partner">افتح مساحة الشركات</a>
+        <div><span class="kicker light">للفريق والمركبات</span><h2>دورني للأعمال</h2><p>تحتاج بطاقات لموظفيك أو لمركبات الشركة؟ خلّينا نعرف احتياجك، ونناقش معاك توزيع البطاقات أو تجربة محدودة قبل التوسع.</p><ul class="business-uses"><li>بطاقات لموظفي الشركة</li><li>مركبات الشركة والأسطول</li><li>طلب جماعي حسب احتياجك</li></ul><p class="business-note">حساب الشركات يوفّر إدارة حسب الصلاحيات الممنوحة للمؤسسة.</p></div>
+        <div class="business-actions"><a class="button button-light" href="#business-request" data-event="business_click" data-location="business">جرّب دورني في شركتك</a><a class="business-login" href="https://dorni.onrender.com/partner">عندك حساب شركة؟ افتح مساحتك ←</a></div>
       </div>
+      <div class="container business-contact" id="business-request"><div><h3>احكيلنا على احتياج شركتك</h3><p>جهّز رسالة قصيرة، وبعدها افتحها في بريدك وأرسلها لنا.</p><p class="contact-privacy">البيانات ما تُرسلش ولا تُحفظ من النموذج. تنتقل إلى تطبيق بريدك فقط لما تختار فتح الرسالة.</p></div><form id="company-draft-form" class="company-form"><div class="field"><label for="company-name">اسم الشركة</label><input id="company-name" name="company" autocomplete="organization" maxlength="100" required></div><div class="field"><label for="company-quantity">عدد البطاقات المتوقع</label><select id="company-quantity" name="quantity"><option value="غير محدد بعد">غير محدد بعد</option value="1–10">1–10</option><option value="11–50">11–50</option><option value="أكثر من 50">أكثر من 50</option></select></div><div class="field full"><label for="company-purpose">شن الاستخدام المطلوب؟</label><select id="company-purpose" name="purpose"><option value="بطاقات الموظفين">بطاقات الموظفين</option><option value="مركبات الشركة">مركبات الشركة</option><option value="تجربة محدودة">تجربة محدودة</option></select></div><button class="button button-secondary full" type="submit" disabled>جهّز رسالة الشركة</button><div id="company-draft-result" class="full draft-result" hidden><p role="status">الرسالة جاهزة، لكن ما زالت ما انرسلتش.</p><a id="company-mail-link" class="button button-primary" href="mailto:dorni.2026@gmail.com" data-event="company_email_open" data-location="business">افتح الرسالة في بريدك</a><small>راجع التفاصيل واضغط إرسال في بريدك. لو ما فتحش، راسل <bdi>dorni.2026@gmail.com</bdi>.</small></div><noscript><p class="full">راسلنا مباشرة: <a href="mailto:dorni.2026@gmail.com">dorni.2026@gmail.com</a>. تجهيز الرسالة يحتاج JavaScript.</p></noscript></form></div>
     </section>
 
     <section class="section faq" id="faq">
       <div class="container faq-grid">
         <div class="section-heading align-start reveal"><span class="kicker">قبل ما تبدأ</span><h2>أسئلة تتكرر</h2><p>الإجابات الأساسية لفهم البطاقة وطريقة عمل الخدمة.</p></div>
         <div class="accordion reveal">
-    <details><summary>هل لازم المبلّغ يثبّت التطبيق؟<span>+</span></summary><p>لا، يمسح بطاقة السيارة بكاميرا هاتفه ويفتح رابط الإبلاغ في المتصفح. يحتاج اتصالاً بالإنترنت لإرسال البلاغ ومتابعته.</p></details>
-    <details><summary>هل يظهر رقم صاحب السيارة؟<span>+</span></summary><p>لا يظهر رقم المالك أو بريده في صفحة المسح. البلاغ والردود يمران من خلال دورني.</p></details>
-    <details><summary>شن يصير لو صاحب السيارة ما ردّش؟<span>+</span></summary><p>تابع صفحة الحالة. يظهر خيار طلب الدعم عند توفره حسب إعدادات المنظومة. وإذا ردّ المالك «لا أستطيع الوصول»، يتاح التصعيد مباشرة. أرقام مركز الدعم تظهر عند توفر خيار الاتصال.</p></details>
-    <details><summary>هل تجيني إشعارات والتطبيق مسكّر؟<span>+</span></summary><p>على جهاز ومتصفح يدعمان الإشعارات وبعد تفعيلها. استخدم الاختبار داخل الإعدادات للتأكد من وصولها. إذن الإشعارات والاتصال وقيود الهاتف تؤثر على التسليم.</p></details>
-    <details><summary>هل دورني بديل لخدمات الطوارئ؟<span>+</span></summary><p>لا. دورني وسيلة تنبيه ومتابعة، وليس خدمة طوارئ ولا ضماناً لاستجابة المالك. في خطر مباشر، لا تنتظر ردّ التطبيق واطلب المساعدة المناسبة.</p></details>
-    <details><summary>وين نلقى الشروط وسياسة الخصوصية؟<span>+</span></summary><p>تقدر تراجع الوثائق المتاحة من قسم الشروط والخصوصية داخل حسابك. <a href="https://dorni.onrender.com/app?tab=privacy">افتح الشروط والخصوصية في التطبيق</a>.</p></details>
-  </div>
+          <details data-faq="phone"><summary>هل يظهر رقم هاتفي؟<span>+</span></summary><p>رقم صاحب المركبة وبريده ما يظهروا لمُرسل التنبيه في صفحة المسح. التواصل يكون بالبلاغ والردّ داخل دورني، بدون تبادل مباشر للأرقام.</p></details>
+          <details data-faq="sender-app"><summary>هل يحتاج مُرسل التنبيه إلى تطبيق؟<span>+</span></summary><p>لا. يمسح البطاقة بكاميرا هاتفه ويفتح رابط الإبلاغ في المتصفح. يحتاج اتصالاً بالإنترنت للإرسال والمتابعة.</p></details>
+          <details data-faq="scan"><summary>شن يصير بعد مسح QR؟<span>+</span></summary><p>تفتح صفحة السيارة وأسباب التنبيه المتاحة. اختار السبب وأرسل، ثم احتفظ برابط المتابعة المؤقت لمعرفة ردّ صاحب المركبة.</p></details>
+          <details data-faq="change-car"><summary>شن ندير لو غيّرت سيارتي؟<span>+</span></summary><p>من الإعدادات ← السيارات والبطاقات، تقدر تنقل البطاقة إلى سيارة أخرى في حسابك ما عندهاش بطاقة. النقل يحفظ سجل التعيين السابق؛ مش نقل ملكية السيارة.</p></details>
+          <details data-faq="lost-card"><summary>شن ندير لو فقدت البطاقة أو تلفت؟<span>+</span></summary><p>أوقف البطاقة مؤقتاً من إدارة السيارات. لو فقدتها نهائياً، تقدر تلغيها ثم تفعّل بطاقة جديدة أصلية؛ الإلغاء نهائي. لطلب بدل، افتح تذكرة QR / NFC من <a href="https://dorni.onrender.com/app?tab=support">الدعم داخل حسابك</a>.</p></details>
+          <details data-faq="multiple-cars"><summary>نقدر نستخدم دورني لأكثر من سيارة؟<span>+</span></summary><p>تقدر تدير سياراتك من حسابك وتربط البطاقات بها. البطاقة تكون مرتبطة بسيارة واحدة في الوقت نفسه؛ لو تحتاج بطاقات إضافية، <a href="#get-dorni" data-event="get_dorni_click" data-location="faq">تواصل معنا لطلبها</a>.</p></details>
+          <details data-faq="activate"><summary>كيف نفعّل البطاقة؟<span>+</span></summary><p>افتح حسابك وأضف السيارة من «سياراتي». أدخل الرقم التسلسلي ورمز التفعيل الموجود مع بطاقتك، واختر السيارة. احتفظ برمز التفعيل سرياً؛ رابط QR العام مش رمز التفعيل. <a href="https://dorni.onrender.com/app?tab=vehicles" data-event="activation_click" data-location="faq">ابدأ من حسابك</a>.</p></details>
+          <details data-faq="notifications"><summary>كيف تصلني التنبيهات؟<span>+</span></summary><p>تظهر داخل حسابك، وبإشعارات الجهاز بعد تفعيلها من الإعدادات واختبارها. دعم المتصفح، إذن الإشعارات، الاتصال وقيود الهاتف تؤثر على وصولها. ما نعتمدوش على SMS أو WhatsApp. <a href="https://dorni.onrender.com/install">طريقة تثبيت دورني</a>.</p></details>
+          <details data-faq="business"><summary>هل دورني مناسب للشركات؟<span>+</span></summary><p>تقدر تتواصل معنا بخصوص بطاقات الموظفين أو مركبات الشركة وطلب جماعي. مساحة الشركات تتيح إدارة حسب صلاحيات المؤسسة. <a href="#business" data-event="business_click" data-location="faq">احكيلنا على احتياج شركتك</a>.</p></details>
+          <details data-faq="no-response"><summary>شن يصير لو صاحب السيارة ما ردّش؟<span>+</span></summary><p>تابع صفحة الحالة. يظهر طلب الدعم عند توفره حسب إعدادات المنظومة. وإذا ردّ المالك «لا أستطيع الوصول»، يتاح التصعيد مباشرة. أرقام مركز الدعم تظهر عند توفر خيار الاتصال.</p></details>
+          <details data-faq="emergency"><summary>هل دورني بديل لخدمات الطوارئ؟<span>+</span></summary><p>لا. دورني وسيلة تنبيه ومتابعة، وليس خدمة طوارئ ولا ضماناً لاستجابة المالك. في خطر مباشر، لا تنتظر ردّ التطبيق واطلب المساعدة المناسبة.</p></details>
+          <details data-faq="legal"><summary>وين نلقى الشروط وسياسة الخصوصية؟<span>+</span></summary><p>تقدر تراجع الوثائق المتاحة من <a href="https://dorni.onrender.com/app?tab=privacy">قسم الشروط والخصوصية داخل حسابك</a>.</p></details>
+        </div>
       </div>
     </section>
 
     <section class="final-cta" id="activate">
-      <div class="container final-grid"><div><span>بطاقة صغيرة. موقف أسهل.</span><h2>جاهز تفعّل بطاقتك؟</h2><p>خلّي بيانات بطاقتك قريب منك، وافتح حسابك لربطها بسيارتك.</p></div><a class="button button-light button-large" href="https://dorni.onrender.com/app?tab=vehicles">ابدأ الآن</a></div>
+      <div class="container final-grid"><div><span>بطاقة صغيرة. موقف أسهل.</span><h2>خلّي الوصول لك أسهل.</h2><p>ابدأ بطلب بطاقة، أو فعّل البطاقة اللي عندك.</p></div><div class="final-actions"><a class="button button-light button-large" href="#get-dorni" data-event="get_dorni_click" data-location="footer">احصل على دورني</a><a class="button final-secondary" href="https://dorni.onrender.com/app?tab=vehicles" data-event="activation_click" data-location="footer">عندي بطاقة — تفعيل</a></div></div>
     </section>
   </main>
 
   <footer><div class="container footer-grid"><div class="footer-brand"><img src="assets/dorni-wordmark-optimized.png" alt="دورني"><p>تنبيه أسرع، بخصوصية أكثر.</p></div><div><b>دورني</b><a href="#how">كيف يعمل</a><a href="#privacy">الخصوصية</a></div><div><b>المساعدة</b><a href="#faq">الأسئلة الشائعة</a><a href="https://dorni.onrender.com/app?tab=support">الدعم</a></div><div><b>قانوني</b><a href="https://dorni.onrender.com/app?tab=privacy">شروط الاستخدام</a><a href="https://dorni.onrender.com/app?tab=privacy">سياسة الخصوصية</a></div></div><div class="container copyright"><span>© 2026 دورني. جميع الحقوق محفوظة.</span><a href="#top">العودة للأعلى ↑</a></div></footer>
 
-  <script src="assets/site.js?v=4"></script>
+  <script src="assets/analytics.js?v=1"></script>
+  <script src="assets/site.js?v=5"></script>
+  <script src="assets/contact.js?v=1"></script>
 </body>
 </html>
