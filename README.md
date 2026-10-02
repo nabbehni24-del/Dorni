@@ -10,7 +10,7 @@ Static Arabic RTL site at https://dorni-landing.onrender.com/, deployed independ
 
 ## 2026-10-02 conversion improvements
 
-- Preserved original hero message, logo, icon, illustrations, orange/navy identity and original `style.css`. CTA orange was darkened only to improve text contrast. Extensions live in `conversion.css`.
+- Preserved original hero message, logo, icon, illustrations, orange/navy identity and original `style.css`. Brand orange remains #FF5A22; navy foreground text supplies contrast on bright orange buttons and sections. Extensions live in `conversion.css`.
 - Added four everyday parking situations after the hero and a short transition to the existing three-step explanation.
 - Kept the navy section and illustrated owner. Added balanced sender/owner journeys and only supported responses: on the way, resolved, cannot reach.
 - Kept the educational four-stage walkthrough, now optionally expandable after the two journeys. Existing #walkthrough links auto-expand it. No real report, ticket, call or QR token is generated.
