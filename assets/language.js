@@ -46,6 +46,13 @@
   window.dispatchEvent(new CustomEvent('dorni:languagechange',{detail:{locale}}));
  }
  window.DorniI18n=Object.freeze({t,set,get locale(){return locale;}});
- document.querySelectorAll('[data-language-select]').forEach(select=>select.addEventListener('change',()=>apply(select.value,true)));
+ document.querySelectorAll('[data-language-select]').forEach(select=>{
+  select.querySelector('[value="ar-LY"]').textContent='اللغة العربية (ليبيا)';
+  select.addEventListener('change',()=>apply(select.value,true));
+  const short=document.createElement('span');short.className='language-short';short.setAttribute('aria-hidden','true');
+  select.parentElement.appendChild(short);
+  const updateShort=()=>{short.textContent=locale==='en'?'EN':'AR';};
+  window.addEventListener('dorni:languagechange',updateShort);updateShort();
+ });
  apply(locale);
 })();
