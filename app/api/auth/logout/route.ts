@@ -1,5 +1,7 @@
 import { json } from "@/lib/server/http";
 import { createServerSupabase } from "@/lib/supabase/server";
+import {cookies} from 'next/headers';
+import {activationCookie} from '@/lib/server/activation-context';
 export async function POST() {
   const supabase = await createServerSupabase();
   // Revoke this session's device bindings before removing its auth session.
@@ -10,6 +12,7 @@ export async function POST() {
     if(detached.error && !detached.error.message.includes("AUTH_REQUIRED")) console.warn("PUSH_DETACH_UNAVAILABLE");
   }
   const {error}=await supabase.auth.signOut({scope:"local"});
+  if(!error)(await cookies()).delete(activationCookie);
   return error?json({error:"تعذر تسجيل الخروج"},503):json({ok:true});
 }
 

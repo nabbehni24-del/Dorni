@@ -1,0 +1,14 @@
+.git
+.env*
+node_modules
+.next
+outputs
+work
+.sites-runtime
+.codex
+.agents
+.npm-cache*
+supabase
+tests
+docs
+*.tsbuildinfo

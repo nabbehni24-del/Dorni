@@ -1,3 +1,4 @@
+import type {CodeInventory} from "./code-inventory";
 export type CompanySection =
   | "overview"
   | "codes"
@@ -26,6 +27,7 @@ export type PartnerCode = {
   public_token: string;
   ownership_state: string;
   activation_state: string;
+  card_state:string;service_state:string;service_policy:string;admin_suspended:boolean;owner_paused:boolean;first_activated_at:string|null;
 };
 
 export type ProductionExport = {
@@ -36,6 +38,7 @@ export type ProductionExport = {
 };
 
 export type PartnerOverview = {
+  inventory:CodeInventory;
   membership: { role: string; organization_id: string };
   organization: {
     id: string;

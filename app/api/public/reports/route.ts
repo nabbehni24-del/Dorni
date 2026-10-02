@@ -13,8 +13,9 @@ export async function POST(request:Request){
     const ip=(request.headers.get("x-forwarded-for")??"").split(",")[0].trim();
     const {data,error}=await createAdminSupabase().rpc("submit_public_report",{p_public_token:p.publicToken,p_report_type:p.reportType,p_session_hash:await digest(sessionToken),p_status_token_hash:await digest(statusToken),p_ip_hash:ip?await digest(`${process.env.ABUSE_HASH_SECRET??"dev"}:${ip}`):null,p_latitude:p.latitude??null,p_longitude:p.longitude??null});
     if(error){
+      if(error.message.includes("REPORT_RATE_LIMITED")) return json({error:"وصلت بلاغات كثيرة لهذه المركبة. حاول بعد قليل.",code:"RATE_LIMITED"},429);
       if(error.message.includes("REQUEST_EXPIRED")||error.message.includes("REQUEST_CONFLICT")) return json({error:"تعذر استكمال المحاولة السابقة. ابدأ بلاغاً جديداً.",code:"NEW_ATTEMPT_REQUIRED"},409);
-      if(error.message.includes("CODE_NOT_ACTIVE")) return json({error:"البطاقة غير متاحة لاستقبال البلاغات حالياً."},409);
+      if(error.message.includes("CODE_NOT_ACTIVE")) return json({error:"خدمة Dorni لهذه المركبة غير فعالة حاليًا.",code:"SERVICE_UNAVAILABLE"},409);
       return json({error:"تعذر تأكيد إرسال البلاغ. يمكنك إعادة المحاولة بأمان."},503);
     }
     if(!data?.[0]?.report_id) return json({error:"لم يصل تأكيد الإرسال. أعد المحاولة."},503);

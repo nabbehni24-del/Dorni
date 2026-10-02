@@ -1,5 +1,2 @@
-import { redirect } from "next/navigation";
-
-export default function ClaimPage() {
-  redirect("/login");
-}
+import {ActivationJourney} from '@/components/activation-journey';
+export default function ClaimPage(){return <ActivationJourney/>;}

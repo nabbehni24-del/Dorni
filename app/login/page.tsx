@@ -26,6 +26,7 @@ function LoginContent() {
     params = useSearchParams();
   const invite = params.get("invite") ?? "",
     reason = params.get("error");
+  const activating = params.get('next') === '/claim';
   const initialError =
     reason === "partner_invite"
       ? "تعذر ربط دعوة الشركة. افتح رابط الدعوة من جديد."
@@ -93,7 +94,7 @@ function LoginContent() {
       if (!r.ok) throw new Error(j.error);
       if (j.needsEmailConfirmation) {
         setNotice(
-          portal === "partner"
+          activating ? "تم إنشاء الحساب. افتح رسالة تأكيد البريد لإكمال تفعيل بطاقتك. إذا فتحتها في متصفح آخر، ارجع إلى هذا المتصفح وسجّل الدخول." : portal === "partner"
             ? "تم حفظ تسجيل الشركة. افتح رسالة التأكيد، وبعدها تتكوّن بوابة الشركة تلقائياً."
             : "تم إنشاء الحساب. افتح رسالة التأكيد في بريدك وبعدها ادخل.",
         );
@@ -102,7 +103,7 @@ function LoginContent() {
         return;
       }
       router.replace(
-        j.context?.destination ??
+        j.destination ?? j.context?.destination ??
           j.destination ??
           (portal === "partner" ? "/partner" : "/app"),
       );
@@ -126,7 +127,7 @@ function LoginContent() {
         </div>
       </header>
       <section className="auth-card account-auth-card">
-        <div className="account-kind-tabs">
+        {!activating && <div className="account-kind-tabs">
           <button
             className={portal === "owner" ? "active" : ""}
             onClick={() => changePortal("owner")}
@@ -139,7 +140,7 @@ function LoginContent() {
           >
             <Building2 /> {t("شركة / شريك")}
           </button>
-        </div>
+        </div>}
         <span className="auth-icon">
           {portal === "partner" ? (
             <Building2 />
@@ -164,7 +165,7 @@ function LoginContent() {
               : t("تسجيل الدخول")}
         </h1>
         <p>
-          {invite
+          {activating ? t("سجّل الدخول أو أنشئ حسابك لإكمال تفعيل بطاقتك. بيانات التفعيل محفوظة مؤقتًا في هذا المتصفح.") : invite
             ? t("أنشئ حسابك للانضمام إلى الشركة.")
             : portal === "partner"
               ? mode === "signup"

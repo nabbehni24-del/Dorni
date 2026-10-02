@@ -1,4 +1,6 @@
 "use client";
+import {CodeInventoryPanel} from "@/components/code-inventory-panel";
+import {batchRequestKey,completeBatchRequest} from "@/lib/batch-request-key";
 import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { requestJson, errorMessage, copyText } from "@/lib/client-api";
@@ -131,9 +133,11 @@ export function AdminWorkspace({
                 ...batch,
                 organizationId: batch.organizationId || null,
                 productType: "STANDARD_CARD",
+                idempotencyKey: batchRequestKey(JSON.stringify(["admin", batch])),
               },
         ),
       });
+      if (kind === "batch") completeBatchRequest(JSON.stringify(["admin", batch]));
       if (kind === "company") {
         setInvite(result.invitation?.url ?? "");
         setPartner({
@@ -365,6 +369,7 @@ export function AdminWorkspace({
                   <input
                     style={{ width: 18 }}
                     type="checkbox"
+                    disabled
                     checked={editing.trusted_generation}
                     onChange={(e) =>
                       setEditing({
@@ -373,7 +378,7 @@ export function AdminWorkspace({
                       })
                     }
                   />{" "}
-                  السماح بالإصدار المباشر
+                  إذن تشغيل قديم — لا يمنح رصيد أكواد
                 </label>
                 <label>
                   ملاحظة المراجعة
@@ -458,6 +463,7 @@ export function AdminWorkspace({
                 <input
                   style={{ width: 18 }}
                   type="checkbox"
+                  disabled
                   checked={partner.trustedGeneration}
                   onChange={(e) =>
                     setPartner({
@@ -466,7 +472,7 @@ export function AdminWorkspace({
                     })
                   }
                 />{" "}
-                السماح بتوليد الأكواد مباشرة ضمن حد الشركة
+                إذن تشغيل قديم — لا يمنح رصيد أكواد
               </label>
               <button disabled={busy}>
                 {busy ? "جاري الإنشاء…" : "إنشاء الشركة"}
@@ -539,6 +545,7 @@ export function AdminWorkspace({
           </section>
         </>
       )}
+      {section === "production" && batch.organizationId && <CodeInventoryPanel key={batch.organizationId} organizationId={batch.organizationId} refreshKey={productionExport} manage/>}
       {section === "production" && (
         <>
           {productionExport && (

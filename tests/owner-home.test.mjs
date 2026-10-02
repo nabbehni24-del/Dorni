@@ -5,6 +5,6 @@ import {renderToStaticMarkup} from 'react-dom/server';
 import {createElement} from 'react';
 const {OwnerHome}=await import(moduleUrl('components/owner-home.tsx'));
 const render=(props={})=>renderToStaticMarkup(createElement(OwnerHome,{vehicles:[],reports:[],labels:{LIGHTS_ON:'الأنوار شغالة'},onCars(){},onAlerts(){},...props}));
-test('new owner home has a clear next action and no account settings clutter',()=>{const html=render();assert.match(html,/إضافة سيارة/);assert.doesNotMatch(html,/البريد|ملخص الحساب|كيف تستخدم|إعدادات الحساب/);});
+test('new owner home enters the combined activation journey without a dashboard detour',()=>{const html=render();assert.match(html,/href="\/claim"/);assert.match(html,/تفعيل بطاقتك وإضافة مركبتك/);assert.doesNotMatch(html,/البريد|ملخص الحساب|كيف تستخدم|إعدادات الحساب/);});
 test('home surfaces pending alerts, not resolved reports',()=>{const html=render({reports:[{id:'1',status:'ACTIVE',report_type_code:'LIGHTS_ON',created_at:'2026-09-23T10:00:00Z',vehicles:null},{id:'2',status:'RESOLVED',report_type_code:'hidden-resolved',created_at:'2026-09-23T10:00:00Z',vehicles:null}]});assert.match(html,/تنبيهات تستنّى ردّك: 1/);assert.match(html,/الأنوار شغالة/);assert.doesNotMatch(html,/hidden-resolved/);});
 test('vehicle readiness follows current card assignment',()=>{const html=render({vehicles:[{id:'car',manufacturer:'Test',model:'Car',color:'أسود',code_assignments:[{ended_at:'2026-01-01',codes:{activation_state:'ACTIVE'}}]}]});assert.match(html,/فعّل بطاقتك/);});

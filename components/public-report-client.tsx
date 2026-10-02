@@ -18,7 +18,7 @@ export function PublicReportClient({token}:{token:string}){
   const attempt=useRef<ReportAttempt|null>(null),sending=useRef(false);
   const storageKey="dorni_report_attempt:"+token;
   const load=useCallback(async()=>{
-    setError("");
+    setError("");setVehicle(null);
     try{const d=await requestJson<{vehicle:{manufacturer:string;model:string;color:string}}>("/api/public/codes/"+token);setVehicle(d.vehicle);}
     catch(e){setError(errorMessage(e));}
   },[token]);
@@ -51,6 +51,7 @@ export function PublicReportClient({token}:{token:string}){
       const response=await fetch("/api/public/reports",{method:"POST",headers:{"content-type":"application/json"},signal:AbortSignal.timeout(30000),body:JSON.stringify({publicToken:token,reportType:reason,statusToken:attempt.current.statusToken,scannerSessionToken:attempt.current.sessionToken,...location})});
       const d=await response.json();
       if(!response.ok){
+        if(d.code==="SERVICE_UNAVAILABLE")setVehicle(null);
         if(d.code==="NEW_ATTEMPT_REQUIRED"){attempt.current=null;try{sessionStorage.removeItem(storageKey);}catch{}}
         throw new Error(d.error||"تعذر تأكيد الإرسال. أعد المحاولة بأمان.");
       }

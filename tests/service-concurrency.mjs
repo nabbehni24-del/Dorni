@@ -1,0 +1,50 @@
+import {spawn,spawnSync} from 'node:child_process';
+import assert from 'node:assert/strict';
+const database=process.argv[2];
+if(!/^dorni_commercial_phases_\d+$/.test(database??''))throw Error('Fresh synthetic phase database required');
+const exe='C:/Program Files/PostgreSQL/17/bin/psql.exe';
+const args=['-X','-h','127.0.0.1','-p','55439','-U','dorni_test','-d',database,'-v','ON_ERROR_STOP=1','-At'];
+const id=n=>`00000000-0000-4000-8000-${String(n).padStart(12,'0')}`;
+function sql(input){const r=spawnSync(exe,args,{input,encoding:'utf8'});if(r.status!==0)throw Error(r.stderr);return r.stdout.trim();}
+function run(input){return new Promise((resolve,reject)=>{const p=spawn(exe,args);let out='',error='';p.on('error',reject);p.stdout.on('data',b=>out+=b);p.stderr.on('data',b=>error+=b);p.on('close',status=>resolve({status,out,error}));p.stdin.end(input);});}
+const auth=u=>`select set_config('request.jwt.claim.sub','${id(u)}',true),set_config('request.jwt.claims','{"session_id":"${id(u)}"}',true);set local role authenticated;`;
+sql(`insert into auth.users(id,email) values('${id(501)}','renewal-admin@example.invalid'),('${id(502)}','renewal-owner@example.invalid');
+insert into auth.sessions(id,user_id) values('${id(501)}','${id(501)}'),('${id(502)}','${id(502)}');
+insert into public.internal_memberships(user_id,role_code,active) values('${id(501)}','SUPER_ADMIN',true);
+insert into public.vehicles(id,owner_id,manufacturer,model,color) values('${id(503)}','${id(502)}','Test','Concurrency','Orange');
+insert into public.codes(id,serial_number,public_token) values('${id(504)}','RENEWAL-CONCURRENT','RENEWAL-CONCURRENT-PUBLIC');
+insert into public.code_claims(code_id,credential_hash) values('${id(504)}',repeat('a',64));
+begin;${auth(502)}select public.claim_dorni_code('RENEWAL-CONCURRENT',repeat('a',64),'${id(503)}');commit;`);
+const monthly=sql("select v.id from public.service_plan_versions v join public.service_plans p on p.id=v.plan_id where p.code='MONTHLY' and version=1");
+function order(key,source='MANUAL_ADMIN',price='null'){
+ sql(`begin;${auth(501)}select public.create_service_order('${id(504)}','${monthly}',${price},'${source}','${source==='MANUAL_ADMIN'?'ADMIN':'TEST_PROVIDER'}','RENEWAL','concurrent-service-${key}','Concurrent renewal test');commit;`);
+ return sql(`select id from public.service_orders where request_key='concurrent-service-${key}'`);
+}
+const confirm=o=>`begin;${auth(501)}select public.confirm_manual_service_order('${o}');select pg_sleep(0.15);commit;`;
+const duplicate=order('duplicate');
+let results=await Promise.all([run(confirm(duplicate)),run(confirm(duplicate))]);
+assert.ok(results.every(r=>r.status===0),JSON.stringify(results));
+assert.equal(sql(`select count(*) from public.service_periods where order_id='${duplicate}'`),'1');
+console.log('PASS concurrent duplicate manual confirmation: one period');
+const first=order('first'),second=order('second');
+results=await Promise.all([run(confirm(first)),run(confirm(second))]);
+assert.ok(results.every(r=>r.status===0),JSON.stringify(results));
+assert.equal(sql(`select count(*) from (select starts_at,lag(ends_at) over(order by starts_at) previous_end from public.service_periods where code_id='${id(504)}') p where previous_end is not null and starts_at<>previous_end`),'0');
+assert.equal(sql(`select count(*) from public.service_periods where code_id='${id(504)}'`),'4');
+console.log('PASS distinct simultaneous renewals serialize into contiguous periods');
+sql(`begin;${auth(501)}select public.manage_service_catalog('price',jsonb_build_object('versionId','${monthly}','amountMinor',1000,'currency','LYD'));commit;`);
+const price=sql(`select id from public.service_prices where plan_version_id='${monthly}' order by created_at desc limit 1`);
+const payment=order('payment','PAYMENT_PROVIDER',`'${price}'`);
+const provider=(o,ref,amount=1000)=>`begin;set local role service_role;select public.confirm_provider_service_order('${o}','TEST_PROVIDER','${ref}',${amount},'LYD');select pg_sleep(0.15);commit;`;
+results=await Promise.all([run(provider(payment,'concurrent-provider-event')),run(provider(payment,'concurrent-provider-event'))]);
+assert.ok(results.every(r=>r.status===0),JSON.stringify(results));
+assert.equal(sql(`select count(*) from public.service_periods where order_id='${payment}'`),'1');
+const other=order('payment-other','PAYMENT_PROVIDER',`'${price}'`);
+let rejected=await run(provider(other,'concurrent-provider-event'));
+assert.notEqual(rejected.status,0);assert.match(rejected.error,/CONFIRMATION_ALREADY_USED/);
+rejected=await run(provider(other,'wrong-amount',1));
+assert.notEqual(rejected.status,0);assert.match(rejected.error,/PAYMENT_MISMATCH/);
+rejected=await run(provider(payment,'different-reference'));
+assert.notEqual(rejected.status,0);assert.match(rejected.error,/CONFIRMATION_CONFLICT/);
+assert.equal(sql(`select count(*) from public.service_periods where order_id='${other}'`),'0');
+console.log('PASS provider duplicate, reference reuse, changed reference and amount mismatch');

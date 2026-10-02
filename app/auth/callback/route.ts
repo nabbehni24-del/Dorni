@@ -4,6 +4,7 @@ import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { createServerSupabase } from "@/lib/supabase/server";
 import { publicOrigin } from "@/lib/server/public-origin";
+import {activationDestination} from '@/lib/server/activation-context';
 
 const allowedTypes = new Set<EmailOtpType>(["email", "magiclink", "recovery", "invite", "email_change", "signup"]);
 
@@ -11,7 +12,7 @@ export async function GET(request: Request) {
   const url = new URL(request.url);
   const origin = publicOrigin(request);
   const nextParam = url.searchParams.get("next");
-  const requestedNext = nextParam?.startsWith("/") && !nextParam.startsWith("//") ? nextParam : null;
+  const requestedNext = nextParam && ['/app','/partner','/claim','/reset-password'].includes(nextParam) ? nextParam : null;
   const code = url.searchParams.get("code");
   const tokenHash = url.searchParams.get("token_hash");
   const type = url.searchParams.get("type") as EmailOtpType | null;
@@ -49,7 +50,7 @@ export async function GET(request: Request) {
       return NextResponse.redirect(login);
     }
   }
-  const response = NextResponse.redirect(new URL(inviteToken ? "/partner" : next, origin));
+  const response = NextResponse.redirect(new URL(inviteToken ? "/partner" : await activationDestination(next), origin));
   if (inviteToken) response.cookies.delete("dorni_partner_invite");
   return response;
 }

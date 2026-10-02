@@ -10,7 +10,7 @@ export async function POST(request:Request){
     const value=schema.parse(await body(request));
     const {supabase}=await requireUser();
     const {data,error}=await supabase.rpc("create_institutional_move_request",{p_organization_id:value.organizationId,p_public_token:value.publicToken,p_reason_code:value.reasonCode,p_reason_note:value.reasonNote??null,p_idempotency_key:value.idempotencyKey});
-    if(error){const forbidden=error.message.includes("FORBIDDEN");const limited=error.message.includes("RATE_LIMITED")||error.message.includes("DUPLICATE");return json({error:forbidden?"ما عندكش صلاحية لإرسال هذا الإجراء":limited?"تم إرسال طلب قريباً؛ انتظر قبل إعادة المحاولة":"تعذر إنشاء الطلب المؤسسي"},forbidden?403:400);}
+    if(error){if(error.message.includes("CODE_NOT_ACTIVE"))return json({error:"خدمة Dorni لهذه المركبة غير فعالة حاليًا."},409);const forbidden=error.message.includes("FORBIDDEN");const limited=error.message.includes("RATE_LIMITED")||error.message.includes("DUPLICATE");return json({error:forbidden?"ما عندكش صلاحية لإرسال هذا الإجراء":limited?"تم إرسال طلب قريباً؛ انتظر قبل إعادة المحاولة":"تعذر إنشاء الطلب المؤسسي"},forbidden?403:400);}
     return json({action:data},201);
   }catch(error){if(error instanceof UnauthorizedError)return json({error:"UNAUTHORIZED"},401);if(error instanceof z.ZodError)return json({error:error.issues[0]?.message??"بيانات الطلب غير صالحة"},400);return json({error:"تعذر إنشاء الطلب المؤسسي"},500);}
 }

@@ -2,6 +2,22 @@ import type {Locale} from './locale';
 // Source copy is the stable key. Only authored UI copy is passed to this catalog.
 // Customer names, messages, vehicle details and published legal documents are not translated.
 const rows = `
+رقم الهاتف|Phone number
+غير موثّق|Not verified
+موثّق ✓|Verified ✓
+لم تضف رقم هاتف بعد.|You have not added a phone number yet.
+نحفظ الرقم بصيغة +218. حفظ الرقم لا يعني توثيقه، ولا يغيّر طريقة تسجيل دخولك.|We save your number in +218 format. Saving it does not verify it or change how you sign in.
+حفظ رقم الهاتف|Save phone number
+إزالة رقم الهاتف|Remove phone number
+تم حفظ رقم الهاتف.|Phone number saved.
+تمت إزالة رقم الهاتف.|Phone number removed.
+رقمك لا يظهر لمُرسل التنبيه أو للشركة التي أصدرت بطاقتك.|Your number is not shown to the reporter or the company that issued your card.
+جاري تحميل رقم الهاتف…|Loading phone number…
+تحديث البيانات|Refresh details
+أدخل رقمًا ليبيًا صحيحًا مع رمز الشبكة أو المدينة.|Enter a valid Libyan number including its mobile or area code.
+تغير الرقم في جلسة أخرى. حدّث البيانات قبل الحفظ.|Your number changed in another session. Refresh before saving.
+تعذر حفظ رقم الهاتف|Could not save your phone number
+تعذر تحميل رقم الهاتف|Could not load your phone number
 أنت بدون اتصال. تحتاج الإنترنت لإرسال البلاغات وحفظ التغييرات.|You are offline. Connect to send reports and save changes.
 تثبيت دورني|Install Dorni
 نسخة جديدة من دورني جاهزة. احفظ تغييراتك ثم حدّث.|A new version of Dorni is ready. Save your changes before updating.

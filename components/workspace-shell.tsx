@@ -22,6 +22,7 @@ const adminLinks = [
   { href: "/admin", title: "نظرة عامة", icon: LayoutDashboard },
   { href: "/admin/companies", title: "الشركات والشركاء", icon: Building2 },
   { href: "/admin/production", title: "الأكواد والإنتاج", icon: Boxes },
+  { href: "/admin/renewals", title: "طلبات التجديد", icon: History },
   { href: "/admin/institutions", title: "صلاحيات المؤسسات", icon: ShieldCheck },
   { href: "/admin/support", title: "فريق الدعم", icon: Users },
   { href: "/admin/inbox", title: "صندوق الدعم", icon: Headphones },
