@@ -70,6 +70,12 @@ Reserved events `activation_start`, `activation_complete`, `company_form_submitt
 
 Browser checks: 320, 360, 390, 430, 768, 1280 CSS px × all four panels (24 combinations), one visible panel and no horizontal page overflow. Checked educational owner-unavailable response, company draft creation and invalidation, correct approved recipient, FAQ expansion and mobile navigation. No production records created.
 
+## Language selector
+
+The landing page supports formal Arabic (`ar`), Libyan Arabic (`ar-LY`, default), and English (`en`). Header and mobile-menu selectors show a local SVG flag and a written language name. Switching is immediate, updates text, accessibility labels, interactive-demo messages and email drafts, and changes RTL/LTR direction. Only the chosen locale is saved in localStorage (`dorni.landing.language`); no translation service or tracking was added. This preference is for the landing page, not the separate application.
+
+Language verification: all 16 tests pass with `node --test tests/site.test.mjs tests/analytics.test.mjs tests/contact.test.mjs tests/language.test.mjs`. Browser checks covered all three languages at 320, 390, 1024 and 1280 CSS pixels with no horizontal overflow; English remained selected after reload.
+
 ## Founder decisions remaining
 
 Product photograph/design, approved service duration and commercial terms, optional actual mail submission provider, and eventual analytics provider/consent model. None were invented or silently enabled.
