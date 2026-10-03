@@ -3,6 +3,7 @@ import type {Locale} from './locale';
 // Customer names, messages, vehicle details and published legal documents are not translated.
 const rows = `
 رقم الهاتف|Phone number
+تفعيل بطاقة أخرى|Activate another card
 استرجاع الحساب متاح حاليًا عبر الدعم بعد التحقق من الملكية.|Account recovery is currently handled by support after ownership checks.
 لا ترسل كلمة مرورك أو رمز بطاقتك. البريد أو الرقم غير الموثّق وحده لا يكفي لاسترجاع الحساب.|Do not send your password or card activation code. An unverified email or phone number alone cannot establish account ownership.
 يلزم توثيق بريدك لاحقًا. خدمة التوثيق غير متاحة حاليًا؛ تفعيل البطاقة لا يوثّق البريد.|You will need to verify your email later. Verification is not available yet; activating a card does not verify your email.

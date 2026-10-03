@@ -16,6 +16,16 @@ export function ActivationJourney(){
  const {t,dir}=useLocale();const router=useRouter();const started=useRef(false),draftLoaded=useRef(false);
  const [journey,setJourney]=useState<Journey|null>(null),[busy,setBusy]=useState(false),[error,setError]=useState(''),[manual,setManual]=useState(false),[serial,setSerial]=useState(''),[credential,setCredential]=useState('');
  const [vehicle,setVehicle]=useState(''),[form,setForm]=useState({manufacturer:'',model:'',color:''});
+ async function startAnother(){
+  if(busy)return;setBusy(true);setError('');
+  try{
+   const r=await fetch('/api/activation',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({action:'restart'})});
+   if(!r.ok)throw Error(t(messages.RETRY));
+   try{sessionStorage.removeItem('activation-serial');}catch{}
+   draftLoaded.current=false;setCredential('');setSerial('');setVehicle('');setForm({manufacturer:'',model:'',color:''});setManual(true);
+   await load();
+  }catch(e){setError(e instanceof Error?e.message:t(messages.RETRY));}finally{setBusy(false);}
+ }
  async function load(){
   const r=await fetch('/api/activation',{cache:'no-store'});
   if(r.status===401){window.location.replace('/login?next=/claim');return;}
@@ -66,6 +76,7 @@ export function ActivationJourney(){
     <span className="activation-success"><Check size={32}/></span><h1>{journey.state==='ACTIVATED'?t('تم تفعيل Dorni ✓'):t('هذه البطاقة مرتبطة بحسابك')}</h1>
     {journey.state==='ACTIVATED'?<section className="activation-box"><ServiceFacts service={journey.service}/></section>:<ServiceDetail initial={journey.service}/>}
     <Link className="activation-primary" href="/app?tab=vehicles">{t('الذهاب إلى مركباتي')}</Link>
+    <button className="activation-secondary" disabled={busy} onClick={()=>void startAnother()}>{t('تفعيل بطاقة أخرى')}</button>
    </>:journey?.state==='READY'?<>
     <div className="activation-progress" aria-hidden="true"><span className="done"/><span className="done"/><span/></div>
     <span className="activation-step">{t('خطوة واحدة وتصبح جاهزًا')}</span><h1>{t('فعّل Dorni على مركبتك')}</h1>

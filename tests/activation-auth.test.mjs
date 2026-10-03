@@ -36,6 +36,8 @@ test('activation screen never captures a credential from a scanned URL',()=>{
  assert.match(source,/action:'restart'/);
  assert.match(source,/if\(j.state==='MISSING'\)setManual\(true\)/);
  assert.match(source,/await capture\(s,c\)/); // explicit form submission only
+ assert.match(source,/onClick=\{\(\)=>void startAnother\(\)\}/);
+ assert.match(source,/async function startAnother\(\)/);
 });
 
 test('support-only recovery refuses before constructing an Auth client or sending mail',async()=>{
