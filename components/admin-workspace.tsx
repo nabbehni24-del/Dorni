@@ -1,6 +1,7 @@
 "use client";
 import {CodeInventoryPanel} from "@/components/code-inventory-panel";
 import {batchRequestKey,completeBatchRequest} from "@/lib/batch-request-key";
+import {readBatchDraft,saveBatchDraft,clearBatchDraft} from "@/lib/batch-draft";
 import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { requestJson, errorMessage, copyText } from "@/lib/client-api";
@@ -15,6 +16,7 @@ type Company = {
   review_note: string | null;
 };
 type Overview = {
+  actorId: string;
   auditLogs: {
     id: string;
     action: string;
@@ -99,9 +101,19 @@ export function AdminWorkspace({
     trustedGeneration: false,
   });
   const [batch, setBatch] = useState({ organizationId: "", quantity: 100 });
+  const [pendingBatch,setPendingBatch]=useState(false),[batchReady,setBatchReady]=useState(false);
+  const restoredActor=useRef("");
   const load = useCallback(async () => {
     try {
-      setData(await requestJson<Overview>("/api/admin/overview"));
+      const overview=await requestJson<Overview>("/api/admin/overview");
+      if(restoredActor.current!==overview.actorId){
+        const draft=readBatchDraft(overview.actorId);
+        setBatch(draft??{organizationId:"",quantity:100});
+        setPendingBatch(Boolean(draft));
+        restoredActor.current=overview.actorId;
+        setBatchReady(true);
+      }
+      setData(overview);
       setError("");
     } catch (e) {
       setError(errorMessage(e));
@@ -118,7 +130,13 @@ export function AdminWorkspace({
     setError("");
     setNotice("");
     setInvite("");
+    if(kind==="batch")setProductionExport("");
     try {
+      if(kind==="batch"){
+        if(!data?.actorId||!batchReady)throw new Error("حدّث الصفحة قبل الإصدار.");
+        saveBatchDraft(data.actorId,batch);
+        setPendingBatch(true);
+      }
       const result = await requestJson<{
         invitation?: { url: string };
         batch?: { batchCode: string };
@@ -137,7 +155,11 @@ export function AdminWorkspace({
               },
         ),
       });
-      if (kind === "batch") completeBatchRequest(JSON.stringify(["admin", batch]));
+      if (kind === "batch") {
+        completeBatchRequest(JSON.stringify(["admin", batch]));
+        clearBatchDraft(data!.actorId);
+        setPendingBatch(false);
+      }
       if (kind === "company") {
         setInvite(result.invitation?.url ?? "");
         setPartner({
@@ -574,6 +596,7 @@ export function AdminWorkspace({
           )}
           <section className="ws-panel">
             <h2>إصدار دفعة</h2>
+            {pendingBatch&&<p role="status">طلب إصدار محفوظ بانتظار التأكيد. أعد المحاولة لاستكمال نفس الدفعة دون إصدار أكواد إضافية. لا تغيّر الجهة أو الكمية.</p>}
             <p>
               عملية الإصدار تنشئ أكواداً فعلية. راجع الشركة والكمية قبل التأكيد.
             </p>
@@ -588,6 +611,7 @@ export function AdminWorkspace({
                 <label>
                   الجهة
                   <select
+                    disabled={busy||pendingBatch||!batchReady}
                     value={batch.organizationId}
                     onChange={(e) =>
                       setBatch({ ...batch, organizationId: e.target.value })
@@ -607,6 +631,7 @@ export function AdminWorkspace({
                   عدد الأكواد
                   <input
                     type="number"
+                    disabled={busy||pendingBatch||!batchReady}
                     required
                     min={1}
                     max={1000}
@@ -618,20 +643,21 @@ export function AdminWorkspace({
                   />
                 </label>
               </div>
-              <button disabled={busy}>
-                {busy ? "جاري الإصدار…" : "إصدار الدفعة"}
+              <button disabled={busy||!batchReady}>
+                {busy ? "جاري الإصدار…" : pendingBatch ? "إعادة محاولة نفس الدفعة" : "إصدار الدفعة"}
               </button>
             </form>
           </section>
           <section className="ws-panel">
             <h2>آخر الدفعات</h2>
+            <p>هذه حالة توليد الأكواد فقط؛ اكتمال التوليد لا يعني نجاح رفع ملف CSV. عند فشل الرفع أعد محاولة الطلب المحفوظ.</p>
             <div className="ws-table-wrap">
               <table className="ws-table">
                 <thead>
                   <tr>
                     <th>الدفعة</th>
                     <th>الكمية</th>
-                    <th>حالة الإنتاج</th>
+                    <th>حالة توليد الأكواد</th>
                   </tr>
                 </thead>
                 <tbody>
