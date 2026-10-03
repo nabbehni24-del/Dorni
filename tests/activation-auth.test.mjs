@@ -5,6 +5,7 @@ import * as crypto from 'node:crypto';
 import ts from 'typescript';
 import {z} from 'zod';
 function load(path,imports={}){
+ imports={'@/lib/login-error': path==='lib/login-error.ts'?{}:load('lib/login-error.ts'),...imports};
  const exports={};const js=ts.transpileModule(readFileSync(new URL('../'+path,import.meta.url),'utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2022}}).outputText;
  new Function('require','exports',js)(name=>{if(name==='server-only')return {};if(name==='node:crypto')return crypto;if(name==='zod')return {z};if(name==='@/lib/auth-callback-recovery')return load('lib/auth-callback-recovery.ts');if(name in imports)return imports[name];throw Error('Unexpected import '+name);},exports);return exports;
 }
