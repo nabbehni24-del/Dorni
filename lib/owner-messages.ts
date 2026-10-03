@@ -3,6 +3,14 @@ import type {Locale} from './locale';
 // Customer names, messages, vehicle details and published legal documents are not translated.
 const rows = `
 رقم الهاتف|Phone number
+استرجاع الحساب متاح حاليًا عبر الدعم بعد التحقق من الملكية.|Account recovery is currently handled by support after ownership checks.
+لا ترسل كلمة مرورك أو رمز بطاقتك. البريد أو الرقم غير الموثّق وحده لا يكفي لاسترجاع الحساب.|Do not send your password or card activation code. An unverified email or phone number alone cannot establish account ownership.
+يلزم توثيق بريدك لاحقًا. خدمة التوثيق غير متاحة حاليًا؛ تفعيل البطاقة لا يوثّق البريد.|You will need to verify your email later. Verification is not available yet; activating a card does not verify your email.
+استرجاع الحساب عبر الدعم|Recover your account with support
+يساعدك الدعم على استرجاع الحساب بعد التحقق من الملكية. لا يُغيّر الحساب تلقائيًا عند إرسال الطلب.|Support can help recover your account after ownership checks. Contacting support does not automatically change your account.
+أرقام مركز الدعم غير منشورة حاليًا. تواصل مع الجهة التي سلّمتك البطاقة للوصول إلى دعم Dorni.|Support phone numbers have not been published yet. Contact your card supplier to reach Dorni support.
+تعذر تحميل وسائل الدعم. حاول لاحقًا.|Support contacts could not be loaded. Please try later.
+تعذر تحميل حالة البريد|Email verification status could not be loaded
 غير موثّق|Not verified
 موثّق ✓|Verified ✓
 لم تضف رقم هاتف بعد.|You have not added a phone number yet.

@@ -20,6 +20,7 @@ export function ActivationJourney(){
   const r=await fetch('/api/activation',{cache:'no-store'});
   if(r.status===401){window.location.replace('/login?next=/claim');return;}
   const j:Journey=await r.json();setJourney(j);
+  if(j.state==='MISSING')setManual(true);
   if(j.state==='READY'&&!draftLoaded.current){draftLoaded.current=true;let draft=null;
    try{draft=JSON.parse(sessionStorage.getItem('activation-draft:'+j.journeyId)??'null');}catch{}
    const available=j.vehicles?.filter(v=>!v.occupied)??[];
@@ -29,14 +30,20 @@ export function ActivationJourney(){
  async function capture(s:string,c:string){
   const r=await fetch('/api/activation',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({action:'capture',serial:s,code:c})});
   if(!r.ok)throw Error(t('تعذر حفظ رابط التفعيل. امسحه مجددًا.'));
+  try{sessionStorage.removeItem('activation-serial');}catch{}
   draftLoaded.current=false;setManual(false);await load();
  }
  useEffect(()=>{const unwatch=watchActivationFragment(window);
   if(!started.current){started.current=true;
   void(async()=>{try{const url=new URL(window.location.href),params=new URLSearchParams(url.hash.slice(1));
-   let s=params.get('serial')??url.searchParams.get('serial'),c=params.get('code')??url.searchParams.get('code');
+   const s=params.get('serial')??url.searchParams.get('serial');
    window.history.replaceState(null,'','/claim');
-   if(s&&c){const request=capture(s,c);s=null;c=null;await request;}else await load();
+   // Only the non-secret printed identifier survives a login redirect.
+   try{if(s)sessionStorage.setItem('activation-serial',s);else setSerial(sessionStorage.getItem('activation-serial')??'');}catch{}
+   // A scanned link may identify stock, but never supplies the activation secret.
+   // Users must enter the private printed code themselves.
+   if(s){setSerial(s);setManual(true);const reset=await fetch('/api/activation',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({action:'restart',serial:s})});if(!reset.ok)throw Error(t('تعذر تجهيز البطاقة. حاول مجددًا.'));}
+   await load();
   }catch(e){setError(e instanceof Error?e.message:t('تعذر تحميل التفعيل'));}})();}
   return unwatch;
  // Capture the original URL once, also under React Strict Mode.
@@ -70,7 +77,7 @@ export function ActivationJourney(){
      {valid&&<p className="activation-notice">{t('سترتبط بطاقتك بـ')} {vehicle==='new'?`${form.manufacturer} ${form.model} — ${form.color}`:`${selected?.manufacturer} ${selected?.model} — ${selected?.color}`} · {t(journey.plan??'')}</p>}
      <button className="activation-primary" disabled={busy||!valid} type="submit">{busy?t('جاري التفعيل…'):t('تفعيل Dorni على هذه المركبة')}<ShieldCheck size={20}/></button>
     </form>
-   </>:journey&&<><h1>{t('تفعيل بطاقتك')}</h1><p className="activation-notice">{t(messages[journey.state]??messages.RETRY)}</p><Link href="/app?tab=support">{t('التواصل مع الدعم')}</Link></>}
+   </>:journey&&<><h1>{t('تفعيل بطاقتك')}</h1><p className="activation-notice">{t(journey.state==='MISSING'?'أدخل رقم البطاقة ورمز التفعيل الخاص المطبوع عليها. إنشاء الحساب أو تأكيد البريد لا يبدأ الاشتراك.':messages[journey.state]??messages.RETRY)}</p><Link href="/app?tab=support">{t('التواصل مع الدعم')}</Link></>}
    {error&&<p className="activation-error" role="alert">{error}</p>}
    {!journey?.service&&<button className="activation-secondary" disabled={busy} onClick={()=>{setError('');void load().catch(()=>setError(t(messages.RETRY)));}}>{t('تحديث حالة البطاقة')}</button>}
    {!journey?.service&&journey?.state!=='READY'&&<button className="activation-secondary" onClick={()=>setManual(!manual)}>{t('إدخال بيانات البطاقة يدويًا')}</button>}

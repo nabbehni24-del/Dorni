@@ -1,7 +1,7 @@
 import {z} from 'zod';
 import {json,requireUser,UnauthorizedError} from '@/lib/server/http';
 import {claimDigest} from '@/lib/server/security';
-import {newContext,readActivationContext,saveActivationContext} from '@/lib/server/activation-context';
+import {newContext,readActivationContext,saveActivationContext,clearActivationContext,rememberActivationSerial} from '@/lib/server/activation-context';
 import {validPushOrigin} from '@/lib/server/push-origin';
 const capture=z.object({action:z.literal('capture'),serial:z.string().trim().min(6).max(80),code:z.string().trim().min(8).max(120)}).strict();
 const confirm=z.object({action:z.literal('confirm'),journeyId:z.string().uuid(),versionId:z.string().uuid().nullable(),vehicleId:z.string().uuid().optional(),manufacturer:z.string().trim().min(1).max(80).optional(),model:z.string().trim().min(1).max(80).optional(),color:z.string().trim().min(1).max(40).optional()}).strict();
@@ -22,10 +22,11 @@ async function journey(confirmData?:z.infer<typeof confirm>){
  if(vehicles.error)return json({state:'RETRY'},503);
  return json({...data,journeyId:context.id,vehicles:vehicles.data.map(v=>({...v,occupied:v.code_assignments.some((a:{ended_at:string|null})=>!a.ended_at),code_assignments:undefined}))});
 }
-export async function GET(){try{return await journey();}catch(e){return json({state:e instanceof UnauthorizedError?'AUTH_REQUIRED':'RETRY'},e instanceof UnauthorizedError?401:503);}}
+export async function GET(){try{if(!await readActivationContext())await rememberActivationSerial('pending');return await journey();}catch(e){return json({state:e instanceof UnauthorizedError?'AUTH_REQUIRED':'RETRY'},e instanceof UnauthorizedError?401:503);}}
 export async function POST(request:Request){try{
  if(!validPushOrigin(request,process.env.NEXT_PUBLIC_APP_URL)||!request.headers.get('origin'))return json({state:'FORBIDDEN'},403);
  const raw=await request.json();
+ if(raw.action==='restart'){const p=z.object({action:z.literal('restart'),serial:z.string().trim().min(6).max(80).optional()}).strict().parse(raw);await clearActivationContext();if(p.serial)await rememberActivationSerial(p.serial);return json({ok:true});}
  if(raw.action==='capture'){
   const p=capture.parse(raw);await saveActivationContext(newContext(p.serial.toUpperCase(),await claimDigest(p.serial,p.code)));
   return json({ok:true}); // Never echo the proof, credential or cookie.

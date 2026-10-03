@@ -62,14 +62,6 @@ function LoginContent() {
     setNotice("");
     try {
       if (mode === "forgot") {
-        const r = await fetch("/api/auth/forgot-password", {
-          method: "POST",
-          headers: { "content-type": "application/json" },
-          body: JSON.stringify({ email }),
-        });
-        const j = await r.json();
-        if (!r.ok) throw new Error(j.error);
-        setNotice("لو البريد مسجل، بيصلك رابط لتغيير كلمة المرور.");
         return;
       }
       const url = mode === "signup" ? "/api/auth/signup" : "/api/auth/login";
@@ -182,7 +174,11 @@ function LoginContent() {
             <ShieldCheck /> {t("دعوة شركة موثقة")}
           </div>
         )}
-        <form onSubmit={submit}>
+        {mode === "forgot" ? <div className="privacy-note" role="status">
+          <p>{t("استرجاع الحساب متاح حاليًا عبر الدعم بعد التحقق من الملكية.")}</p>
+          <p>{t("لا ترسل كلمة مرورك أو رمز بطاقتك. البريد أو الرقم غير الموثّق وحده لا يكفي لاسترجاع الحساب.")}</p>
+          <a href="/account-recovery">{t("التواصل مع الدعم")}</a>
+        </div> : <form onSubmit={submit}>
           {mode === "signup" && (
             <>
               <label className="auth-field">
@@ -255,7 +251,7 @@ function LoginContent() {
               />
             </div>
           </label>
-          {mode !== "forgot" && (
+          {(
             <label className="auth-field">
               <span>{t("كلمة المرور")}</span>
               <div>
@@ -300,12 +296,10 @@ function LoginContent() {
                 ? portal === "partner"
                   ? t("إنشاء حساب الشركة")
                   : t("إنشاء الحساب")
-                : mode === "forgot"
-                  ? t("إرسال رابط الاسترجاع")
-                  : t("دخول")}{" "}
+                : t("دخول")}{" "}
             <ArrowLeft />
           </Button>
-        </form>
+        </form>}
         {error && (
           <p className="form-error" role="alert">
             {t(error)}

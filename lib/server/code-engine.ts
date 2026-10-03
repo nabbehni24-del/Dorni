@@ -12,4 +12,4 @@ export async function generateCodes(quantity:number):Promise<GeneratedCode[]>{
   }
   return rows;
 }
-export function productionCsv(batchCode:string,rows:GeneratedCode[],origin:string){const quote=(v:string)=>`"${v.replaceAll('"','""')}"`;return ["batch_code,print_index,serial_number,public_qr_payload,claim_code,claim_qr_payload",...rows.map((r,i)=>[batchCode,String(i+1),r.serialNumber,`${origin}/t/${r.publicToken}`,r.claimCode,`${origin}/claim#serial=${encodeURIComponent(r.serialNumber)}&code=${encodeURIComponent(r.claimCode)}`].map(quote).join(","))].join("\r\n");}
+export function productionCsv(batchCode:string,rows:GeneratedCode[],origin:string){const quote=(v:string)=>`"${v.replaceAll('"','""')}"`;return ["batch_code,print_index,serial_number,public_qr_payload,claim_code,claim_qr_payload",...rows.map((r,i)=>[batchCode,String(i+1),r.serialNumber,`${origin}/t/${r.publicToken}`,r.claimCode,`${origin}/claim#serial=${encodeURIComponent(r.serialNumber)}`].map(quote).join(","))].join("\r\n");}

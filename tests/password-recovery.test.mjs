@@ -7,11 +7,13 @@ const recoveryRoute = new URL("../app/auth/recovery/route.ts", import.meta.url);
 const callbackRoute = new URL("../app/auth/callback/route.ts", import.meta.url);
 const publicOrigin = new URL("../lib/server/public-origin.ts", import.meta.url);
 
-test("password recovery email uses the allow-listed callback on the public app origin", async () => {
+test("self-service password recovery cannot send email while recovery is support-only", async () => {
   const source = await readFile(authRoute, "utf8");
-  assert.match(source, /new URL\("\/auth\/callback",publicOrigin\(request\)\)/);
-  assert.match(source, /redirect\.searchParams\.set\("next","\/reset-password"\)/);
-  assert.match(source, /resetPasswordForEmail/);
+  assert.match(source, /SUPPORT_RECOVERY_REQUIRED/);
+  assert.doesNotMatch(source, /resetPasswordForEmail/);
+  const magic = await readFile(new URL('../app/api/auth/request-email-link/route.ts',import.meta.url),'utf8');
+  assert.match(magic,/SUPPORT_RECOVERY_REQUIRED/);
+  assert.doesNotMatch(magic,/signInWithOtp/);
 });
 
 test("recovery callback always finishes on the new-password screen", async () => {

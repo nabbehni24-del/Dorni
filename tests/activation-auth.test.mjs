@@ -11,6 +11,66 @@ function load(path,imports={}){
  new Function('require','exports',js)(name=>{if(name==='server-only')return {};if(name==='node:crypto')return crypto;if(name==='zod')return {z};if(name==='@/lib/auth-callback-recovery')return load('lib/auth-callback-recovery.ts');if(name in imports)return imports[name];throw Error('Unexpected import '+name);},exports);return exports;
 }
 
+test('manual entry replaces legacy link-captured context without changing owned service contexts',async()=>{
+ const before=process.env.CLAIM_PEPPER;process.env.CLAIM_PEPPER='synthetic-manual-entry-test-secret';
+ try{
+  const jar=new Map();const cookieStore={get:n=>jar.has(n)?{value:jar.get(n)}:undefined,set:(n,v)=>jar.set(n,v),delete:n=>jar.delete(n)};
+  const context=load('lib/server/activation-context.ts',{'next/headers':{cookies:async()=>cookieStore}});
+  const pending=context.newContext('SERIAL','synthetic-proof');
+  const legacy={...pending};delete legacy.entry;
+  await context.saveActivationContext(legacy);assert.equal(await context.readActivationContext(),null);
+  await context.saveActivationContext(pending);assert.equal((await context.readActivationContext()).entry,'manual');
+  await context.saveActivationContext({id:pending.id,expires:pending.expires,codeId:'owned-card',userId:'owner'});
+  assert.equal((await context.readActivationContext()).codeId,'owned-card');
+  await context.clearActivationContext();assert.equal(await context.readActivationContext(),null);
+  await context.rememberActivationSerial('SERIAL');
+  assert.equal(await context.activationDestination('/app'),'/claim');
+  assert.equal(await context.readActivationContext(),null); // identity is never claim proof
+  await context.clearActivationContext();assert.equal(await context.activationDestination('/app'),'/app');
+ }finally{if(before===undefined)delete process.env.CLAIM_PEPPER;else process.env.CLAIM_PEPPER=before;}
+});
+
+test('activation screen never captures a credential from a scanned URL',()=>{
+ const source=readFileSync(new URL('../components/activation-journey.tsx',import.meta.url),'utf8');
+ assert.doesNotMatch(source,/(?:params|searchParams)\.get\(['"]code['"]\)/);
+ assert.match(source,/action:'restart'/);
+ assert.match(source,/if\(j.state==='MISSING'\)setManual\(true\)/);
+ assert.match(source,/await capture\(s,c\)/); // explicit form submission only
+});
+
+test('support-only recovery refuses before constructing an Auth client or sending mail',async()=>{
+ const route=load('app/api/auth/[action]/route.ts',{
+  '@/lib/supabase/server':{createServerSupabase:async()=>{throw Error('Auth must not be called');}},
+  '@/lib/server/account':{},'@/lib/server/public-origin':{},'@/lib/server/activation-context':{},
+  '@/lib/server/http':{json:(body,status=200)=>({body,status}),UnauthorizedError:class extends Error{}},
+ });
+ const result=await route.POST(new Request('https://example.invalid/api/auth/forgot-password',{method:'POST'}),{params:Promise.resolve({action:'forgot-password'})});
+ assert.equal(result.status,403);assert.equal(result.body.code,'SUPPORT_RECOVERY_REQUIRED');
+});
+
+test('immediate signup creates only the account, not a card or trial, and returns to manual activation',async()=>{
+ const calls=[];
+ const route=load('app/api/auth/[action]/route.ts',{
+  '@/lib/supabase/server':{createServerSupabase:async()=>({auth:{signUp:async()=>({data:{session:{user:{id:'synthetic'}}},error:null})},rpc:async(name)=>{calls.push(name);return {error:null};}})},
+  '@/lib/server/account':{},'@/lib/server/public-origin':{publicOrigin:()=> 'https://example.invalid'},
+  '@/lib/server/activation-context':{activationDestination:async()=>'/claim'},
+  '@/lib/server/http':{json:(body,status=200)=>({body,status}),UnauthorizedError:class extends Error{}},
+ });
+ const result=await route.POST(new Request('https://example.invalid/api/auth/signup',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({fullName:'Synthetic Owner',email:'synthetic@example.invalid',password:'Synthetic-test-123'})}),{params:Promise.resolve({action:'signup'})});
+ assert.equal(result.status,201);assert.equal(result.body.needsEmailConfirmation,false);
+ assert.equal(result.body.destination,'/claim');assert.deepEqual(calls,['provision_my_account']);
+});
+
+test('email ownership projection never trusts client metadata or implicit confirmation',()=>{
+ const migration=readFileSync(new URL('../supabase/migrations/20261003130625_staging_independent_contact_proof.sql',import.meta.url),'utf8');
+ assert.match(migration,/email_ownership_proofs enable row level security/);
+ assert.match(migration,/revoke all on private.email_ownership_proofs from public, anon, authenticated/);
+ assert.match(migration,/p.email=lower\(u.email\)/);
+ assert.match(migration,/CONTACT_PROOF_BASELINE_MISMATCH/);
+ assert.match(migration,/'http_code',403/);
+ assert.doesNotMatch(migration,/insert into private.email_ownership_proofs/i);
+});
+
 for (const route of ['app/auth/callback/route.ts','app/auth/recovery/route.ts']) {
  test(`${route}: preserves explicit PKCE flow binding, including invalid empty values`,async()=>{
   for(const flowId of [null,'first-flow_123','second-flow_456','']) {

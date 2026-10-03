@@ -12,6 +12,15 @@ function load(path,imports={}){
 const security=load('lib/server/security.ts');
 const {productionCsv}=load('lib/server/code-engine.ts',{'./security':security});
 const {recoverableCodes}=load('lib/server/batch-recovery.ts',{'./security':security});
+
+test('printed activation URL identifies the card but never carries its private code',()=>{
+ const csv=productionCsv('TEST',[{serialNumber:'SERIAL-1',publicToken:'public-token',claimCode:'private-code',credentialHash:'digest'}],'https://example.invalid');
+ assert.ok(csv.includes('"https://example.invalid/claim#serial=SERIAL-1"'));
+ assert.ok(csv.includes('"private-code"'));
+ assert.ok(csv.includes('"https://example.invalid/t/public-token"'));
+ assert.equal(csv.includes('&code='),false);
+ assert.equal(csv.split('private-code').length-1,1);
+});
 test('production code recovery is stable, scoped, secret-separated and fails closed',async()=>{
  const oldKey=process.env.BATCH_GENERATION_SECRET,oldPepper=process.env.CLAIM_PEPPER;
  try{
