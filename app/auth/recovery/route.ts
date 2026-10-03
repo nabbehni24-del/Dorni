@@ -15,12 +15,13 @@ export async function GET(request: Request) {
   const url = new URL(request.url);
   const origin = publicOrigin(request);
   const code = url.searchParams.get("code");
+  const flowId = url.searchParams.get("sb_flow_id");
   const tokenHash = url.searchParams.get("token_hash");
   const type = url.searchParams.get("type") as EmailOtpType | null;
   const supabase = await createServerSupabase();
 
   if (code) {
-    const { error } = await supabase.auth.exchangeCodeForSession(code);
+    const { error } = await supabase.auth.exchangeCodeForSession(code, flowId !== null ? { flowId } : undefined);
     if (error) return loginError(origin);
   } else if (tokenHash && type && recoveryTypes.has(type)) {
     const { error } = await supabase.auth.verifyOtp({ token_hash: tokenHash, type });

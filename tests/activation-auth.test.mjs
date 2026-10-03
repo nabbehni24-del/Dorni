@@ -4,11 +4,73 @@ import {readFileSync} from 'node:fs';
 import * as crypto from 'node:crypto';
 import ts from 'typescript';
 import {z} from 'zod';
+import {createServerClient} from '@supabase/ssr';
 function load(path,imports={}){
  imports={'@/lib/login-error': path==='lib/login-error.ts'?{}:load('lib/login-error.ts'),...imports};
  const exports={};const js=ts.transpileModule(readFileSync(new URL('../'+path,import.meta.url),'utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2022}}).outputText;
  new Function('require','exports',js)(name=>{if(name==='server-only')return {};if(name==='node:crypto')return crypto;if(name==='zod')return {z};if(name==='@/lib/auth-callback-recovery')return load('lib/auth-callback-recovery.ts');if(name in imports)return imports[name];throw Error('Unexpected import '+name);},exports);return exports;
 }
+
+for (const route of ['app/auth/callback/route.ts','app/auth/recovery/route.ts']) {
+ test(`${route}: preserves explicit PKCE flow binding, including invalid empty values`,async()=>{
+  for(const flowId of [null,'first-flow_123','second-flow_456','']) {
+   let received;
+   const supabase={auth:{exchangeCodeForSession:async(...args)=>{received=args;return {error:null};}},rpc:async()=>({error:null})};
+   const callback=load(route,{
+    '@supabase/supabase-js':{},
+    '@/lib/supabase/server':{createServerSupabase:async()=>supabase},
+    '@/lib/server/public-origin':{publicOrigin:()=> 'https://example.invalid'},
+    '@/lib/server/activation-context':{activationDestination:async()=>'/claim'},
+    'next/headers':{cookies:async()=>({get:()=>undefined})},
+    'next/server':{NextResponse:{redirect:url=>({url:String(url),cookies:{delete(){}}})}},
+   });
+   const url=new URL('https://example.invalid/auth/callback?code=synthetic-code&next=/claim');
+   if(flowId!==null)url.searchParams.set('sb_flow_id',flowId);
+   const result=await callback.GET(new Request(url));
+   assert.deepEqual(received,['synthetic-code',flowId===null?undefined:{flowId}]);
+   assert.equal(result.url,`https://example.invalid/${route.includes('/recovery/')?'reset-password':'claim'}`);
+  }
+ });
+}
+
+test('real Supabase SDK uses the original signup verifier after a second email flow',async()=>{
+ const jar=new Map(),flows=[];let matched=false;
+ const client=()=>createServerClient('https://synthetic.supabase.co','synthetic-publishable-key',{
+  auth:{experimental:{appendPkceFlowIdToRedirects:true}},
+  cookies:{getAll:()=>[...jar].map(([name,value])=>({name,value})),setAll:items=>items.forEach(({name,value})=>value?jar.set(name,value):jar.delete(name))},
+  global:{fetch:async(input,init)=>{
+   const url=new URL(String(input));const body=JSON.parse(init.body);
+   if(url.pathname.endsWith('/signup')){
+    flows.push({challenge:body.code_challenge,redirect:new URL(url.searchParams.get('redirect_to'))});
+    return new Response(JSON.stringify({id:crypto.randomUUID(),aud:'authenticated',email:'synthetic@example.invalid',created_at:new Date().toISOString()}),{status:200,headers:{'content-type':'application/json'}});
+   }
+   if(url.pathname.endsWith('/token')){
+    matched=crypto.createHash('sha256').update(body.code_verifier).digest('base64url')===flows[0].challenge;
+    // Stop before creating a session: only verifier selection is under test.
+    return new Response(JSON.stringify({code:'flow_state_expired',msg:'Synthetic test stops at exchange'}),{status:400,headers:{'content-type':'application/json'}});
+   }
+   throw Error('Unexpected SDK request');
+  }},
+ });
+ for(let i=0;i<2;i++){
+  const result=await client().auth.signUp({email:'synthetic@example.invalid',password:'SyntheticOnly123',options:{emailRedirectTo:'https://example.invalid/auth/callback?next=/claim'}});
+  assert.equal(result.error,null);
+ }
+ assert.equal(flows.length,2);
+ const first=flows[0].redirect;
+ assert.ok(first.searchParams.get('sb_flow_id'));
+ assert.notEqual(first.searchParams.get('sb_flow_id'),flows[1].redirect.searchParams.get('sb_flow_id'));
+ first.searchParams.set('code','synthetic-auth-code');
+ const callback=load('app/auth/callback/route.ts',{
+  '@supabase/supabase-js':{},'@/lib/supabase/server':{createServerSupabase:async()=>client()},
+  '@/lib/server/public-origin':{publicOrigin:()=> 'https://example.invalid'},
+  '@/lib/server/activation-context':{activationDestination:async()=>'/claim'},
+  'next/headers':{cookies:async()=>({get:()=>undefined})},
+  'next/server':{NextResponse:{redirect:url=>({url:String(url),cookies:{delete(){}}})}},
+ });
+ await callback.GET(new Request(first));
+ assert.equal(matched,true,'first email must not use the second signup verifier');
+});
 test('private link -> signup -> email confirmation -> same activation context, with no credential in URLs or JSON',async()=>{
  const before=process.env.CLAIM_PEPPER;process.env.CLAIM_PEPPER='synthetic-activation-test-secret-not-production';
  try{

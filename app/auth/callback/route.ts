@@ -15,17 +15,25 @@ export async function GET(request: Request) {
   const nextParam = url.searchParams.get("next");
   const requestedNext = nextParam && ['/app','/partner','/claim','/reset-password'].includes(nextParam) ? nextParam : null;
   const code = url.searchParams.get("code");
+  // Bind this callback to its own verifier, not the latest flow in another tab.
+  const flowId = url.searchParams.get("sb_flow_id");
   const tokenHash = url.searchParams.get("token_hash");
   const type = url.searchParams.get("type") as EmailOtpType | null;
   const next = requestedNext ?? (type === "recovery" ? "/reset-password" : "/app");
   const supabase = await createServerSupabase();
 
   let error = null;
-  if (code) ({ error } = await supabase.auth.exchangeCodeForSession(code));
+  if (code) ({ error } = await supabase.auth.exchangeCodeForSession(code, flowId !== null ? { flowId } : undefined));
   else if (tokenHash && type && allowedTypes.has(type)) ({ error } = await supabase.auth.verifyOtp({ token_hash: tokenHash, type }));
   else error = new Error("Missing authentication parameters");
 
   if (error) {
+    // Never log the URL, auth code, token hash, cookies, or provider message.
+    console.warn("Auth callback could not establish session", {
+      method: code ? "pkce" : tokenHash ? "email_token" : "missing_parameters",
+      flowBound: flowId !== null,
+      reason: callbackErrorReason(error),
+    });
     const login = new URL("/login", origin);
     login.searchParams.set("error", callbackErrorReason(error));
     if (requestedNext === '/claim' || await activationDestination('/app') === '/claim') login.searchParams.set('next', '/claim');
